@@ -1,0 +1,26 @@
+{
+  "name": "mongo-strict",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "npm run tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "class-validator": "^0.13.2",
+    "mongodb": "^4.9.1",
+    "realistic-structured-clone": "^3.0.0"
+  }
+}

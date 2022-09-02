@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ES2020",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "removeComments": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./lib/esm",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution":"node",
+    "composite": true
+  },
+  "include": [
+    "./src"
+  ]
+}
