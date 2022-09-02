@@ -9,7 +9,7 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./lib/esm",
+    "outDir": "./dist/esm",
     "allowSyntheticDefaultImports": true,
     "sourceMap": false,
     "incremental": true,
