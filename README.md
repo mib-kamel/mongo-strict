@@ -1,6 +1,6 @@
 # mongo-strict
 
-Mongo Strict is a Real MongoDB ORM, It makes the usage of MongoDB safer, easier, faster with a better performance...
+Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, easier and faster with a better performance...
 
 ## mongo-strict Allows you to
 
@@ -12,7 +12,9 @@ Mongo Strict is a Real MongoDB ORM, It makes the usage of MongoDB safer, easier,
 - Imporove the **App performance** by using the best practices in the background.
 - Imporove the **code quality**.
 
+
 ### mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB
+
 
 ## Example of using mongo-strict
 
