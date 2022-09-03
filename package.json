@@ -26,7 +26,13 @@
     "test": "jest --runInBand --no-cache --coverage --verbose",
     "prepublish": "npm run build"
   },
-  "keywords": [],
+  "keywords": [
+    "mongodb",
+    "relations",
+    "ORM",
+    "decorators",
+    "typescript"
+  ],
   "devDependencies": {
     "@types/jest": "^29.0.0",
     "jest": "^29.0.1",
