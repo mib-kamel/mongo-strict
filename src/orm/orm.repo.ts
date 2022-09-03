@@ -57,7 +57,7 @@ export class ORMRepo {
         };
     }
 
-    findOneById = async (id: string, select: any = {}) => {
+    findOneById = async (id: string, select: any) => {
         const findOptions = {
             where: { id },
             select,
