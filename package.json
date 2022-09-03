@@ -1,12 +1,12 @@
 {
   "name": "mongo-strict",
-  "version": "0.0.1",
+  "version": "0.0.1-a1",
   "description": "MongoDB ORM for typescript.",
   "author": "Kamel",
   "license": "MIT",
   "sideEffects": false,
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/src/index.js",
+  "module": "./dist/esm/src/index.js",
   "files": [
     "dist/"
   ],
@@ -37,22 +37,5 @@
     "class-validator": "^0.13.2",
     "mongodb": "^4.9.1",
     "realistic-structured-clone": "^3.0.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "test",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "./src/**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }
