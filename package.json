@@ -1,20 +1,32 @@
 {
   "name": "mongo-strict",
   "version": "0.0.1",
-  "description": "",
+  "description": "MongoDB ORM for typescript.",
+  "author": "Kamel",
+  "license": "MIT",
+  "sideEffects": false,
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "files": [
     "dist/"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mib-kamel/mongo-strict.git"
+  },
+  "tags": [
+    "mongodb",
+    "relations",
+    "ORM",
+    "decorators",
+    "typescript"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
-    "test": "jest --runInBand --logHeapUsage",
+    "test": "jest --runInBand --no-cache --coverage --verbose",
     "prepublish": "npm run build"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.0.0",
     "jest": "^29.0.1",
