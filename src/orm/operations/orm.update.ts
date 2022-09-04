@@ -175,7 +175,7 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
 
     uniqueKeys.forEach((uni: any) => {
         const obj = {};
-        const { key, isCaseInsensitive } = uni;
+        const { key, isIgnoreCase } = uni;
 
         if (data[key] === undefined) {
             return;
@@ -183,7 +183,7 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
 
         if (data[key] === undefined) return;
 
-        if (isCaseInsensitive && typeof data[key] === 'string') {
+        if (isIgnoreCase && typeof data[key] === 'string') {
             obj[key] = { $regex: new RegExp(`^${data[key]}$`), $options: 'i' };
         } else {
             obj[key] = data[key];
@@ -210,11 +210,11 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
             const foundUniqueKeys = [];
 
             uniqueKeys.forEach((uni: any) => {
-                const { key, isCaseInsensitive } = uni;
+                const { key, isIgnoreCase } = uni;
 
                 let isKeyFound;
 
-                if (isCaseInsensitive) {
+                if (isIgnoreCase) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === data[key].toString().toLowerCase())
                 } else {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key] === data[key])

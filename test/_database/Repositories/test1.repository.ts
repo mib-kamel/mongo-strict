@@ -10,7 +10,7 @@ class Test1Entity {
     @Allow()
     @IsString()
     @IsRequired({ message: 'The Email Address is Required' })
-    @IsUnique({ isCaseInsensitive: true, message: 'This email is already registered' })
+    @IsUnique({ isIgnoreCase: true, message: 'This email is already registered' })
     @IsEmail()
     @MaxLength(100)
     email;

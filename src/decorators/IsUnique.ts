@@ -1,5 +1,5 @@
 interface UniqueOptions {
-    isCaseInsensitive?: boolean,
+    isIgnoreCase?: boolean,
     message?: string
 }
 

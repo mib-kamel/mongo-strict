@@ -68,13 +68,13 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
 
     uniqueKeys.forEach((uni: any) => {
         const obj = {};
-        const { key, isCaseInsensitive } = uni;
+        const { key, isIgnoreCase } = uni;
 
         if (insertData[key] === undefined) {
             return;
         }
 
-        if (isCaseInsensitive && typeof insertData[key] === 'string') {
+        if (isIgnoreCase && typeof insertData[key] === 'string') {
             obj[key] = { $regex: new RegExp(`^${insertData[key]}$`), $options: 'i' };
         } else {
             obj[key] = insertData[key];
@@ -98,11 +98,11 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
             const foundUniqueKeys = [];
 
             uniqueKeys.forEach((uni: any) => {
-                const { key, isCaseInsensitive } = uni;
+                const { key, isIgnoreCase } = uni;
 
                 let isKeyFound;
 
-                if (isCaseInsensitive) {
+                if (isIgnoreCase) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === insertData[key].toString().toLowerCase())
                 } else {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key] === insertData[key])
