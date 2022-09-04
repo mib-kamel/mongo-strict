@@ -40,7 +40,7 @@ class MongoStrict {
         const entityProperties: _EntityProperties = getEntityProperties(entity, defaultSelectFields, EntityClass);
         repositoryOptions = { ...this.repositoriesOptions, ...repositoryOptions };
 
-        const ORM = new ORMRepo(mongoCollection, entityProperties, repositoryOptions);
+        const ORM = new ORMRepo(mongoCollection, entityProperties, repositoryOptions, collectionName);
 
         this.repositoriesMap.set(collectionName, {
             entityProperties,

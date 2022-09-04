@@ -16,9 +16,10 @@ export class ORMRepo {
     private requiredKeys;
     private defaultValues;
     private repositoryptions;
+    private collectionName;
 
     constructor(
-        private collection: any, entityProperties: _EntityProperties, repositoryptions: any
+        private collection: any, entityProperties: _EntityProperties, repositoryptions: any, collectionName: string
     ) {
         this.defaultSelectFields = entityProperties.defaultSelectFields;
         this.referenceEntities = entityProperties.referenceEntities;
@@ -27,6 +28,7 @@ export class ORMRepo {
         this.requiredKeys = entityProperties.requiredKeys;
         this.defaultValues = entityProperties.defaultValues;
         this.repositoryptions = repositoryptions;
+        this.collectionName = collectionName;
     }
 
     getCollection = () => {
@@ -35,24 +37,23 @@ export class ORMRepo {
 
     find = async (findOptions: FindOptions) => {
         if (typeof findOptions !== "object") { findOptions = {}; }
-        return ormFind(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions);
+        return ormFind(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions, this.collectionName);
     }
 
     count = async (findOptions: FindOptions) => {
         if (typeof findOptions !== "object") { findOptions = {}; }
-        const count = await ormCount(this.collection, findOptions, this.referenceEntities, this.repositoryptions);
-        return count[0]?.count[0]?.total || 0;
+        return ormCount(this.collection, findOptions, this.referenceEntities, this.repositoryptions, this.collectionName);
     }
 
     findAndCount = async (findOptions: FindOptions) => {
         if (typeof findOptions !== "object") { findOptions = {}; }
-        const findPromise = ormFind(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions);
-        const countPromise = ormCount(this.collection, findOptions, this.referenceEntities, this.repositoryptions);
+        const findPromise = this.find(findOptions);
+        const countPromise = this.count(findOptions);
 
         const [find, count] = await Promise.all([findPromise, countPromise]);
 
         return {
-            count: count[0]?.count[0]?.total || 0,
+            count: count,
             data: find
         };
     }

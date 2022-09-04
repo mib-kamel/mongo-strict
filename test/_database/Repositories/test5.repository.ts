@@ -1,4 +1,4 @@
-import { addRepository, IsArray, IsString, Entity, ORMOperations, RefersTo, RELATION_TYPES } from '../../../src';
+import { addRepository, IsArray, IsString, Entity, ORMOperations, RefersTo, RELATION_TYPES, IsOptional } from '../../../src';
 
 import DATABASE_CONSTANTS from '../database.test.constants';
 
@@ -8,6 +8,7 @@ class Test5Entity {
     name;
 
     @IsArray()
+    @IsOptional()
     @RefersTo({
         collection: DATABASE_CONSTANTS.TEST3_COLLECTION,
         key: 'id',
@@ -16,6 +17,7 @@ class Test5Entity {
     repo3;
 
     @IsArray()
+    @IsOptional()
     @RefersTo({
         collection: DATABASE_CONSTANTS.TEST1_COLLECTION,
         key: 'email',
@@ -27,8 +29,8 @@ class Test5Entity {
 const DEFAULT_SELECT_FIELDS: string[] = [
     'id',
     'repo3',
-    "createdAt",
-    "updatedAt"
+    "created_at",
+    "updated_at"
 ];
 
 export class Test5Repository extends ORMOperations {
@@ -36,7 +38,11 @@ export class Test5Repository extends ORMOperations {
     public getCollection;
 
     constructor() {
-        const ORM = addRepository(Test5Entity, DEFAULT_SELECT_FIELDS).getORM();
+        const ORM = addRepository(Test5Entity, DEFAULT_SELECT_FIELDS,
+            {
+                createdAtKey: 'created_at',
+                updatedAtKey: 'updated_at'
+            }).getORM();
         super(ORM);
     }
 }

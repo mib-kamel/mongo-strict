@@ -12,6 +12,7 @@ export interface FindOptions {
     selectFields?: string[];
     select?: any;
     sort?: any;
+    cache?: any;
 }
 
 export interface ReferenceEntity {
@@ -58,4 +59,5 @@ export interface RepositoryOptions {
     updatedAtKey?: string;
     maxFindTimeMS?: number;
     debug?: boolean;
+    // cache?: any;
 }

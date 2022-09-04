@@ -1,5 +1,10 @@
 import { getConnectionManager, getDB } from '../../src';
 import { createTestingModule } from '../utils';
+import {
+    toBeBefore, toBeSameDayAs
+} from 'jest-date/dist/matchers';
+
+expect.extend({ toBeBefore, toBeSameDayAs });
 
 const NEW_RECORDS_COUNT = 20;
 const NEW_RECORDS_COUNT2 = 4;
@@ -65,6 +70,8 @@ describe('AppController', () => {
 
             expect(updatedRec).toBeDefined();
             expect(updatedRec.phone).toBe(newPhone);
+            expect(updatedRec.createdAt).toBeBefore(updatedRec.updatedAt);
+            expect(updatedRec.createdAt).toBeSameDayAs(updatedRec.updatedAt);
         });
 
         it('Should update first record again with the same phone number', async () => {

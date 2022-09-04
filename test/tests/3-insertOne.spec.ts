@@ -1,13 +1,20 @@
 import { getConnectionManager, getDB } from '../../src';
 import { createTestingModule } from '../utils';
 import { repo1Data } from '../data/repo1.data';
+import {
+    toBeSameSecondAs
+} from 'jest-date/dist/matchers';
+
+expect.extend({ toBeSameSecondAs });
 
 describe('AppController', () => {
     let repo;
+    let repo5;
 
     beforeAll(async () => {
         const testingMdolule = await createTestingModule();
         repo = testingMdolule.repo1;
+        repo5 = testingMdolule.repo5;
     });
 
     describe('root', () => {
@@ -16,6 +23,19 @@ describe('AppController', () => {
             expect(inseretResponse.id).toBeDefined();
             expect(inseretResponse.createdAt).toBeDefined();
             expect(inseretResponse.updatedAt).toBeDefined();
+        });
+
+        it('should insert created_at', async () => {
+            try {
+                const inseretResponse = await repo5.insertOne({ name: "test" });
+                expect(inseretResponse.id).toBeDefined();
+                expect(inseretResponse.created_at).toBeDefined();
+                expect(inseretResponse.updated_at).toBeDefined();
+                expect(inseretResponse.created_at).toBeSameSecondAs(inseretResponse.updated_at);
+            } catch (e) {
+                console.log(e);
+                expect(e).toBeUndefined();
+            }
         });
 
         it('should refuse invalid email', async () => {

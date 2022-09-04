@@ -1,5 +1,10 @@
 import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
+const structuredClone = require('realistic-structured-clone');
+const NodeCache = require("node-cache");
+var hash = require('object-hash');
+
+const queryCache = new NodeCache({ stdTTL: 1000, checkperiod: 120 });
 
 const PAGINATION_OPTIONS_DEFAULTS = {
     limit: 50,
@@ -14,8 +19,22 @@ export async function find(
     defaultSelectFields: string[] = [],
     findOptions: FindOptions,
     referenceEntities: ReferenceEntity[],
-    repositoryOptions: RepositoryOptions
+    repositoryOptions: RepositoryOptions,
+    collectionName: string
 ): Promise<any> {
+    let cacheKey;
+
+    if (findOptions.cache === true || !isNaN(findOptions.cache?.timeout)) {
+        const findClone: any = structuredClone(findOptions);
+        delete findClone.cache;
+        findClone.collectionName = collectionName;
+        findClone.operation = "FIND";
+        cacheKey = hash(findOptions);
+        if (queryCache.has(cacheKey)) {
+            return queryCache.get(cacheKey);
+        }
+    }
+
     const takeOption = !isNaN(findOptions.limit) ? parseInt(String(findOptions.limit)) : PAGINATION_OPTIONS_DEFAULTS.limit;
     const skipOption = !isNaN(findOptions.skip)
         ? findOptions.skip
@@ -101,6 +120,15 @@ export async function find(
 
     const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
     replaceAllData_id(res);
+
+    if (!!cacheKey) {
+        let cacheTimeout = 1000;
+        if (!isNaN(findOptions.cache?.timeout)) {
+            cacheTimeout = Number(findOptions.cache.timeout);
+        }
+        queryCache.set(cacheKey, res, cacheTimeout);
+    }
+
     return res;
 }
 
@@ -108,8 +136,22 @@ export async function count(
     Repository,
     findOptions: FindOptions,
     referenceEntities: ReferenceEntity[],
-    repositoryOptions: RepositoryOptions
+    repositoryOptions: RepositoryOptions,
+    collectionName: string
 ): Promise<any> {
+    let cacheKey;
+
+    if (findOptions.cache === true || !isNaN(findOptions.cache?.timeout)) {
+        const findClone: any = structuredClone(findOptions);
+        delete findClone.cache;
+        findClone.collectionName = collectionName;
+        findClone.operation = "COUNT";
+        cacheKey = hash(findOptions);
+        if (queryCache.has(cacheKey)) {
+            return queryCache.get(cacheKey);
+        }
+    }
+
     let where = findOptions.where || {};
     replaceWhereIds(where, referenceEntities);
 
@@ -140,7 +182,19 @@ export async function count(
         console.log(JSON.stringify(aggregateArray, null, 4));
     }
 
-    return Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
+    const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
+
+    const count = res[0]?.count[0]?.total || 0;
+
+    if (!!cacheKey) {
+        let cacheTimeout = 1000;
+        if (!isNaN(findOptions.cache?.timeout)) {
+            cacheTimeout = Number(findOptions.cache.timeout);
+        }
+        queryCache.set(cacheKey, count, cacheTimeout);
+    }
+
+    return count;
 }
 
 const selectItemsToProject = (selectItems) => {

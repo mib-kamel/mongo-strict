@@ -6,7 +6,11 @@ const numberKey = 365;
 
 describe('AppController', () => {
     let repo;
-    let records = []
+    let records: any[] = [];
+    let cachedFindOptions;
+    let cachedFindOptionsTimout;
+    let cachedCountOptions;
+    let cachedCountOptionsTimout;
 
     beforeAll(async () => {
         const testingMdolule = await createTestingModule();
@@ -25,6 +29,11 @@ describe('AppController', () => {
                 });
                 records.push(rec);
             }
+            cachedFindOptions = { where: { email: records[0].email }, cache: true };
+            cachedFindOptionsTimout = { where: { email: records[0].email }, cache: { timeout: 3000 } };
+
+            cachedCountOptions = { cache: true };
+            cachedCountOptionsTimout = { cache: { timeout: 3000 } };
         } catch (e: any) {
             console.log(e);
             expect(e).toBeUndefined();
@@ -42,6 +51,14 @@ describe('AppController', () => {
             const newRecords = await repo.find();
             expect(newRecords).toBeDefined();
             expect(newRecords.length).toBe(records.length);
+        });
+
+        it('Find and count', async () => {
+            const newRecords = await repo.findAndCount();
+            expect(newRecords?.data).toBeDefined();
+            expect(newRecords.data.length).toBe(records.length);
+            expect(newRecords?.count).toBeDefined();
+            expect(newRecords.count).toBe(records.length);
         });
 
         it('Selects only the selected fields', async () => {
@@ -94,6 +111,46 @@ describe('AppController', () => {
         it('Selects condition result', async () => {
             const findRecords = await repo.find({ where: { email: records[0].email } });
             expect(findRecords.length).toBe(1);
+        });
+
+        it('Should cache and get Data', async () => {
+            const findRecords = await repo.find(cachedFindOptions);
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should get cached Data', async () => {
+            const findRecords = await repo.find(cachedFindOptions);
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should cache and get Data with timeout', async () => {
+            const findRecords = await repo.find(cachedFindOptionsTimout);
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should get cached Data with timeout', async () => {
+            const findRecords = await repo.find(cachedFindOptionsTimout);
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should cache and get Count', async () => {
+            const count = await repo.count(cachedCountOptions);
+            expect(count).toBe(records.length);
+        });
+
+        it('Should get cached Data', async () => {
+            const count = await repo.count(cachedCountOptions);
+            expect(count).toBe(records.length);
+        });
+
+        it('Should cache and get Data with timeout', async () => {
+            const count = await repo.count(cachedCountOptionsTimout);
+            expect(count).toBe(records.length);
+        });
+
+        it('Should get cached Data with timeout', async () => {
+            const count = await repo.count(cachedCountOptionsTimout);
+            expect(count).toBe(records.length);
         });
     });
 
