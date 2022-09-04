@@ -71,9 +71,6 @@ class UserEntity {
 }
 
 export class UserRepository extends ORMOperations {
-    public getORM;
-    public getCollection;
-
     constructor() {
         const ORM = addRepository(UserEntity).getORM();
         super(ORM);
@@ -117,11 +114,8 @@ class UserCVEntity {
 }
 
 export class UserCVRepository extends ORMOperations {
-    public getORM;
-    public getCollection;
-
     constructor() {
-        const ORM = addRepository(UserCVEntity, DEFAULT_SELECT_FIELDS).getORM();
+        const ORM = addRepository(UserCVEntity).getORM();
         super(ORM);
     }
 }
@@ -168,11 +162,8 @@ class UserSectionEntity {
 }
 
 export class UserSectionRepository extends ORMOperations {
-    public getORM;
-    public getCollection;
-
     constructor() {
-        const ORM = addRepository(UserSectionEntity, DEFAULT_SELECT_FIELDS).getORM();
+        const ORM = addRepository(UserSectionEntity).getORM();
         super(ORM);
     }
 }
