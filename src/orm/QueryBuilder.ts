@@ -9,12 +9,10 @@ export class QueryBuilder {
     private isDebug: boolean;
     private cacheOption: any;
 
-
     private findFunction: Function;
     private findOneFunction: Function;
     private countFunction: Function;
     private findAndCountFunction: Function;
-
 
     constructor(find: Function, findOne: Function, count: Function, findAndCount: Function) {
         this.findFunction = find;
@@ -22,7 +20,6 @@ export class QueryBuilder {
         this.countFunction = count;
         this.findAndCountFunction = findAndCount;
     }
-
 
     debug = (isDebug: boolean) => {
         this.isDebug = isDebug;

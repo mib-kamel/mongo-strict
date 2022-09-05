@@ -47,13 +47,11 @@ describe('AppController', () => {
         it('Selects only the selected fields', async () => {
             const findRecords = await repo
                 .queryBuilder()
-                .find({
-                    select: {
-                        email: 1,
-                        numberKey: 1,
-                        booleanKey: 1,
-                    }
-                });
+                .select({
+                    email: 1,
+                    numberKey: 1,
+                    booleanKey: 1,
+                }).find();
 
             const recordsLength = records.length;
             expect(findRecords.length).toBe(recordsLength);
@@ -64,13 +62,11 @@ describe('AppController', () => {
         });
 
         it('Selects only on field', async () => {
-            const findRecord = await repo.queryBuilder().findOne({
-                select: {
-                    email: 1,
-                    numberKey: 1,
-                    booleanKey: 1,
-                }
-            });
+            const findRecord = await repo.queryBuilder().select({
+                email: 1,
+                numberKey: 1,
+                booleanKey: 1,
+            }).findOne();
 
             expect(findRecord.numberKey).toBe(numberKey);
         });
@@ -79,19 +75,54 @@ describe('AppController', () => {
             const findRecords = await repo.queryBuilder()
                 .where({ numberKey })
                 .limit(2)
-                .find({
-                    select: {
-                        email: 1,
-                        numberKey: 1,
-                        booleanKey: 1,
-                    }
-                });
+                .select(["email", "numberKey", "booleanKey"])
+                .find();
 
             expect(findRecords.length).toBe(2);
             expect(findRecords[0].email).toBeDefined();
             expect(findRecords[0].notRequiredUnique).toBeUndefined();
         });
 
+
+        it('Should cache and get Data', async () => {
+            const findRecords = await repo.queryBuilder().cache(true).limit(1).find();
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should get cached Data', async () => {
+            const findRecords = await repo.queryBuilder().cache(true).limit(1).find();
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should cache and get Data with timeout', async () => {
+            const findRecords = await repo.queryBuilder().cache({ timeout: 3000 }).limit(1).find();
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should get cached Data with timeout', async () => {
+            const findRecords = await repo.queryBuilder().cache({ timeout: 3000 }).limit(1).find();
+            expect(findRecords.length).toBe(1);
+        });
+
+        it('Should cache and get Count', async () => {
+            const count = await repo.queryBuilder().cache(true).count();
+            expect(count).toBe(records.length);
+        });
+
+        it('Should get cached Data', async () => {
+            const count = await repo.queryBuilder().cache(true).count();
+            expect(count).toBe(records.length);
+        });
+
+        it('Should cache and get Data with timeout', async () => {
+            const count = await repo.queryBuilder().cache({ timeout: 3000 }).count();
+            expect(count).toBe(records.length);
+        });
+
+        it('Should get cached Data with timeout', async () => {
+            const count = await repo.queryBuilder().cache({ timeout: 3000 }).count();
+            expect(count).toBe(records.length);
+        });
 
     });
 
