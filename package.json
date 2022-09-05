@@ -1,6 +1,6 @@
 {
   "name": "mongo-strict",
-  "version": "0.0.2-7",
+  "version": "0.0.2-8",
   "description": "MongoDB ORM for typescript.",
   "author": "Kamel",
   "license": "MIT",
