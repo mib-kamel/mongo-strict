@@ -11,7 +11,7 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
 - Get the **related data using the reference keys** whithout using any complicated lookups.
 - Imporove the **App performance** by using the best practices in the background.
 - Imporove the **code quality**.
-- Cache any query for a better performance.
+- **Cache** any query for a better performance.
 
 
 **mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB**

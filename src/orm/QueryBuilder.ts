@@ -7,17 +7,20 @@ export class QueryBuilder {
     private whereOption: object;
     private sortOption: object;
     private isDebug: boolean;
+    private cacheOption: any;
 
 
     private findFunction: Function;
     private findOneFunction: Function;
     private countFunction: Function;
+    private findAndCountFunction: Function;
 
 
-    constructor(find: Function, findOne: Function, count: Function) {
+    constructor(find: Function, findOne: Function, count: Function, findAndCount: Function) {
         this.findFunction = find;
         this.findOneFunction = findOne;
         this.countFunction = count;
+        this.findAndCountFunction = findAndCount;
     }
 
 
@@ -50,36 +53,41 @@ export class QueryBuilder {
         return this;
     }
 
-    find = async () => {
+    cache = (cacheOption: any) => {
+        this.cacheOption = cacheOption;
+        return this;
+    }
+
+    private getStoredFindOptions = () => {
         const options: FindOptions = {};
+
         this.skipOption && (options.skip = this.skipOption);
         this.limitOption && (options.limit = this.limitOption);
         this.whereOption && (options.where = this.whereOption);
         this.selectOption && (options.select = this.selectOption);
         this.sortOption && (options.sort = this.sortOption);
+        this.cacheOption && (options.cache = this.cacheOption);
 
+        return options;
+    }
+
+    find = async () => {
+        const options: FindOptions = this.getStoredFindOptions()
         return this.findFunction(options);
     }
 
     findOne = async () => {
-        const options: FindOptions = {};
-        this.skipOption && (options.skip = this.skipOption);
-        this.limitOption && (options.limit = this.limitOption);
-        this.whereOption && (options.where = this.whereOption);
-        this.selectOption && (options.select = this.selectOption);
-        this.sortOption && (options.sort = this.sortOption);
-
+        const options: FindOptions = this.getStoredFindOptions()
         return this.findOneFunction(options);
     }
 
     count = async () => {
-        const options: FindOptions = {};
-        this.skipOption && (options.skip = this.skipOption);
-        this.limitOption && (options.limit = this.limitOption);
-        this.whereOption && (options.where = this.whereOption);
-        this.selectOption && (options.select = this.selectOption);
-        this.sortOption && (options.sort = this.sortOption);
-
+        const options: FindOptions = this.getStoredFindOptions()
         return this.countFunction(options);
+    }
+
+    findAndCount = async () => {
+        const options: FindOptions = this.getStoredFindOptions()
+        return this.findAndCountFunction(options);
     }
 }

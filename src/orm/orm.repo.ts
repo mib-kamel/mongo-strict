@@ -101,6 +101,6 @@ export class ORMRepo {
     }
 
     queryBuilder = () => {
-        return new QueryBuilder(this.find, this.findOne, this.count);
+        return new QueryBuilder(this.find, this.findOne, this.count, this.findAndCount);
     }
 }
