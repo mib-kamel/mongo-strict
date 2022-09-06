@@ -41,38 +41,44 @@ Create your Database connection with the connection URL
 import { createConnection } from 'mongo-strict';
 
 await createConnection({
-    url: `mongodb://localhost:27017/fancy-cvs`,
-    synchronize: false,
-    logging: false,
+    url: `mongodb://localhost:27017/fancy-cvs`
 });
 ```
 
-Add your DB Repositories:
+Define your DB Repositories:
 
 ```
-import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength } from 'mongo-strict';
+import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, MinLength, IsString, IsArray, RefersTo } from 'mongo-strict';
 
 @Entity({ name: 'user' })
 class UserEntity {
     @Allow()
-    @IsEmail()
+    @IsEmail(undefined, { message: "The email should be valid :(" })
     @IsUnique({ isIgnoreCase: true })
-    emailAddress: string;
+    email: string;
 
     @Allow()
     @IsRequired()
     @MinLength(3)
-    @IsUnique({ isIgnoreCase: true })
-    userName: string;
+    name: string;
 
     @Allow()
-    @IsDate()
-    lastSeenAt: Date;
+    @IsString()
+    country: string;
+
+    @Allow()
+    @IsArray()
+    @RefersTo({
+        collection: 'cv',
+        key: 'id',
+        isArray: true
+    })
+    cvs: any[];
 }
 
 export class UserRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(UserEntity).getORM();
+        const ORM = addRepository(UserEntity, undefined, { debug: false }).getORM();
         super(ORM);
     }
 }
@@ -80,23 +86,14 @@ export class UserRepository extends ORMOperations {
 ```
 
 ```
-import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, IsBoolean, Allow } from 'mongo-strict';
+import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, Allow, IsArray } from 'mongo-strict';
 
-@Entity({ name: DATABASE_CONSTANTS.'user-cv' })
-class UserCVEntity {
+@Entity({ name: 'cv' })
+class CVEntity {
     @Allow()
     @IsRequired()
     @IsString()
-    @RefersTo({
-        collection: 'user',
-        key: 'id'
-    })
-    user: string;
-
-    @Allow()
-    @IsRequired()
-    @IsString()
-    name: string;
+    cvName: string;
 
     @Allow()
     @IsRequired()
@@ -104,66 +101,37 @@ class UserCVEntity {
     currentPosition: string;
 
     @Allow()
-    @IsRequired()
-    @IsString()
-    cvLanguage: string;
-
-    @Allow()
-    @IsBoolean()
-    isDeleted: boolean;
+    @IsArray()
+    @RefersTo({
+        collection: 'section',
+        key: 'id',
+        isArray: true
+    })
+    sections: any[]
 }
 
-export class UserCVRepository extends ORMOperations {
+export class CVRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(UserCVEntity).getORM();
+        const ORM = addRepository(CVEntity).getORM();
         super(ORM);
     }
 }
 ```
 
 ```
-import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, RELATION_TYPES, Allow, IsNumber, IsString, IsObject, IsBoolean } from 'mongo-strict';
+import { addRepository, Entity, IsRequired, ORMOperations, Allow, IsString } from 'mongo-strict';
 
-@Entity({ name: 'cv-section' })
-class UserSectionEntity {
-    @Allow()
-    @IsRequired()
-    @IsObject()
-    sectionTitle: object;
-
-    @Allow()
-    @IsRequired()
-    @IsObject()
-    sectionContent: object;
-
+@Entity({ name: 'section' })
+class SectionEntity {
     @Allow()
     @IsRequired()
     @IsString()
-    @RefersTo({
-        collection: 'user',
-        key: 'id'
-    })
-    user: string;
-
-    @Allow()
-    @IsRequired()
-    @IsString()
-    @RefersTo({
-        collection: DATABASE_CONSTANTS.'user-cv',
-        key: 'id',
-        type: RELATION_TYPES.MANY_TO_ONE,
-        refererAs: 'sections'
-    })
-    cv: string;
-
-    @Allow()
-    @IsBoolean()
-    isDeleted: boolean;
+    sectionTitle: string;
 }
 
-export class UserSectionRepository extends ORMOperations {
+export class SectionRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(UserSectionEntity).getORM();
+        const ORM = addRepository(SectionEntity).getORM();
         super(ORM);
     }
 }
@@ -178,3 +146,72 @@ initDBMap();
 ```
 
 Then you are ready to start...
+
+## Index file example:
+```
+import { createConnection, initDBMap } from 'mongo-strict';
+import { SectionRepository } from './section.repository';
+import { CVRepository } from './cv.repository';
+import { UserRepository } from './user.repository';
+
+const start = async () => {
+    await createConnection({
+        url: `mongodb://localhost:27017/fancy-cvs`
+    });
+
+    const userRepository = new UserRepository();
+    const cvRepository = new CVRepository();
+    const sectionRepository = new SectionRepository();
+
+    // Should be called after initializing all the repositories
+    initDBMap();
+
+    let insertedUser;
+    try {
+        // You don't need to make any check before inserting or updating, mongo-strict will do that.
+        insertedUser = await userRepository.insertOne({
+            email: 'email@co.co',
+            name: 'mongo user',
+            country: 'mongolia',
+            cvs: []
+        });
+    } catch (e) { }
+
+    let insertedCV;
+    if (insertedUser) {
+        try {
+            insertedCV = await cvRepository.insertOne({
+                cvName: 'User CV 1',
+                currentPosition: 'Developer !',
+                sections: []
+            });
+            await userRepository.update(insertedUser.id).setOne({ cvs: [insertedCV.id] });
+        } catch (e) { }
+    }
+
+    if (insertedCV && insertedUser) {
+        const insertedSections: any = [];
+        for (let i = 0; i < 6; i++) {
+            try {
+                const insertSection = await sectionRepository.insertOne({
+                    sectionTitle: `Section ${i + 1}`
+                });
+                insertedSections.push(insertSection);
+            } catch (e) { }
+        }
+
+        await cvRepository.update(insertedCV.id).setOne({ sections: insertedSections.map((section) => section.id) });
+    }
+
+    // This will fetch the user cvs and section with no need to make any lookups
+    const userData = await userRepository.findOne({
+        select: ["id", "name", "cvs.cvName", "cvs.currentPosition", "cvs.sections.sectionTitle"]
+    })
+
+    console.log(JSON.stringify(userData, null, 4));
+}
+
+start();
+```
+
+**You can check more examples in the samples folder**
