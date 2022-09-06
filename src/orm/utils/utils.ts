@@ -30,6 +30,10 @@ export function getEntityProperties(entity: any, defaultSelectFields = [], Entit
                 key: ref.key
             });
         }
+
+        if (ref.refersToKey && !ref.type && ref.isArray) {
+            ref.type = RELATION_TYPES.MANY_TO_MANY
+        }
     });
 
     if (!referenceEntities) {

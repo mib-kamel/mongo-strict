@@ -124,7 +124,7 @@ export function revertRefsObjectIdsToString(referenceEntities, data) {
             if (isObjectID(refValue)) {
                 data[ref.key] = refValue.toString;
             } else if (Array.isArray(refValue)) {
-                data = data.map((r) => isObjectID(r) ? r.toString() : r);
+                data[ref.key] = refValue.map((r) => isObjectID(r) ? r.toString() : r);
             }
 
             data[ref.key] = refValue.toString();
