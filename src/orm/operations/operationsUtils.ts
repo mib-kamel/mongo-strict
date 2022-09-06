@@ -121,13 +121,11 @@ export function revertRefsObjectIdsToString(referenceEntities, data) {
 
         const refValue = data[ref.key]
         if ((ref.refersToKey === 'id' || ref.refersToKey === '_id') && refValue) {
-            if (isObjectID(refValue)) {
-                data[ref.key] = refValue.toString;
-            } else if (Array.isArray(refValue)) {
+            if (Array.isArray(refValue)) {
                 data[ref.key] = refValue.map((r) => isObjectID(r) ? r.toString() : r);
+            } else if (isObjectID(refValue)) {
+                data[ref.key] = refValue.toString();
             }
-
-            data[ref.key] = refValue.toString();
         }
     }
 

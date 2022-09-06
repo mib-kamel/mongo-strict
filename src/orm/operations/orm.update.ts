@@ -45,12 +45,12 @@ export default function update(
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
             const res = await collection.findOneAndUpdate(where, { $set: updateData }, { returnDocument: 'after', returnNewDocument: true });
-            revertRefsObjectIdsToString(referenceEntities, res);
-            if (res?._id) {
-                res.id = res._id.toString();
-                delete res._id;
+            revertRefsObjectIdsToString(referenceEntities, res.value);
+            if (res?.value?._id) {
+                res.value.id = res.value._id.toString();
+                delete res.value._id;
             }
-            return res?.value;
+            return res.value;
         } catch (err) {
             throw err;
         }
@@ -81,7 +81,9 @@ export default function update(
     }
 
     const replaceOne = async (updateData: any) => {
+        const updateDataClone = structuredClone(updateData);
         updateData = structuredClone(updateData);
+        const updatedDataId = updateData.id;
         delete updateData._id;
         delete updateData.id;
         fillDefaultValue(defaultValues, updateData);
@@ -102,10 +104,10 @@ export default function update(
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
             const res = await collection.replaceOne(where, updateData);
-            revertRefsObjectIdsToString(referenceEntities, res);
-            if (res?._id) {
-                res.id = res._id.toString();
-                delete res._id;
+            revertRefsObjectIdsToString(referenceEntities, res.value);
+            if (res?.value?._id) {
+                res.value.id = res.value._id.toString();
+                delete res.value._id;
             }
             return res?.value;
         } catch (err) {
