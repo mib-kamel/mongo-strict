@@ -13,7 +13,6 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
 - Imporove the **code quality**.
 - **Cache** any query for a better performance.
 
-
 **mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB**
 
 
@@ -38,7 +37,7 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
 
 ## Instalation
 
-```
+```JavaScript
 npm install mongo-strict --save
 ```
 
@@ -48,7 +47,7 @@ Example: Suppose we have CVs management system => Every user can create multiple
 
 Create your Database connection with the connection URL
 
-```
+```JavaScript
 import { createConnection } from 'mongo-strict';
 
 await createConnection({
@@ -58,7 +57,7 @@ await createConnection({
 
 Define your DB Repositories:
 
-```
+```JavaScript
 import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, MinLength, IsString, IsArray, RefersTo } from 'mongo-strict';
 
 @Entity({ name: 'user' })
@@ -96,7 +95,7 @@ export class UserRepository extends ORMOperations {
 
 ```
 
-```
+```JavaScript
 import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, Allow, IsArray } from 'mongo-strict';
 
 @Entity({ name: 'cv' })
@@ -129,7 +128,7 @@ export class CVRepository extends ORMOperations {
 }
 ```
 
-```
+```JavaScript
 import { addRepository, Entity, IsRequired, ORMOperations, Allow, IsString } from 'mongo-strict';
 
 @Entity({ name: 'section' })
@@ -150,7 +149,7 @@ export class SectionRepository extends ORMOperations {
 
 Then you are ready to start...
 
-```
+```JavaScript
 import { createConnection, initDBMap } from 'mongo-strict';
 import { SectionRepository } from './section.repository';
 import { CVRepository } from './cv.repository';
@@ -232,6 +231,7 @@ await createConnection({
 [Repository Options](#repository-options)
 
 ## Add Repository
+
 You can add a new repository by calling:
 
 ```JavaScript
@@ -247,13 +247,16 @@ addRepository(EntityClass, repositoryOptions)
 |    createdAtKey    |      default 'createdAt'       |
 |    updatedAtKey    |        default 'updatedAt'     |
 |    maxFindTimeMS    |       default 60000      |
-|    debug    |       defaulr false      |
+|    debug    |       default false      |
 |    defaultSelectFields    |      default undefined       |
 |    cacheTimeout    |      default 1000 MS       |
 
 ## Entity Class
+
 You should pass the @Entity decorator before the Entity class and pass the collection name as a variable.
+
 The entity class should contains all the entity keys.
+
 You can add validations to every key and determine the default value, uniquness and the references.
 
 ```JavaScript
@@ -291,6 +294,7 @@ So you can call any validator class-validator provides, Exampels:
 ```
 
 #### IsRequired
+
 You can mark any key as a required and pass the error message which will be passed if the key is not found.
 
 ```JavaScript
@@ -299,8 +303,10 @@ requiredKey;
 ```
 
 #### IsUnique
+
 You can mark any key as unique key througt the collection.
-You can determine if you need it case sensetive or not
+
+You can determine if you need it case sensetive or not.
 
 ```JavaScript
 @IsUnique({message 'The use email should be unique', isIgnoreCase: true}) // isIgnoreCase default false
@@ -308,6 +314,7 @@ userEmail;
 ```
 
 #### Default
+
 You can pass the default value of any key
 
 ```JavaScript
@@ -317,6 +324,7 @@ counter;
 ```
 
 #### RefersTo
+
 You can mark any key as a reference key.
 
 ```JavaScript
