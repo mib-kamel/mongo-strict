@@ -24,7 +24,7 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
         for (let i = 0; i < referenceEntites?.length || 0; i++) {
             const ref = referenceEntites[i];
 
-            if (!ref.refersToCollectionName || ref.refererCollectionName || ref.refersToCollectionName === collectionName) continue;
+            if (!ref.refersToCollectionName || ref._refererCollectionName || ref.refersToCollectionName === collectionName) continue;
 
             const refersTo = repositoriesMap.get(ref.refersToCollectionName);
 
@@ -44,9 +44,9 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
 
             refersTo.entityProperties.referenceEntities.push({
                 key: ref.refersToKey,
-                refererCollectionName: collectionName,
-                refererKey: ref.key,
-                as: ref.refererAs || collectionName,
+                _refererCollectionName: collectionName,
+                _refererKey: ref.key,
+                as: ref.refersToAs || collectionName,
                 type: newRelationType,
                 maxDepth: ref.maxDepth
             })
@@ -71,7 +71,7 @@ function checkReferenceEntity(ref: ReferenceEntity) {
 
 function extendReferenceEntities(repositoriesMap: any, parent: ReferenceEntity, depth, circulatDepth = 0, parents) {
 
-    const targetCollectionName = parent.refersToCollectionName || parent.refererCollectionName;
+    const targetCollectionName = parent.refersToCollectionName || parent._refererCollectionName;
     const refersTo = repositoriesMap.get(targetCollectionName);
 
     const newParent = [...parents, targetCollectionName];
@@ -84,7 +84,7 @@ function extendReferenceEntities(repositoriesMap: any, parent: ReferenceEntity, 
         const ref = refersToOptions.referenceEntities[i];
         let newRef: ReferenceEntity = { key: '' };
 
-        const newTargetCollectionName = ref.refersToCollectionName || ref.refererCollectionName;
+        const newTargetCollectionName = ref.refersToCollectionName || ref._refererCollectionName;
 
         if (newParent.find(p => p === newTargetCollectionName) && newParent[newParent.length - 1] !== newTargetCollectionName) {
             continue;
@@ -108,8 +108,8 @@ function extendReferenceEntities(repositoriesMap: any, parent: ReferenceEntity, 
 
         const ref = parent.referenceEntities[i];
 
-        const ref1 = parent.refersToCollectionName || parent.refererCollectionName;
-        const ref2 = ref.refersToCollectionName || ref.refererCollectionName;
+        const ref1 = parent.refersToCollectionName || parent._refererCollectionName;
+        const ref2 = ref.refersToCollectionName || ref._refererCollectionName;
         const isCircular = ref1 === ref2;
         const maxCircularDepth = ref.maxDepth || MAX_DEPTH;
 

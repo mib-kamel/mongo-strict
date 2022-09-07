@@ -9,7 +9,6 @@ describe('AppController', () => {
     let sectionRepository;
     let insertedUser;
     let insertedCV;
-    let insertedSections: any[] = [];
 
     beforeAll(async () => {
         await createConnection({
@@ -52,7 +51,7 @@ describe('AppController', () => {
                     currentPosition: 'Developer !',
                     sections: []
                 });
-                insertedUser = await userRepository.update(insertedUser.id).setOne({ cvs: [insertedCV.id] });    
+                insertedUser = await userRepository.update(insertedUser.id).setOne({ cvs: [insertedCV.id] });
             } catch (e) {
                 expect(e).toBeUndefined();
             }
@@ -88,13 +87,32 @@ describe('AppController', () => {
             } catch (e) {
                 expect(e).toBeUndefined();
             }
-            console.log(insertedSections?.length)
-            console.log(insertedCV?.sections?.length)
-            console.log(insertedCV?.sections)
+
             expect(insertedCV).toBeDefined();
             expect(insertedCV?.sections?.length).toBe(6);
-
             expect(insertedSections?.length).toBe(6);
+        });
+
+        it('Should get user inserted data', async () => {
+            let userData;
+            try {
+                userData = await userRepository.findOne({
+                    select: ["id", "name", "cvs.cvName", "cvs.currentPosition", "cvs.sections.sectionTitle"]
+                })
+            } catch (e) {
+                expect(e).toBeUndefined();
+            }
+
+            expect(userData).toBeDefined();
+            expect(userData?.id).toBeDefined();
+            expect(userData?.name).toBeDefined();
+            expect(userData?.cvs).toBeDefined();
+            expect(userData?.cvs?.length).toEqual(1);
+            expect(userData?.cvs[0]).toBeDefined();
+            expect(userData?.cvs[0]?.cvName).toBeDefined();
+            expect(userData?.cvs[0]?.currentPosition).toBeDefined();
+            expect(userData?.cvs[0]?.sections?.length).toEqual(6);
+            expect(userData?.cvs[0]?.sections[0]?.sectionTitle).toBeDefined();
         });
     });
 

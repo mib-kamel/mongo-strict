@@ -252,9 +252,9 @@ const getLookups = (referenceEntities: ReferenceEntity[], lookupStrings: string[
             if (ref) {
                 const as = ref.as || currentKey;
                 let newLookup: any = {
-                    from: ref.refersToCollectionName || ref.refererCollectionName,
+                    from: ref.refersToCollectionName || ref._refererCollectionName,
                     localField: ref.key,
-                    foreignField: ref.refersToKey || ref.refererKey,
+                    foreignField: ref.refersToKey || ref._refererKey,
                     as
                 }
 

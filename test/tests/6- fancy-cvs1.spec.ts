@@ -63,10 +63,9 @@ describe('AppController', () => {
         it('Should insert Sections', async () => {
             try {
                 for (let i = 0; i < 6; i++) {
-                    const insertedSection = await cvRepository.insertOne({
-                        user: insertedUser.id,
-                        cvName: 'User CV 1',
-                        currentPosition: 'Developer !'
+                    const insertedSection = await sectionRepository.insertOne({
+                        cv: insertedCV.id,
+                        sectionTitle: 'A new section'
                     });
                     insertedSections.push(insertedSection);
                 }
@@ -76,6 +75,28 @@ describe('AppController', () => {
 
             expect(insertedSections?.length).toBeDefined();
             expect(insertedSections?.length).toBe(6);
+        });
+
+        it('Should get user inserted data', async () => {
+            let userData;
+            try {
+                userData = await userRepository.findOne({
+                    select: ["id", "name", "cv.cvName", "cv.currentPosition", "cv.sections.sectionTitle"]
+                })
+            } catch (e) {
+                expect(e).toBeUndefined();
+            }
+
+            expect(userData).toBeDefined();
+            expect(userData?.id).toBeDefined();
+            expect(userData?.name).toBeDefined();
+            expect(userData?.cv).toBeDefined();
+            expect(userData?.cv?.length).toEqual(1);
+            expect(userData?.cv[0]).toBeDefined();
+            expect(userData?.cv[0]?.cvName).toBeDefined();
+            expect(userData?.cv[0]?.currentPosition).toBeDefined();
+            expect(userData?.cv[0]?.sections?.length).toEqual(6);
+            expect(userData?.cv[0]?.sections[0]?.sectionTitle).toBeDefined();
         });
     });
 

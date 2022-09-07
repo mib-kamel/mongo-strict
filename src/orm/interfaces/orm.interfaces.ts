@@ -16,16 +16,16 @@ export interface FindOptions {
 }
 
 export interface ReferenceEntity {
+    refersToCollectionName?: string;
     key: string,
-    refersToCollectionName?: string,
-    refersToKey?: string,
-    refererCollectionName?: string,
-    refererKey?: string,
-    referenceEntities?: ReferenceEntity[];
-    isArray?: boolean,
+    refersToKey?: string;
+    isArray?: boolean;
+    maxDepth?: number; // in case of cirecular reference
+    type?: RELATION_TYPES;
     as?: string;
-    maxDepth?: number;
-    type?: RELATION_TYPES
+    _refererCollectionName?: string;
+    _refererKey?: string;
+    referenceEntities?: ReferenceEntity[];
 }
 
 export interface _EntityProperties {
@@ -38,14 +38,14 @@ export interface _EntityProperties {
 }
 
 export interface EntityRefersTo {
-    isArray?: boolean;
     collection: string;
     key: string;
     as?: string;
-    refererAs?: string;
+    isArray?: boolean;
+    refersToAs?: string;
     maxDepth?: number;
-    type?: RELATION_TYPES,
-    message?: string
+    type?: RELATION_TYPES;
+    message?: string;
 }
 
 export interface EntityProperties {

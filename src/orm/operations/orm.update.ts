@@ -81,9 +81,7 @@ export default function update(
     }
 
     const replaceOne = async (updateData: any) => {
-        const updateDataClone = structuredClone(updateData);
         updateData = structuredClone(updateData);
-        const updatedDataId = updateData.id;
         delete updateData._id;
         delete updateData.id;
         fillDefaultValue(defaultValues, updateData);
@@ -103,13 +101,7 @@ export default function update(
             repositoryOptions?.autoCreatedAt && (updateData[createdAtKey] = createdAt);
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
-            const res = await collection.replaceOne(where, updateData);
-            revertRefsObjectIdsToString(referenceEntities, res.value);
-            if (res?.value?._id) {
-                res.value.id = res.value._id.toString();
-                delete res.value._id;
-            }
-            return res?.value;
+            return collection.replaceOne(where, updateData);
         } catch (err) {
             throw err;
         }

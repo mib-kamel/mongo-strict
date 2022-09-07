@@ -8,7 +8,7 @@ class SectionEntity {
     @RefersTo({
         collection: 'cv',
         key: 'id',
-        refererAs: 'sections'
+        refersToAs: 'sections'
     })
     cv: string;
 

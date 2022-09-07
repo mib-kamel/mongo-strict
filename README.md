@@ -24,6 +24,14 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
   - [Table of Contents](#table-of-contents)
   - [Instalation](#instalation)
   - [Usage](#usage)
+  - [Index file example:](#index-file-example)
+  - [Entity Validation](#entity-validation)
+    - [class-validator](#class-validator)
+    - [IsRequired](#isrequired)
+    - [IsUnique](#isunique)
+    - [Default](#default)
+    - [RefersTo](#refersto)
+      - [RefersTo Options](#refersto-options)
 
 ## Instalation
 
@@ -137,14 +145,6 @@ export class SectionRepository extends ORMOperations {
 }
 ```
 
-Then we need to call this function to initialize the DB Mapping
-
-```
-import { initDBMap } from 'mongo-strict';
-
-initDBMap();
-```
-
 Then you are ready to start...
 
 ## Index file example:
@@ -215,3 +215,70 @@ start();
 ```
 
 **You can check more examples in the samples folder**
+
+## Entity Validation
+
+### class-validator
+
+We use [class-validator to validate the Entities](https://www.npmjs.com/package/class-validator#validation-decorators)
+
+So you can call any validator class-validator provides, Exampels:
+
+```
+  @Length(10, 20)
+  @Contains('hello')
+  @IsInt()
+  @Min(0)
+  @Max(10)
+  @IsEmail()
+  @IsFQDN()
+  @IsDate()
+```
+
+### IsRequired
+You can mark any key as a required and pass the error message which will be passed if the key is not found.
+
+```
+@IsRequired({message: 'This Key is required'})
+requiredKey;
+```
+
+### IsUnique
+You can mark any key as unique key througt the collection.
+You can determine if you need it case sensetive or not
+
+```
+@IsUnique({message 'The use email should be unique', isIgnoreCase: true}) // isIgnoreCase default false
+userEmail;
+```
+
+### Default
+You can pass the default value of any key
+```
+@Default(0)
+@IsNumber()
+counter;
+```
+
+### RefersTo
+You can mark any key as a reference key.
+```
+@RefersTo({
+    collection: 'user'.
+    key: 'id',
+    as: 'user'
+})
+user;
+```
+#### RefersTo Options
+
+| Option | Description |
+|--------|-------------|
+|    collection    | The collection which the key refers to|
+|    key    |       The key which the refer key refers to      |
+|    as    |       Select the reference as (defaults to the collection name)     |
+|    isArray    |      Determine if the key is an array (for example we may have array of users refer to many users with defferent Ids) (default fakse)      |
+|    refersToAs    |       Select the current key form the refers to collection as      |
+|    maxDepth    |      Max Depth in case of circular references       |
+|    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
+|    message    |       The error messasge in case of inser or update refers to entity not found      |

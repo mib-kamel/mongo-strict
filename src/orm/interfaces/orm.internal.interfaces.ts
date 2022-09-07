@@ -2,8 +2,8 @@ export interface InternalReferenceEntity {
     key: string,
     refersToCollectionName?: string,
     refersToKey?: string,
-    refererCollectionName?: string,
-    refererKey?: string,
+    _refererCollectionName?: string,
+    _refererKey?: string,
     referenceEntities?: InternalReferenceEntity[];
     isArray?: boolean,
     as?: string;

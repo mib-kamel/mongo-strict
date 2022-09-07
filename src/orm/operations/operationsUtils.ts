@@ -12,7 +12,7 @@ export async function checkReferenceEntities(collection, referenceEntities, upda
         for (let i = 0; i < referenceEntities.length; i++) {
             const ref = referenceEntities[i];
 
-            if (ref.refererCollectionName) continue;
+            if (ref._refererCollectionName) continue;
 
             let refCreateData = updateData[ref.key];
 
