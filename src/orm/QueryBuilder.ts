@@ -1,4 +1,4 @@
-import { FindOptions } from "./interfaces/orm.interfaces";
+import { CacheOptions, FindOptions } from "./interfaces/orm.interfaces";
 
 export class QueryBuilder {
     private limitOption: number;
@@ -50,7 +50,7 @@ export class QueryBuilder {
         return this;
     }
 
-    cache = (cacheOption: any) => {
+    cache = (cacheOption: CacheOptions | boolean) => {
         this.cacheOption = cacheOption;
         return this;
     }

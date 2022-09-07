@@ -35,7 +35,7 @@ const DEFAULT_SELECT_FIELDS: string[] = [
 
 export class Test2Repository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(Test2Entity, DEFAULT_SELECT_FIELDS).getORM();
+        const ORM = addRepository(Test2Entity, { defaultSelectFields: DEFAULT_SELECT_FIELDS });
         super(ORM);
     }
 }

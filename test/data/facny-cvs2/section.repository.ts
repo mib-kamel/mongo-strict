@@ -10,7 +10,7 @@ class SectionEntity {
 
 export class SectionRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(SectionEntity).getORM();
+        const ORM = addRepository(SectionEntity);
         super(ORM);
     }
 }

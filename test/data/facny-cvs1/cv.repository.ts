@@ -1,4 +1,4 @@
-import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, IsBoolean, Allow } from '../../../src' ;
+import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, IsBoolean, Allow } from '../../../src';
 
 @Entity({ name: 'cv' })
 class CVEntity {
@@ -25,7 +25,7 @@ class CVEntity {
 
 export class CVRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(CVEntity).getORM();
+        const ORM = addRepository(CVEntity);
         super(ORM);
     }
 }

@@ -24,13 +24,16 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
   - [Table of Contents](#table-of-contents)
   - [Instalation](#instalation)
   - [Usage](#usage)
-  - [Index file example:](#index-file-example)
-  - [Entity Validation](#entity-validation)
-    - [class-validator](#class-validator)
-    - [IsRequired](#isrequired)
-    - [IsUnique](#isunique)
-    - [Default](#default)
-    - [RefersTo](#refersto)
+  - [Create Connection](#create-connection)
+  - [Add Repository](#add-repository)
+    - [Repository Options](#repository-options)
+  - [Entity Class](#entity-class)
+    - [Entity Validation](#entity-validation)
+      - [class-validator](#class-validator)
+      - [IsRequired](#isrequired)
+      - [IsUnique](#isunique)
+      - [Default](#default)
+      - [RefersTo](#refersto)
       - [RefersTo Options](#refersto-options)
 
 ## Instalation
@@ -49,7 +52,7 @@ Create your Database connection with the connection URL
 import { createConnection } from 'mongo-strict';
 
 await createConnection({
-    url: `mongodb://localhost:27017/fancy-cvs`
+    uri: `mongodb://localhost:27017/fancy-cvs`
 });
 ```
 
@@ -86,7 +89,7 @@ class UserEntity {
 
 export class UserRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(UserEntity, undefined, { debug: false }).getORM();
+        const ORM = addRepository(UserEntity, { debug: false });
         super(ORM);
     }
 }
@@ -120,7 +123,7 @@ class CVEntity {
 
 export class CVRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(CVEntity).getORM();
+        const ORM = addRepository(CVEntity);
         super(ORM);
     }
 }
@@ -139,7 +142,7 @@ class SectionEntity {
 
 export class SectionRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(SectionEntity).getORM();
+        const ORM = addRepository(SectionEntity);
         super(ORM);
     }
 }
@@ -147,7 +150,6 @@ export class SectionRepository extends ORMOperations {
 
 Then you are ready to start...
 
-## Index file example:
 ```
 import { createConnection, initDBMap } from 'mongo-strict';
 import { SectionRepository } from './section.repository';
@@ -156,7 +158,7 @@ import { UserRepository } from './user.repository';
 
 const start = async () => {
     await createConnection({
-        url: `mongodb://localhost:27017/fancy-cvs`
+        uri: `mongodb://localhost:27017/fancy-cvs`
     });
 
     const userRepository = new UserRepository();
@@ -216,15 +218,68 @@ start();
 
 **You can check more examples in the samples folder**
 
-## Entity Validation
+## Create Connection
 
-### class-validator
+You should pass the connection options which should contains the connection uri.
+You can pass the default repositoryOptions which will be applied to the all repositories.
+
+```JavaScript
+await createConnection({
+    uri: `mongodb://localhost:27017/fancy-cvs`
+}, repositoryOptions);
+```
+
+[Repository Options](#repository-options)
+
+## Add Repository
+You can add a new repository by calling:
+
+```JavaScript
+addRepository(EntityClass, repositoryOptions)
+```
+
+### Repository Options
+
+| Option | Description |
+|--------|-------------|
+|    autoCreatedAt    |       default true      |
+|    autoUpdatedAt    |       default true      |
+|    createdAtKey    |      default 'createdAt'       |
+|    updatedAtKey    |        default 'updatedAt'     |
+|    maxFindTimeMS    |       default 60000      |
+|    debug    |       defaulr false      |
+|    defaultSelectFields    |      default undefined       |
+|    cacheTimeout    |      default 1000 MS       |
+
+## Entity Class
+You should pass the @Entity decorator before the Entity class and pass the collection name as a variable.
+The entity class should contains all the entity keys.
+You can add validations to every key and determine the default value, uniquness and the references.
+
+```JavaScript
+@Entity({ name: 'user' })
+class UserEntity {
+    @Allow()
+    @IsEmail(undefined, { message: "The email should be valid :(" })
+    @IsUnique({ isIgnoreCase: true })
+    email: string;
+
+    @Allow()
+    @IsRequired()
+    @MinLength(3)
+    name: string;
+}
+```
+
+### Entity Validation
+
+#### class-validator
 
 We use [class-validator to validate the Entities](https://www.npmjs.com/package/class-validator#validation-decorators)
 
 So you can call any validator class-validator provides, Exampels:
 
-```
+```JavaScript
   @Length(10, 20)
   @Contains('hello')
   @IsInt()
@@ -235,34 +290,36 @@ So you can call any validator class-validator provides, Exampels:
   @IsDate()
 ```
 
-### IsRequired
+#### IsRequired
 You can mark any key as a required and pass the error message which will be passed if the key is not found.
 
-```
+```JavaScript
 @IsRequired({message: 'This Key is required'})
 requiredKey;
 ```
 
-### IsUnique
+#### IsUnique
 You can mark any key as unique key througt the collection.
 You can determine if you need it case sensetive or not
 
-```
+```JavaScript
 @IsUnique({message 'The use email should be unique', isIgnoreCase: true}) // isIgnoreCase default false
 userEmail;
 ```
 
-### Default
+#### Default
 You can pass the default value of any key
-```
+
+```JavaScript
 @Default(0)
 @IsNumber()
 counter;
 ```
 
-### RefersTo
+#### RefersTo
 You can mark any key as a reference key.
-```
+
+```JavaScript
 @RefersTo({
     collection: 'user'.
     key: 'id',
@@ -270,6 +327,7 @@ You can mark any key as a reference key.
 })
 user;
 ```
+
 #### RefersTo Options
 
 | Option | Description |

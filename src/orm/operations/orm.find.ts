@@ -24,7 +24,7 @@ export async function find(
 ): Promise<any> {
     let cacheKey;
 
-    if (findOptions.cache === true || !isNaN(findOptions.cache?.timeout)) {
+    if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout))) {
         const findClone: any = structuredClone(findOptions);
         delete findClone.cache;
         findClone.collectionName = collectionName;
@@ -122,8 +122,9 @@ export async function find(
     replaceAllData_id(res);
 
     if (!!cacheKey) {
-        let cacheTimeout = 1000;
-        if (!isNaN(findOptions.cache?.timeout)) {
+        let cacheTimeout = repositoryOptions.cacheTimeout;
+
+        if (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout)) {
             cacheTimeout = Number(findOptions.cache.timeout);
         }
         queryCache.set(cacheKey, res, cacheTimeout);
@@ -141,7 +142,7 @@ export async function count(
 ): Promise<any> {
     let cacheKey;
 
-    if (findOptions.cache === true || !isNaN(findOptions.cache?.timeout)) {
+    if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout))) {
         const findClone: any = structuredClone(findOptions);
         delete findClone.cache;
         findClone.collectionName = collectionName;
@@ -187,8 +188,8 @@ export async function count(
     const count = res[0]?.count[0]?.total || 0;
 
     if (!!cacheKey) {
-        let cacheTimeout = 1000;
-        if (!isNaN(findOptions.cache?.timeout)) {
+        let cacheTimeout = repositoryOptions.cacheTimeout;
+        if (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout)) {
             cacheTimeout = Number(findOptions.cache.timeout);
         }
         queryCache.set(cacheKey, count, cacheTimeout);

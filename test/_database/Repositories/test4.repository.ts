@@ -28,7 +28,7 @@ export class Test4Repository extends ORMOperations {
     public getCollection;
 
     constructor() {
-        const ORM = addRepository(Test4Entity, DEFAULT_SELECT_FIELDS).getORM();
+        const ORM = addRepository(Test4Entity, { defaultSelectFields: DEFAULT_SELECT_FIELDS });
         super(ORM);
     }
 }

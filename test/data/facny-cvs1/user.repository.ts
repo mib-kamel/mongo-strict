@@ -19,7 +19,7 @@ class UserEntity {
 
 export class UserRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(UserEntity, undefined, { debug: false }).getORM();
+        const ORM = addRepository(UserEntity, { debug: false });
         super(ORM);
     }
 }

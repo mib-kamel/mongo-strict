@@ -34,7 +34,7 @@ export class Test3Repository extends ORMOperations {
     public getCollection;
 
     constructor() {
-        const ORM = addRepository(Test3Entity, DEFAULT_SELECT_FIELDS).getORM();
+        const ORM = addRepository(Test3Entity, { defaultSelectFields: DEFAULT_SELECT_FIELDS });
         super(ORM);
     }
 }

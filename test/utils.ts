@@ -11,7 +11,7 @@ const mongoHostName = process.env.DATABASE_HOST_NAME || 'localhost';
 
 export async function createTestingModule() {
     await createConnection({
-        url: `mongodb://${mongoHostName}:27017/${databaseName}`,
+        uri: `mongodb://${mongoHostName}:27017/${databaseName}`,
         synchronize: false,
         logging: false,
     }, { debug: false });

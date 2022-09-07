@@ -15,9 +15,9 @@ class MongoStrict {
     private repositoriesOptions = {};
 
     createConnection = async (connection: any, repositoriesOptions: RepositoryOptions = {}) => {
-        if (!connection.url) return;
+        if (!connection.uri) return;
         this.repositoriesOptions = { ...REPOSITORIES_DEFAULT_OPTIONS, ...repositoriesOptions };
-        this.connection = await new MongoClient(connection.url);
+        this.connection = await new MongoClient(connection.uri);
         let refCheckCollection = await this.connection.db().collection(REF_CHECK_COLLECTION_NAME);
         if (!refCheckCollection) {
             await this.connection.db().createCollection(REF_CHECK_COLLECTION_NAME);
@@ -33,11 +33,11 @@ class MongoStrict {
         return this.connection;
     }
 
-    addRepository = (EntityClass: any, defaultSelectFields = [], repositoryOptions: RepositoryOptions = {}) => {
+    addRepository = (EntityClass: any, repositoryOptions: RepositoryOptions = {}) => {
         const entity: any = new EntityClass();
         const collectionName = entity.ORM_ENTITY_OPTIONS.name;
         const mongoCollection = this.connection.db().collection(collectionName);
-        const entityProperties: _EntityProperties = getEntityProperties(entity, defaultSelectFields, EntityClass);
+        const entityProperties: _EntityProperties = getEntityProperties(entity, repositoryOptions.defaultSelectFields, EntityClass);
         repositoryOptions = { ...this.repositoriesOptions, ...repositoryOptions };
 
         const ORM = new ORMRepo(mongoCollection, entityProperties, repositoryOptions, collectionName);
@@ -48,10 +48,7 @@ class MongoStrict {
             repositoryOptions
         });
 
-        return {
-            getORM: () => ORM,
-            getCollection: () => mongoCollection
-        };
+        return ORM
     }
 
     initDBMap = () => {

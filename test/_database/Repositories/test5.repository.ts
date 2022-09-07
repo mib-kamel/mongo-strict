@@ -38,11 +38,12 @@ export class Test5Repository extends ORMOperations {
     public getCollection;
 
     constructor() {
-        const ORM = addRepository(Test5Entity, DEFAULT_SELECT_FIELDS,
+        const ORM = addRepository(Test5Entity,
             {
+                defaultSelectFields: DEFAULT_SELECT_FIELDS,
                 createdAtKey: 'created_at',
                 updatedAtKey: 'updated_at'
-            }).getORM();
+            });
         super(ORM);
     }
 }

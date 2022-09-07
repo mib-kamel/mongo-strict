@@ -25,7 +25,7 @@ class CVEntity {
 
 export class CVRepository extends ORMOperations {
     constructor() {
-        const ORM = addRepository(CVEntity).getORM();
+        const ORM = addRepository(CVEntity);
         super(ORM);
     }
 }

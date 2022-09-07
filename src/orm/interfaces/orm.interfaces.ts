@@ -12,7 +12,7 @@ export interface FindOptions {
     selectFields?: string[];
     select?: any;
     sort?: any;
-    cache?: any;
+    cache?: CacheOptions | boolean;
 }
 
 export interface ReferenceEntity {
@@ -59,5 +59,10 @@ export interface RepositoryOptions {
     updatedAtKey?: string;
     maxFindTimeMS?: number;
     debug?: boolean;
-    // cache?: any;
+    defaultSelectFields?: string[];
+    cacheTimeout?: number;
+}
+
+export interface CacheOptions {
+    timeout?: number;
 }

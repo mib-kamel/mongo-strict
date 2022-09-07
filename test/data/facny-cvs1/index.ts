@@ -5,7 +5,7 @@ import { UserRepository } from './user.repository';
 
 const start = async () => {
     await createConnection({
-        url: `mongodb://localhost:27017/fancy-cvs`
+        uri: `mongodb://localhost:27017/fancy-cvs`
     });
 
     const userRepository = new UserRepository();
