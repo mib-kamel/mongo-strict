@@ -34,6 +34,14 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
       - [Default](#default)
       - [RefersTo](#refersto)
       - [RefersTo Options](#refersto-options)
+  - [Operations](#operations)
+    - [find(findOptionsObject)](#findfindoptionsobject)
+      - [FindOptions](#findoptions)
+      - [find example](#find-example)
+    - [findAndCount(findOptionsObject)](#findandcountfindoptionsobject)
+    - [findOne(findOptionsObject)](#findonefindoptionsobject)
+    - [count(findOptionsObject)](#countfindoptionsobject)
+    - [findOneById(id: string, select)](#findonebyidid-string-select)
 
 ## Instalation
 
@@ -348,3 +356,83 @@ user;
 |    maxDepth    |      Max Depth in case of circular references       |
 |    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
 |    message    |       The error messasge in case of inser or update refers to entity not found      |
+
+## Operations
+
+mongo-strict supports the main Database operations and you can get the original collection for any operation we do not support until now.
+
+### find(findOptionsObject)
+
+To make a find query you have to pass the find options object which can contain where, select, sort...
+
+#### FindOptions
+
+|  findOption  |  Description  |
+|---|---|
+|  where  |  Filters the documents to pass only the documents that match the specified condition(s). (mongodb aggergation [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/)) |
+|  select  |  determine the field you want to select (can be array of strings or mongodb aggergation [$project](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/)) |
+|  sort  |  returns the documents in sorted order (mongodb aggergation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/)) |
+|  limit  |  Limits the number of the returned documents (mongodb aggergation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
+|  skip  |  Skips over the specified number of documents (mongodb aggergation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
+
+#### find example
+
+suppose we have a collection of users and we want to get the email of the latest 10 users from a specific country...
+
+```JavaScript
+// returns array of documents
+const usersEmail = await userRepository.find({
+    where: {country: "Mongolia"},
+    sort: {createdAt: -1},
+    limit: 10,
+    skip: 0,
+    select: ["email", "id"]
+})
+```
+
+### findAndCount(findOptionsObject)
+
+```JavaScript
+const {data, count} = await userRepository.findAndCount({
+    where: {country: "Mongolia"},
+    sort: {createdAt: -1},
+    limit: 10,
+    skip: 0,
+    select: ["email", "id"]
+})
+
+/* This will return {
+    data: Array of the returned documents,
+    count: the total count of user from mongolia
+} */
+```
+
+### findOne(findOptionsObject)
+
+It only finds one!
+
+```JavaScript
+const latestUserEmail = await userRepository.findOne({
+    where: {country: "Mongolia"},
+    sort: {createdAt: -1},
+    select: ["email", "id"]
+})
+```
+
+### count(findOptionsObject)
+
+It will return the total number of documents apllies the where object.
+
+```JavaScript
+const usersCount = await userRepository.count({
+    where: {country: "Mongolia"}
+})
+```
+
+### findOneById(id: string, select)
+
+It will find one document by its id and can select the wanted feilds.
+
+```JavaScript
+const user = await userRepository.findOneById("6309c6f839fc4980aeb34677", ["email"])
+```
