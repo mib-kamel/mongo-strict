@@ -286,7 +286,7 @@ class UserEntity {
 
 #### class-validator
 
-We use [class-validator to validate the Entities](https://www.npmjs.com/package/class-validator#validation-decorators)
+We use [class-validator to validate the Entities](https://www.npmjs.com/package/class-validator#validation-decorators){:target="_blank"}
 
 So you can call any validator class-validator provides, Exampels:
 
@@ -352,7 +352,8 @@ user;
 |    key    |       The key which the refer key refers to      |
 |    as    |       Select the reference as (defaults to the collection name)     |
 |    isArray    |      Determine if the key is an array (for example we may have array of users refer to many users with defferent Ids) (default fakse)      |
-|    refersToAs    |       Select the current key form the refers to collection as      |
+|    reverseRefering    |       Determine if want to be able to select the current collection from the refers to collection      |
+|    reverseReferingAs    |       Select the current key form the refers to collection as      |
 |    maxDepth    |      Max Depth in case of circular references       |
 |    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
 |    message    |       The error messasge in case of inser or update refers to entity not found      |
@@ -369,11 +370,11 @@ To make a find query you have to pass the find options object which can contain 
 
 |  findOption  |  Description  |
 |---|---|
-|  where  |  Filters the documents to pass only the documents that match the specified condition(s). (mongodb aggergation [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/)) |
-|  select  |  determine the field you want to select (can be array of strings or mongodb aggergation [$project](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/)) |
-|  sort  |  returns the documents in sorted order (mongodb aggergation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/)) |
-|  limit  |  Limits the number of the returned documents (mongodb aggergation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
-|  skip  |  Skips over the specified number of documents (mongodb aggergation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
+|  where  |  Filters the documents to pass only the documents that match the specified condition(s). (mongodb aggergation [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/){:target="_blank"}) |
+|  select  |  determine the field you want to select (can be array of strings or mongodb aggergation [$project](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/){:target="_blank"}) |
+|  sort  |  returns the documents in sorted order (mongodb aggergation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/){:target="_blank"}) |
+|  limit  |  Limits the number of the returned documents (mongodb aggergation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/){:target="_blank"}) |
+|  skip  |  Skips over the specified number of documents (mongodb aggergation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/){:target="_blank"}) |
 
 #### find example
 

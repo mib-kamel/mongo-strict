@@ -42,7 +42,8 @@ export interface EntityRefersTo {
     key: string;
     as?: string;
     isArray?: boolean;
-    refersToAs?: string;
+    reverseRefering?: boolean;
+    reverseReferingAs?: string;
     maxDepth?: number;
     type?: RELATION_TYPES;
     message?: string;
@@ -61,6 +62,7 @@ export interface RepositoryOptions {
     debug?: boolean;
     defaultSelectFields?: string[];
     cacheTimeout?: number;
+    reverseRefering?: boolean;
 }
 
 export interface CacheOptions {

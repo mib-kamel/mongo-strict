@@ -11,7 +11,8 @@ export function getEntityProperties(entity: any, defaultSelectFields = [], Entit
             refersToKey: schema[key].refersTo.key,
             maxDepth: !isNaN(schema[key].refersTo.maxDepth) ? schema[key].refersTo.maxDepth : 1,
             isArray: !!schema[key].refersTo.isArray,
-            refersToAs: schema[key].refersTo.refersToAs,
+            reverseRefering: schema[key].refersTo.reverseRefering,
+            reverseReferingAs: schema[key].refersTo.reverseReferingAs,
             type: schema[key].refersTo.type
         }
     });

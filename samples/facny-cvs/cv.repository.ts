@@ -8,7 +8,7 @@ class CVEntity {
     @RefersTo({
         collection: 'user',
         key: 'id',
-        refersToAs: 'cv'
+        reverseReferingAs: 'cv'
     })
     user: string;
 

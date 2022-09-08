@@ -20,11 +20,17 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
 
     repositoriesMap.forEach((value, collectionName) => {
         const referenceEntites = value.entityProperties.referenceEntities;
+        const repositoryOptions = value.repositoryOptions;
 
         for (let i = 0; i < referenceEntites?.length || 0; i++) {
             const ref = referenceEntites[i];
 
             if (!ref.refersToCollectionName || ref._refererCollectionName || ref.refersToCollectionName === collectionName) continue;
+
+            if (ref.reverseRefering === false ||
+                (ref.reverseRefering !== true && repositoryOptions.reverseRefering === false)) {
+                continue;
+            }
 
             const refersTo = repositoriesMap.get(ref.refersToCollectionName);
 
@@ -46,7 +52,7 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
                 key: ref.refersToKey,
                 _refererCollectionName: collectionName,
                 _refererKey: ref.key,
-                as: ref.refersToAs || collectionName,
+                as: ref.reverseReferingAs || collectionName,
                 type: newRelationType,
                 maxDepth: ref.maxDepth
             })

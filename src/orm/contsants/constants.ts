@@ -16,5 +16,6 @@ export const REPOSITORIES_DEFAULT_OPTIONS = {
     updatedAtKey: 'updatedAt',
     maxFindTimeMS: 360000,
     debug: false,
-    cacheTimeout: 1000
+    cacheTimeout: 1000,
+    reverseRefering: false
 }
