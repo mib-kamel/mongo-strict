@@ -17,5 +17,10 @@ export const REPOSITORIES_DEFAULT_OPTIONS = {
     maxFindTimeMS: 360000,
     debug: false,
     cacheTimeout: 1000,
-    reverseRefering: false
+    reverseRefering: false,
+    entityClassValidatorOptions: {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        validationError: { target: false }
+    }
 }

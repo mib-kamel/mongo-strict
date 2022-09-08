@@ -35,7 +35,7 @@ export default function update(
         repositoryOptions?.autoCreatedAt && (delete updateData[updatedAtKey]);
 
         try {
-            const validatePromise = validateData(EntityDataValidator, updateData, true);
+            const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions, true);
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities);
             await Promise.all([validatePromise, uniquePromise]);
 
@@ -65,7 +65,7 @@ export default function update(
 
         try {
             checkDuplicatedUniqueKeys(uniqueKeys, updateData);
-            const validatePromise = validateData(EntityDataValidator, updateData, true);
+            const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions, true);
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities);
             await Promise.all([validatePromise, uniquePromise]);
 
@@ -92,7 +92,7 @@ export default function update(
             repositoryOptions?.autoUpdatedAt && (delete updateData[updatedAtKey]);
 
             checkRequiredKeys(requiredKeys, updateData);
-            const validatePromise = validateData(EntityDataValidator, updateData, true);
+            const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions, true);
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities);
             await Promise.all([validatePromise, uniquePromise]);
 
@@ -121,7 +121,7 @@ export default function update(
 
             checkRequiredKeys(requiredKeys, updateData);
             checkDuplicatedUniqueKeys(uniqueKeys, updateData);
-            const validatePromise = validateData(EntityDataValidator, updateData);
+            const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions);
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities, true);
             const refPromise = checkReferenceEntities(collection, referenceEntities, updateData);
 

@@ -152,16 +152,14 @@ export function checkRequiredKeys(requiredKeys, insertData) {
     }
 }
 
-export const validateData = async (EntityDataValidator, insertData, isPartial = false) => {
+export const validateData = async (EntityDataValidator, insertData, repositoryOptions, isPartial = false) => {
     const insertObject = new EntityDataValidator();
     Object.assign(insertObject, insertData);
 
-    const errors = await validate(insertObject, {
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        validationError: { target: false },
-        skipMissingProperties: isPartial
-    });
+    const { entityClassValidatorOptions } = repositoryOptions;
+    entityClassValidatorOptions.skipMissingProperties = isPartial;
+
+    const errors = await validate(insertObject, entityClassValidatorOptions);
 
     if (errors?.length) {
         let errorMessages = errors.map((e: any) => Object.keys(e.constraints).map((k: any) => e.constraints[k])).flat();

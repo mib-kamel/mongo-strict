@@ -1,3 +1,5 @@
+import { ValidationDecoratorOptions, ValidatorOptions } from "class-validator";
+
 export enum RELATION_TYPES {
     ONE_TO_ONE = 'ONE_TO_ONE',
     ONE_TO_MANY = 'ONE_TO_MANY',
@@ -63,6 +65,7 @@ export interface RepositoryOptions {
     defaultSelectFields?: string[];
     cacheTimeout?: number;
     reverseRefering?: boolean;
+    entityClassValidatorOptions?: ValidatorOptions;
 }
 
 export interface CacheOptions {

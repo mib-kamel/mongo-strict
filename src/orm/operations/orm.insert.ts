@@ -52,7 +52,7 @@ export async function validateInsert(
         }
 
         checkRequiredKeys(requiredKeys, insertData);
-        const validatePromise = validateData(EntityDataValidator, insertData, false);
+        const validatePromise = validateData(EntityDataValidator, insertData, repositoryOptions, false);
         const uniquePromise = checkInsertUniqueKeys(collection, uniqueKeys, insertData, referenceEntities);
         await Promise.all([validatePromise, uniquePromise]);
 

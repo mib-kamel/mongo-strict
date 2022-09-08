@@ -22,7 +22,7 @@
     "typescript"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && tsc --project tsconfig.prod.types.json",
     "test": "jest --runInBand --no-cache --coverage --verbose",
     "prepublish": "npm run build"
   },
