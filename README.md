@@ -476,7 +476,7 @@ repository.find({ where: { email: records[0].email }, cache: {timeout: 3000} }) 
 
 ### Query Builder
 
-You can use the query builder for a better code appearence!
+You can use the query builder for a better code appearance!
 
 ```JavaScript
 repo.queryBuilder()
@@ -487,3 +487,5 @@ repo.queryBuilder()
     .cache(true)
     .find();
 ```
+
+More documentation is coming soon...
