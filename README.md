@@ -34,6 +34,7 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
       - [Default](#default)
       - [RefersTo](#refersto)
       - [RefersTo Options](#refersto-options)
+  - [Initialize the DB Map](#initialize-the-db-map)
   - [Operations](#operations)
     - [find(findOptionsObject)](#findfindoptionsobject)
       - [FindOptions](#findoptions)
@@ -42,6 +43,8 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
     - [findOne(findOptionsObject)](#findonefindoptionsobject)
     - [count(findOptionsObject)](#countfindoptionsobject)
     - [findOneById(id: string, select)](#findonebyidid-string-select)
+    - [Query Caching](#query-caching)
+    - [Query Builder](#query-builder)
 
 ## Instalation
 
@@ -258,8 +261,8 @@ addRepository(EntityClass, repositoryOptions)
 |    debug    |       default false      |
 |    defaultSelectFields    |      default undefined       |
 |    cacheTimeout    |      default 1000 MS       |
-|    entityClassValidator    |      Entity Class Validator Options (defaults: {whitelist: true, orbidNonWhitelisted: true, validationError: { target: false }})       |
-|    reverseRefering    |      Determine if you want to be able to select a refernce from the refers to collection (default : false), BE CAREFUL BEFORE ENABLING THIS BECAUSE IT MAY AFFECT YOUR APP PERFORMANCE       |
+|    entityClassValidator    |      Entity Class Validator Options (defaults: {whitelist: true, forbidNonWhitelisted: true, validationError: { target: false }})       |
+|    reverseRefering    |      Determine if you want to be able to select a refernce from the refers to collection (default : false), **BE CAREFUL BEFORE ENABLING THIS BECAUSE IT MAY AFFECT YOUR APP PERFORMANCE**       |
 
 ## Entity Class
 
@@ -360,6 +363,25 @@ user;
 |    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
 |    message    |       The error messasge in case of inser or update refers to entity not found      |
 
+## Initialize the DB Map
+
+You should call initDBMap() function after initializing all the repositories to inialize your database reference Map, Example:
+
+```Javascript
+    await createConnection({
+        uri: `mongodb://localhost:27017/fancy-cvs`
+    });
+
+    const userRepository = new UserRepository();
+    const cvRepository = new CVRepository();
+    const sectionRepository = new SectionRepository();
+
+    // Should be called after initializing all the repositories
+    initDBMap();
+
+    // You can find the complete example in the Samples folder
+```
+
 ## Operations
 
 mongo-strict supports the main Database operations and you can get the original collection for any operation we do not support until now.
@@ -438,4 +460,30 @@ It will find one document by its id and can select the wanted feilds.
 
 ```JavaScript
 const user = await userRepository.findOneById("6309c6f839fc4980aeb34677", ["email"])
+```
+
+### Query Caching
+
+You can cache any query to get the results directly from the memory
+
+```JavaScript
+repository.find({ where: { email: records[0].email }, cache: true })
+
+or
+
+repository.find({ where: { email: records[0].email }, cache: {timeout: 3000} }) // the default cache Timeout is 1000 MS = 1 Second
+```
+
+### Query Builder
+
+You can use the query builder for a better code appearence!
+
+```JavaScript
+repo.queryBuilder()
+    .where({isDeleted: false})
+    .select(["email"])
+    .sort({id: -1})
+    .limit(10)
+    .cache(true)
+    .find();
 ```
