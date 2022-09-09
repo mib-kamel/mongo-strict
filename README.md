@@ -533,7 +533,7 @@ To get the all the user CVs we can easly do:
 userRepository.find({select: ['cvs.cvName']})
 ```
 
-Once we select an inner value of the CVs, that will notify the mongo-strict to get the refernced entity.
+Once we select an inner value of the CVs, that will notify the mongo-strict to get the referenced entity.
 **We can select, match and sort by cvs.cvName or any cvs inner key**
 
 #### Reverse Refering
@@ -605,9 +605,17 @@ const insertedUser = await userRepository.insertOne({
                     name: 'mongo user',
                     country: 'mongolia'
                 });
+
+ insertedCV = await cvRepository.insertOne({
+                    user: insertedUser.id,
+                    cvName: 'User CV 1',
+                    currentPosition: 'Developer !'
+                });
 ```
 
 Just you can insert an Object contains the keys and the values.
+
+mongo-strict will validate the inserted data and check if any unique key is previously existing and check for the existence of the reference keys, in case of any any error it will throw an error.
 
 We doesn't fully support the mongoDB advanced insert operations.
 
