@@ -208,9 +208,7 @@ export function getWhereObject(where: any) {
 
     if (typeof where === 'string') {
         where = { _id: new ObjectId(where) };
-    } else if (isObjectID(where)) {
-        where = { _id: where };
-    } else if (where?.length) {
+    } else if (Array.isArray(where)) {
         where = {
             $or: where.map((id) => {
                 if (typeof id === 'string') {
@@ -218,10 +216,12 @@ export function getWhereObject(where: any) {
                 } else if (isObjectID(id)) {
                     return { _id: id };
                 } else {
-                    throw "Invalid Update Condition";
+                    throw "Invalid Condition Found";
                 }
             })
         }
+    } else if (isObjectID(where)) {
+        where = { _id: where };
     } else {
         if (where.id) {
             where._id = where.id;
