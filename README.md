@@ -231,7 +231,8 @@ start();
 ## Create Connection
 
 You should pass the connection options which should contains the connection uri.
-You can pass the default repositoryOptions which will be applied to the all repositories.
+
+You can pass the default repository Options which will be applied to the all repositories.
 
 ```JavaScript
 await createConnection({
@@ -262,7 +263,7 @@ addRepository(EntityClass, repositoryOptions)
 |    defaultSelectFields    |      default undefined       |
 |    cacheTimeout    |      default 1000 MS       |
 |    entityClassValidator    |      Entity Class Validator Options (defaults: {whitelist: true, forbidNonWhitelisted: true, validationError: { target: false }})       |
-|    reverseRefering    |      Determine if you want to be able to select a refernce from the refers to collection (default : false), **BE CAREFUL BEFORE ENABLING THIS BECAUSE IT MAY AFFECT YOUR APP PERFORMANCE**       |
+|    reverseRefering    |      Determine if you want to be able to select a reference from the refers to collection (default : false), **BE CAREFUL BEFORE ENABLING THIS BECAUSE IT MAY AFFECT YOUR APP PERFORMANCE**       |
 
 ## Entity Class
 
@@ -270,7 +271,7 @@ You should pass the @Entity decorator before the Entity class and pass the colle
 
 The entity class should contains all the entity keys.
 
-You can add validations to every key and determine the default value, uniquness and the references.
+You can add validations to every key and determine the default value, uniqueness and the references.
 
 ```JavaScript
 @Entity({ name: 'user' })
@@ -293,7 +294,7 @@ class UserEntity {
 
 We use [class-validator to validate the Entities](https://www.npmjs.com/package/class-validator#validation-decorators)
 
-So you can call any validator class-validator provides, Exampels:
+So you can call any validator class-validator provides, Examples:
 
 ```JavaScript
   @Length(10, 20)
@@ -317,9 +318,9 @@ requiredKey;
 
 #### IsUnique
 
-You can mark any key as unique key througt the collection.
+You can mark any key as unique key through the collection.
 
-You can determine if you need it case sensetive or not.
+You can determine if you need it case sensitive or not.
 
 ```JavaScript
 @IsUnique({message 'The use email should be unique', isIgnoreCase: true}) // isIgnoreCase default false
@@ -356,12 +357,12 @@ user;
 |    collection    | The collection which the key refers to|
 |    key    |       The key which the refer key refers to      |
 |    as    |       Select the reference as (defaults to the collection name)     |
-|    isArray    |      Determine if the key is an array (for example we may have array of users refer to many users with defferent Ids) (default fakse)      |
+|    isArray    |      Determine if the key is an array (for example we may have array of users refer to many users with different Ids) (default false)      |
 |    reverseRefering    |       Determine if want to be able to select the current collection from the refers to collection (default false)     |
 |    reverseReferingAs    |       Select the current key form the refers to collection as      |
 |    maxDepth    |      Max Depth in case of circular references       |
 |    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
-|    message    |       The error messasge in case of inser or update refers to entity not found      |
+|    message    |       The error message in case of insert or update refers to entity not found      |
 
 ## Initialize the DB Map
 
@@ -394,11 +395,11 @@ To make a find query you have to pass the find options object which can contain 
 
 |  findOption  |  Description  |
 |---|---|
-|  where  |  Filters the documents to pass only the documents that match the specified condition(s). (mongodb aggergation [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/)) |
-|  select  |  determine the field you want to select (can be array of strings or mongodb aggergation [$project](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/)) |
-|  sort  |  returns the documents in sorted order (mongodb aggergation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/)) |
-|  limit  |  Limits the number of the returned documents (mongodb aggergation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
-|  skip  |  Skips over the specified number of documents (mongodb aggergation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
+|  where  |  Filters the documents to pass only the documents that match the specified condition(s). (mongodb aggregation [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/)) |
+|  select  |  determine the field you want to select (can be array of strings or mongodb aggregation [$project](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/)) |
+|  sort  |  returns the documents in sorted order (mongodb aggregation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/)) |
+|  limit  |  Limits the number of the returned documents (mongodb aggregation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
+|  skip  |  Skips over the specified number of documents (mongodb aggregation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
 
 #### find example
 
@@ -446,7 +447,7 @@ const latestUserEmail = await userRepository.findOne({
 
 ### count(findOptionsObject)
 
-It will return the total number of documents apllies the where object.
+It will return the total number of documents applies the where object.
 
 ```JavaScript
 const usersCount = await userRepository.count({
@@ -456,7 +457,7 @@ const usersCount = await userRepository.count({
 
 ### findOneById(id: string, select)
 
-It will find one document by its id and can select the wanted feilds.
+It will find one document by its id and can select the wanted fields.
 
 ```JavaScript
 const user = await userRepository.findOneById("6309c6f839fc4980aeb34677", ["email"])
@@ -476,7 +477,7 @@ repository.find({ where: { email: records[0].email }, cache: {timeout: 3000} }) 
 
 ### Query Builder
 
-You can use the query builder for a better code appearance!
+You can use the query builder for a better code organizing!
 
 ```JavaScript
 repo.queryBuilder()
