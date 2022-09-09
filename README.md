@@ -46,6 +46,10 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
     - [Find reference Entities](#find-reference-entities)
       - [Reverse Refering](#reverse-refering)
     - [inserOne](#inserone)
+    - [Update(filter: object | id: string)](#updatefilter-object--id-string)
+      - [1- setOne(data)](#1--setonedata)
+      - [2- setMany(data)](#2--setmanydata)
+      - [3- replaceOne(completeEntityData)](#3--replaceonecompleteentitydata)
 
 ## Instalation
 
@@ -597,7 +601,7 @@ userRepository.find({select: ['cv.cvName']})
 
 ### inserOne
 
-mongo-strict uses a simple insertOne operation.
+mongo-strict uses a simple insertOne operation and returns the inserted document.
 
 ```JavaScript
 const insertedUser = await userRepository.insertOne({
@@ -606,17 +610,79 @@ const insertedUser = await userRepository.insertOne({
                     country: 'mongolia'
                 });
 
- insertedCV = await cvRepository.insertOne({
+const insertedCV = await cvRepository.insertOne({
                     user: insertedUser.id,
                     cvName: 'User CV 1',
                     currentPosition: 'Developer !'
                 });
 ```
 
-Just you can insert an Object contains the keys and the values.
+You can simply insert an Object contains your entity data.
 
-mongo-strict will validate the inserted data and check if any unique key is previously existing and check for the existence of the reference keys, in case of any any error it will throw an error.
+mongo-strict will validate the inserted entity and check if any uniques key are previously existing or not, check for the existence of the reference keys and all the other checks, in case of any any error it will throw an error.
 
 We doesn't fully support the mongoDB advanced insert operations.
+
+### Update(filter: object | id: string)
+
+To perform an update operation you need to call the Update function with the update filter or the id of the entity you want to update.
+
+This will return 3 function you will need to pass the updated data/entity to:
+
+#### 1- setOne(data)
+
+- You need to pass just the keys you want to update in the entity.
+- Updates only one matching document in the collection that match the filter.
+- Returns the full updated Entity
+
+```JavaScript
+const updatedUser = await userRepository.update({email: 'email@co.co'}).setOne({
+                    name: 'updated mongo user',
+                  });
+
+Or
+
+const updatedUser = await userRepository.update(user.id). setOne({
+                    name: 'updated mongo user',
+                  });
+
+```
+
+#### 2- setMany(data)
+
+updates all matching documents in the collection that match the filter.
+
+**The method returns a document that contains:**
+
+- A boolean acknowledged as true if the operation ran with write concern or false if write concern was disabled.
+- matchedCount containing the number of matched documents.
+- modifiedCount containing the number of modified documents.
+- upsertedId containing the _id for the upserted document
+
+```JavaScript
+                await userRepository.update({}).setMany({
+                    isDeleted: false
+                });
+
+```
+
+#### 3- replaceOne(completeEntityData)
+
+replaceOne() replaces the first matching document in the collection that matches the filter, using the replacement document
+
+**Returns a document containing:**
+
+- A boolean acknowledged as true if the operation ran with write concern or false if write concern was disabled.
+- matchedCount containing the number of matched documents.
+- modifiedCount containing the number of modified documents.
+- upsertedId containing the _id for the upserted document.
+
+```JavaScript
+                await userRepository.update(user.id).replaceOne({
+                    email: 'newEmail@co.com',
+                    name: 'mongo user :)',
+                    country: 'mongolia'
+                });
+```
 
 **More documentation is coming soon...**
