@@ -4,6 +4,8 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
 
 ## mongo-strict Allows you to
 
+**mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB**
+
 - Define the **entity data types** and ensure the data validity (Using class-validator in the background).
 - Define the **relations between the data**.
 - Add a **default value** for any field.
@@ -12,7 +14,6 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
 - Imporove the **App performance** by using the best practices in the background.
 - Imporove the **code quality**.
 - **Cache** any query for a better performance.
-**mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB**
 
 ## Table of Contents
 
@@ -50,6 +51,13 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
       - [1- setOne(data)](#1--setonedata)
       - [2- setMany(data)](#2--setmanydata)
       - [3- replaceOne(completeEntityData)](#3--replaceonecompleteentitydata)
+    - [Errors Handling](#errors-handling)
+      - [Invalid data error](#invalid-data-error)
+      - [Existing Unique Keys](#existing-unique-keys)
+      - [Not Found Reference Keys](#not-found-reference-keys)
+    - [deleteOne(filter: any | id: string)](#deleteonefilter-any--id-string)
+    - [deleteMany(filter: any | ids: string[])](#deletemanyfilter-any--ids-string)
+    - [getCollection()](#getcollection)
 
 ## Instalation
 
@@ -406,6 +414,7 @@ To make a find query you have to pass the find options object which can contain 
 |  limit  |  Limits the number of the returned documents (mongodb aggregation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
 |  skip  |  Skips over the specified number of documents (mongodb aggregation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
 | debug | true or false to print the final lookup DB method in the console, default = false |
+
 #### find example
 
 suppose we have a collection of users and we want to get the email of the latest 10 users from a specific country...
@@ -657,13 +666,13 @@ updates all matching documents in the collection that match the filter.
 - A boolean acknowledged as true if the operation ran with write concern or false if write concern was disabled.
 - matchedCount containing the number of matched documents.
 - modifiedCount containing the number of modified documents.
-- upsertedId containing the _id for the upserted document
+- upsertedId containing the id for the upserted document
 
 ```JavaScript
 await userRepository.update({}).setMany({
     isDeleted: false
 });
-
+// the will set isDelete to false in all users in the collection
 ```
 
 #### 3- replaceOne(completeEntityData)
@@ -675,7 +684,7 @@ replaceOne() replaces the first matching document in the collection that matches
 - A boolean acknowledged as true if the operation ran with write concern or false if write concern was disabled.
 - matchedCount containing the number of matched documents.
 - modifiedCount containing the number of modified documents.
-- upsertedId containing the _id for the upserted document.
+- upsertedId containing the id for the upserted document.
 
 ```JavaScript
 await userRepository.update(user.id).replaceOne({
@@ -685,4 +694,102 @@ await userRepository.update(user.id).replaceOne({
 });
 ```
 
-**More documentation is coming soon...**
+### Errors Handling
+
+Our goal in mongo-strict is to unify the way of throwing the exceptions and give you the full control of the error message to make you able to catch the error then pass it as a response directly with no more code.
+
+#### Invalid data error
+
+For example if you marked a field as @IsEmail()
+
+```JavaScript
+@Entity({ name: 'user' })
+class UserEntity {
+    @Allow()
+    @IsEmail(undefined, { message: "The email should be valid :(" })
+    @IsUnique({ isIgnoreCase: true, message: 'The email should be unique' })
+    email: string;
+}
+```
+
+Then you inserted an invalid email in insert or update it will throw:
+
+```JavaScript
+try {
+    // insert invalid email
+} catch(e) {
+    console.log(e);
+
+    // {
+    //     message: 'Invalid Data Found',
+    //     invalidKeys: ['email'],
+    //     errorMessages: ['The email should be valid :(']
+    // }
+}
+```
+
+#### Existing Unique Keys
+
+If you marked the email as a unique key and you tried to insert an email which is already exists it will throw:
+
+```JavaScript
+try {
+    // insert already exists email
+} catch(e) {
+    console.log(e);
+
+    // {
+    //     message: 'Existing unique keys',
+    //     existingUniqueKeys: ['email'],
+    //     errorMessages: ['The email should be unique']
+    // }
+}
+```
+
+#### Not Found Reference Keys
+
+If you marked any field as a reference to another collection and you inserted a not found reference it will throw:
+
+```JavaScript
+try {
+    // insert not found reference
+} catch(e) {
+    console.log(e);
+
+    // {
+    //     message: 'Not found reference keys',
+    //     missedReferenceKeys: ['user'],
+    //     errorMessages: ['The user is not found']
+    // }
+}
+```
+
+### deleteOne(filter: any | id: string)
+
+Deletes the first document that matches the filter. Use a field that is part of a unique index such as id for precise deletions.
+
+**We just call the mongoDB deleteOne, in the future we will support sql DBs onDelete...**
+
+**Returns a document containing:**
+
+- A boolean acknowledged as true if the operation ran with write concern or false if write concern was disabled.
+- deletedCount containing the number of deleted documents
+
+### deleteMany(filter: any | ids: string[])
+
+Deletes documents one at a time. If the primary node fails during a deleteMany() operation, documents that were not yet deleted from secondary nodes are not deleted from the collection.
+
+**We just call the mongoDB deleteMany, in the future we will support sql DBs onDelete...**
+
+**Returns a document containing:**
+
+- A boolean acknowledged as true if the operation ran with write concern or false if write concern was disabled.
+- deletedCount containing the number of deleted documents
+
+### getCollection()
+
+If you want to make any operation we don't support until now you can get the MongoDB collection and run the orginal mongo query
+
+```JavaScript
+userRepository.getCollection().find({}).limit(10).toArray();
+```
