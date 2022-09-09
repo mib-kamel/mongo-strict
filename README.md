@@ -405,7 +405,7 @@ To make a find query you have to pass the find options object which can contain 
 |  sort  |  returns the documents in sorted order (mongodb aggregation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/)) |
 |  limit  |  Limits the number of the returned documents (mongodb aggregation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
 |  skip  |  Skips over the specified number of documents (mongodb aggregation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
-
+| debug | true or false to print the final lookup DB method in the console, default = false |
 #### find example
 
 suppose we have a collection of users and we want to get the email of the latest 10 users from a specific country...
@@ -660,9 +660,9 @@ updates all matching documents in the collection that match the filter.
 - upsertedId containing the _id for the upserted document
 
 ```JavaScript
-                await userRepository.update({}).setMany({
-                    isDeleted: false
-                });
+await userRepository.update({}).setMany({
+    isDeleted: false
+});
 
 ```
 
@@ -678,11 +678,11 @@ replaceOne() replaces the first matching document in the collection that matches
 - upsertedId containing the _id for the upserted document.
 
 ```JavaScript
-                await userRepository.update(user.id).replaceOne({
-                    email: 'newEmail@co.com',
-                    name: 'mongo user :)',
-                    country: 'mongolia'
-                });
+await userRepository.update(user.id).replaceOne({
+    email: 'newEmail@co.com',
+    name: 'mongo user :)',
+    country: 'mongolia'
+});
 ```
 
 **More documentation is coming soon...**

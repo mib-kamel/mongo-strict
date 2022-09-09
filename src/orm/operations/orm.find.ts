@@ -114,7 +114,9 @@ export async function find(
         aggregateArray.push({ $project: project });
     }
 
-    if (repositoryOptions.debug) {
+    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
+
+    if (isDebug) {
         console.log(JSON.stringify(aggregateArray, null, 4));
     }
 
@@ -179,7 +181,9 @@ export async function count(
         }
     });
 
-    if (repositoryOptions.debug) {
+    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
+
+    if (isDebug) {
         console.log(JSON.stringify(aggregateArray, null, 4));
     }
 

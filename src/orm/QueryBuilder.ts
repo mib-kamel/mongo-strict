@@ -6,7 +6,7 @@ export class QueryBuilder {
     private selectOption: object;
     private whereOption: object;
     private sortOption: object;
-    private isDebug: boolean;
+    private isDebugOption: boolean;
     private cacheOption: any;
 
     private findFunction: Function;
@@ -22,7 +22,7 @@ export class QueryBuilder {
     }
 
     debug = (isDebug: boolean) => {
-        this.isDebug = isDebug;
+        this.isDebugOption = isDebug;
     }
 
     select = (selectOption: object) => {

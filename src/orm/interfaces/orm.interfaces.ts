@@ -15,6 +15,7 @@ export interface FindOptions {
     select?: any;
     sort?: any;
     cache?: CacheOptions | boolean;
+    debug?: boolean;
 }
 
 export interface ReferenceEntity {
