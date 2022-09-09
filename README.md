@@ -12,9 +12,7 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
 - Imporove the **App performance** by using the best practices in the background.
 - Imporove the **code quality**.
 - **Cache** any query for a better performance.
-
 **mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB**
-
 
 ## Table of Contents
 
@@ -36,15 +34,18 @@ Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, eas
       - [RefersTo Options](#refersto-options)
   - [Initialize the DB Map](#initialize-the-db-map)
   - [Operations](#operations)
-    - [find(findOptionsObject)](#findfindoptionsobject)
+    - [find(findOptions: FindOptions)](#findfindoptions-findoptions)
       - [FindOptions](#findoptions)
       - [find example](#find-example)
-    - [findAndCount(findOptionsObject)](#findandcountfindoptionsobject)
-    - [findOne(findOptionsObject)](#findonefindoptionsobject)
-    - [count(findOptionsObject)](#countfindoptionsobject)
+    - [findAndCount(findOptions: FindOptions)](#findandcountfindoptions-findoptions)
+    - [findOne(findOptions: FindOptions)](#findonefindoptions-findoptions)
+    - [count(findOptions: FindOptions)](#countfindoptions-findoptions)
     - [findOneById(id: string, select)](#findonebyidid-string-select)
     - [Query Caching](#query-caching)
     - [Query Builder](#query-builder)
+    - [Find reference Entities](#find-reference-entities)
+      - [Reverse Refering](#reverse-refering)
+    - [inserOne](#inserone)
 
 ## Instalation
 
@@ -387,7 +388,7 @@ You should call initDBMap() function after initializing all the repositories to 
 
 mongo-strict supports the main Database operations and you can get the original collection for any operation we do not support until now.
 
-### find(findOptionsObject)
+### find(findOptions: FindOptions)
 
 To make a find query you have to pass the find options object which can contain where, select, sort...
 
@@ -416,7 +417,7 @@ const usersEmail = await userRepository.find({
 })
 ```
 
-### findAndCount(findOptionsObject)
+### findAndCount(findOptions: FindOptions)
 
 ```JavaScript
 const {data, count} = await userRepository.findAndCount({
@@ -433,7 +434,7 @@ const {data, count} = await userRepository.findAndCount({
 } */
 ```
 
-### findOne(findOptionsObject)
+### findOne(findOptions: FindOptions)
 
 It only finds one!
 
@@ -445,7 +446,7 @@ const latestUserEmail = await userRepository.findOne({
 })
 ```
 
-### count(findOptionsObject)
+### count(findOptions: FindOptions)
 
 It will return the total number of documents applies the where object.
 
@@ -489,4 +490,125 @@ repo.queryBuilder()
     .find();
 ```
 
-More documentation is coming soon...
+### Find reference Entities
+
+Suppose we have user and CV repositories
+
+```JavaScript
+@Entity({ name: 'cv' })
+class CVEntity {
+    @Allow()
+    @IsRequired()
+    @IsString()
+    cvName: string;
+
+    @Allow()
+    @IsRequired()
+    @IsString()
+    currentPosition: string;
+}
+
+class UserEntity {
+    @Allow()
+    @IsEmail(undefined, { message: "The email should be valid :(" })
+    @IsUnique({ isIgnoreCase: true })
+    email: string;
+
+    @Allow()
+    @IsArray()
+    @RefersTo({
+        collection: 'cv',
+        key: 'id',
+        isArray: true
+    })
+    cvs: any[];
+}
+```
+
+Here the user entity contains the CVs IDs (@RefersTo({collection: 'cv', .... }))
+
+To get the all the user CVs we can easly do:
+
+```JavaScript
+userRepository.find({select: ['cvs.cvName']})
+```
+
+Once we select an inner value of the CVs, that will notify the mongo-strict to get the refernced entity.
+**We can select, match and sort by cvs.cvName or any cvs inner key**
+
+#### Reverse Refering
+
+Suppose we have user and CV repositories but the CV repo is the container of the user Id.
+
+```JavaScript
+class UserEntity {
+    @Allow()
+    @IsEmail(undefined, { message: "The email should be valid :(" })
+    @IsUnique({ isIgnoreCase: true })
+    email: string;
+}
+
+@Entity({ name: 'cv' })
+class CVEntity {
+    @Allow()
+    @IsRequired()
+    @IsString()
+    @RefersTo({
+        collection: 'user',
+        key: 'id',
+        reverseRefering: true,
+        reverseReferingAs: 'cv'
+    })
+    user: string;
+
+    @Allow()
+    @IsRequired()
+    @IsString()
+    cvName: string;
+
+    @Allow()
+    @IsRequired()
+    @IsString()
+    currentPosition: string;
+}
+```
+
+We can easly get the user of any CV by doing:
+
+```JavaScript
+cvRepository.find({select: ['user.email', 'user.id']})
+```
+
+But in case if we need to get the user CVs we will need to use the **Reverse Refering**.
+
+In the User entity we have nothing indicates that this user has CV/s.
+
+Fortunutly mongo-strict supports this operation but it will not be good for the app performance.
+
+So to be able to use that we had to add => reverseRefering: true, reverseReferingAs: 'cv' **(Be carefull before doing that)**.
+
+Then we can do:
+
+```JavaScript
+userRepository.find({select: ['cv.cvName']})
+```
+
+**The problem here that the user repository contains nothing about the CV repository so to get the user CVs the DB will have to loop through all the CV entities to get the CVs which refer to the wanted user**
+
+### inserOne
+
+mongo-strict uses a simple insertOne operation.
+
+```JavaScript
+const insertedUser = await userRepository.insertOne({
+                    email: 'email@co.co',
+                    name: 'mongo user',
+                    country: 'mongolia'
+                });
+```
+
+Just you can insert an Object contains the keys and the values.
+
+We doesn't fully support the mongoDB advanced insert operations.
+
+**More documentation is coming soon...**
