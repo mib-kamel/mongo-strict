@@ -2,6 +2,7 @@ import { CVRepository } from '../data/facny-cvs2/cv.repository';
 import { SectionRepository } from '../data/facny-cvs2/section.repository';
 import { UserRepository } from '../data/facny-cvs2/user.repository';
 import { createConnection, getConnectionManager, getDB, initDBMap } from '../../src';
+import { ObjectId } from 'mongodb';
 
 describe('AppController', () => {
     let userRepository;
@@ -44,7 +45,7 @@ describe('AppController', () => {
         });
 
         it('Test Aggregate Array 3', async () => {
-            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ debug: true, select: ["id", "id3", "3id", "name", 'cvs.id', 'cvs.ide', 'cvs.eid'] });
+            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ debug: false, select: ["id", "id3", "3id", "name", 'cvs.id', 'cvs.ide', 'cvs.eid'] });
 
             const $project = aggregateArray[2]?.$project;
 
@@ -154,7 +155,7 @@ describe('AppController', () => {
 
         it('Test Aggregate Array 9', async () => {
             const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs.id': -1 }, where: { 'cvs.name': "Mo" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
-            
+
             const $lookup = aggregateArray[0].$lookup;
             const $match = aggregateArray[1]?.$match;
             const $sort = aggregateArray[2]?.$sort;
@@ -171,17 +172,14 @@ describe('AppController', () => {
         });
 
         it('Test Aggregate Array 10', async () => {
-            console.log = jest.fn();
-
             const aggregateArray = userRepository._testOperations().getFindAggregateArray({ debug: false, sort: { 'cvs': -1 }, where: { 'cvs.name': "Mo" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
-            
+
             const $sort = aggregateArray[0]?.$sort;
             const $lookup = aggregateArray[1].$lookup;
             const $match = aggregateArray[2]?.$match;
             const $limit = aggregateArray[3]?.$limit;
             const $project = aggregateArray[4]?.$project;
 
-            expect(console.log).not.toHaveBeenCalled();
             expect(aggregateArray).toBeDefined();
             expect(aggregateArray.length).toBe(5);
             expect($match).toBeDefined();
@@ -190,6 +188,47 @@ describe('AppController', () => {
             expect($lookup).toBeDefined();
             expect($project).toBeDefined();
         });
+    });
+
+    it('Test Aggregate Array 11', async () => {
+        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs': -1 }, where: { 'cvs': "6309c6f839fc4980aeb34677" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
+
+        const $match = aggregateArray[0]?.$match;
+        const $sort = aggregateArray[1]?.$sort;
+        const $limit = aggregateArray[2]?.$limit;
+        const $lookup = aggregateArray[3].$lookup;
+        const $project = aggregateArray[4]?.$project;
+
+        expect(aggregateArray).toBeDefined();
+        expect(aggregateArray.length).toBe(5);
+        expect($match).toBeDefined();
+        expect($match.cvs).toEqual(new ObjectId("6309c6f839fc4980aeb34677"));
+        expect($match.cvs).not.toEqual("6309c6f839fc4980aeb34677");
+        expect($sort).toBeDefined();
+        expect($limit).toBeDefined();
+        expect($lookup).toBeDefined();
+        expect($project).toBeDefined();
+    });
+
+    it('Test Aggregate Array 12', async () => {
+        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs': -1 }, where: { 'cvs.id': "6309c6f839fc4980aeb34677" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
+
+        const $sort = aggregateArray[0]?.$sort;
+        const $lookup = aggregateArray[1].$lookup;
+        const $match = aggregateArray[2]?.$match;
+        const $limit = aggregateArray[3]?.$limit;
+        const $project = aggregateArray[4]?.$project;
+
+        expect(aggregateArray).toBeDefined();
+        expect(aggregateArray.length).toBe(5);
+        expect($match).toBeDefined();
+        expect($match['cvs._id']).toEqual(new ObjectId("6309c6f839fc4980aeb34677"));
+        expect($match['cvs._id']).not.toEqual("6309c6f839fc4980aeb34677");
+        expect($match['cvs.id']).toBeUndefined();
+        expect($sort).toBeDefined();
+        expect($limit).toBeDefined();
+        expect($lookup).toBeDefined();
+        expect($project).toBeDefined();
     });
 
     afterAll(async () => {
