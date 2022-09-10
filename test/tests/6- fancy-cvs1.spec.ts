@@ -81,8 +81,7 @@ describe('AppController', () => {
             let userData;
             try {
                 userData = await userRepository.findOne({
-                    select: ["id", "name", "cv.cvName", "cv.currentPosition", "cv.sections.sectionTitle"],
-                    debug: true
+                    select: ["id", "name", "cv.cvName", "cv.currentPosition", "cv.sections.sectionTitle"]
                 })
             } catch (e) {
                 expect(e).toBeUndefined();

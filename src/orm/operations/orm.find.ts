@@ -24,22 +24,58 @@ export async function find(
 ): Promise<any> {
     let cacheKey;
 
-    if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout))) {
+    if (isFindoptionsCache(findOptions)) {
         const findClone: any = structuredClone(findOptions);
         delete findClone.cache;
         findClone.collectionName = collectionName;
         findClone.operation = "FIND";
-        cacheKey = hash(findOptions);
+        cacheKey = hash(findClone);
         if (queryCache.has(cacheKey)) {
             return queryCache.get(cacheKey);
         }
     }
 
+    const aggregateArray = getFindAggregateArray(Repository,
+        defaultSelectFields,
+        findOptions,
+        referenceEntities,
+        repositoryOptions,
+        collectionName);
+
+    const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
+
+    replaceAllData_id(res);
+
+    if (cacheKey) {
+        let cacheTimeout = repositoryOptions.cacheTimeout;
+
+        if (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout)) {
+            cacheTimeout = Number(findOptions.cache.timeout);
+        }
+
+        queryCache.set(cacheKey, res, cacheTimeout);
+    }
+
+    return res;
+}
+
+export function getFindAggregateArray(Repository,
+    defaultSelectFields: string[] = [],
+    findOptions: FindOptions,
+    referenceEntities: ReferenceEntity[],
+    repositoryOptions: RepositoryOptions,
+    collectionName: string
+) {
+    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
+
     const takeOption = !isNaN(findOptions.limit) ? parseInt(String(findOptions.limit)) : PAGINATION_OPTIONS_DEFAULTS.limit;
     const skipOption = !isNaN(findOptions.skip)
         ? findOptions.skip
         : PAGINATION_OPTIONS_DEFAULTS.skip;
-    const sort = findOptions.sort ? findOptions.sort : PAGINATION_OPTIONS_DEFAULTS.sort;
+    let sort = findOptions.sort ? findOptions.sort : PAGINATION_OPTIONS_DEFAULTS.sort;
+
+    sort && (sort = replaceObjectIds(sort));
+
     let selectItems = [];
 
     let where = findOptions.where || {};
@@ -58,7 +94,7 @@ export async function find(
         replaceProjectIds(project);
     }
 
-    const isSort = sort && Object.keys(sort)?.length;
+    const isSort = !!sort && !!Object.keys(sort)?.length;
     const isWhere = where && Object.keys(where)?.length;
     const isPorject = project && Object.keys(project)?.length;
 
@@ -68,31 +104,35 @@ export async function find(
 
     const lookups: any = getLookups(referenceEntities, [...projectKeys, ...whereKeys]);
 
-    const where_isPreLookup = whereKeys?.length && !isSomeValidRefKeys(whereKeys, referenceEntities);
-    const sort_isPreLookup = sortKeys?.length && !isSomeValidRefKeys(sortKeys, referenceEntities);
-    const lookup_isPreLimit = !where_isPreLookup || !sort_isPreLookup;
+    const lookup_preWhere = !!whereKeys?.length && hasValidRefKeys(whereKeys, referenceEntities);
+    const lookup_preSort = !!sortKeys?.length && hasValidRefKeys(sortKeys, referenceEntities);
+    const lookup_preLimit = lookup_preWhere || lookup_preSort;
 
     project = { ...project, ...addId_toProject(projectKeys, referenceEntities) };
 
+    if (!project._id) {
+        project._id = 1;
+    }
+
     const aggregateArray = [];
 
-    if (where_isPreLookup && isWhere) {
+    if (!lookup_preWhere && isWhere) {
         aggregateArray.push({ $match: where });
     }
 
-    if (sort_isPreLookup && isSort) {
+    if (!lookup_preSort && isSort) {
         aggregateArray.push({ $sort: sort });
     }
 
-    if (lookup_isPreLimit && lookups?.length) {
+    if (lookup_preLimit && lookups?.length) {
         aggregateArray.push(...lookups);
     }
 
-    if (!where_isPreLookup && isWhere) {
+    if (lookup_preWhere && isWhere) {
         aggregateArray.push({ $match: where });
     }
 
-    if (!sort_isPreLookup && isSort) {
+    if (lookup_preSort && isSort) {
         aggregateArray.push({ $sort: sort });
     }
 
@@ -106,7 +146,7 @@ export async function find(
         { $limit: takeOption }
     );
 
-    if (!lookup_isPreLimit && lookups?.length) {
+    if (!lookup_preLimit && lookups?.length) {
         aggregateArray.push(...lookups);
     }
 
@@ -114,25 +154,15 @@ export async function find(
         aggregateArray.push({ $project: project });
     }
 
-    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
-
     if (isDebug) {
         console.log(JSON.stringify(aggregateArray, null, 4));
     }
 
-    const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
-    replaceAllData_id(res);
+    return aggregateArray;
+}
 
-    if (!!cacheKey) {
-        let cacheTimeout = repositoryOptions.cacheTimeout;
-
-        if (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout)) {
-            cacheTimeout = Number(findOptions.cache.timeout);
-        }
-        queryCache.set(cacheKey, res, cacheTimeout);
-    }
-
-    return res;
+const isFindoptionsCache = (findOptions: FindOptions) => {
+    return findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout));
 }
 
 export async function count(
@@ -149,7 +179,7 @@ export async function count(
         delete findClone.cache;
         findClone.collectionName = collectionName;
         findClone.operation = "COUNT";
-        cacheKey = hash(findOptions);
+        cacheKey = hash(findClone);
         if (queryCache.has(cacheKey)) {
             return queryCache.get(cacheKey);
         }
@@ -334,7 +364,7 @@ const replaceWhereIds = (where, referenceEntities: ReferenceEntity[]) => {
                     } else {
                         key = key.replace(/\.id$/g, '._id');
                     }
-                    where[key] = new ObjectId(searchValue)
+                    where[key] = new ObjectId(searchValue);
                 } else if (typeof where[key] === "string" && isKeyRefersToId(key, referenceEntities)) {
                     where[key] = new ObjectId(where[key]);
                 }
@@ -368,6 +398,10 @@ const replaceProjectIds = (project) => {
             }
         }
     }
+}
+
+const replaceObjectIds = (obj: any) => {
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [replaceId(key), value]));
 }
 
 const replaceId = (key: string) => {
@@ -410,7 +444,7 @@ function getDeepKeys(obj: any, isLevelOneSelect = false) {
     return keys;
 }
 
-const isSomeValidRefKeys = (keys: string[], referenceEntities: ReferenceEntity[]) => {
+const hasValidRefKeys = (keys: string[], referenceEntities: ReferenceEntity[]) => {
     return keys.some((key) => isValidRefKey(key, referenceEntities));
 }
 
@@ -423,6 +457,7 @@ const isValidRefKey = (key: string, referenceEntities: ReferenceEntity[]) => {
 
     const currentKey = splittedKey[0];
     const ref = referenceEntities.find((r) => r.key === currentKey || r.as === currentKey);
+
     if (ref) {
         return true;
     }
@@ -439,6 +474,7 @@ const isAllFirstLevelIds = (keys: string[]) => {
 
 const addId_toProject = (selectItems: string[], referenceEntities: ReferenceEntity[]) => {
     const newProjectItems = {};
+
     for (let i = 0; i < selectItems.length; i++) {
         const item = selectItems[i];
         if (isValidRefKey(item, referenceEntities)) {
@@ -451,6 +487,7 @@ const addId_toProject = (selectItems: string[], referenceEntities: ReferenceEnti
             }
         }
     }
+
     return newProjectItems;
 }
 

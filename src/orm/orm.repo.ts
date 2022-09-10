@@ -1,5 +1,5 @@
 import { _EntityProperties, FindOptions } from './interfaces/orm.interfaces';
-import { find as ormFind, count as ormCount } from './operations/orm.find';
+import { find as ormFind, count as ormCount, getFindAggregateArray as ormGetFindAggregateArray } from './operations/orm.find';
 import { insertOne, validateInsert } from './operations/orm.insert';
 import update from './operations/orm.update';
 import { deleteMany, deleteOne } from './operations/orm.delete';
@@ -102,5 +102,14 @@ export class ORMRepo {
 
     queryBuilder = () => {
         return new QueryBuilder(this.find, this.findOne, this.count, this.findAndCount);
+    }
+
+    _test = () => {
+        return {
+            getFindAggregateArray: (findOptions: FindOptions) => {
+                if (typeof findOptions !== "object") { findOptions = {}; }
+                return ormGetFindAggregateArray(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions, this.collectionName);
+            }
+        }
     }
 }

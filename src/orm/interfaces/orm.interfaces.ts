@@ -1,4 +1,4 @@
-import { ValidationDecoratorOptions, ValidatorOptions } from "class-validator";
+import { ValidatorOptions } from "class-validator";
 
 export enum RELATION_TYPES {
     ONE_TO_ONE = 'ONE_TO_ONE',
@@ -38,22 +38,6 @@ export interface _EntityProperties {
     dataValidators: any;
     requiredKeys: string[];
     defaultValues: any[];
-}
-
-export interface EntityRefersTo {
-    collection: string;
-    key: string;
-    as?: string;
-    isArray?: boolean;
-    reverseRefering?: boolean;
-    reverseReferingAs?: string;
-    maxDepth?: number;
-    type?: RELATION_TYPES;
-    message?: string;
-}
-
-export interface EntityProperties {
-    name: string
 }
 
 export interface RepositoryOptions {

@@ -20,7 +20,7 @@ describe('AppController', () => {
                     numberKey,
                     booleanKey: false,
                     jsonKey: { key: `value${i}` },
-                    userName: `MO1${i}`,
+                    userName: `MO${i}`,
                     notRequiredUnique: `Not Required 1 but unique ${i}`
                 });
                 records.push(rec);
@@ -81,6 +81,26 @@ describe('AppController', () => {
             expect(findRecords.length).toBe(2);
             expect(findRecords[0].email).toBeDefined();
             expect(findRecords[0].notRequiredUnique).toBeUndefined();
+        });
+
+        it('Selects only 2 records and skip 1 record without selecting the email', async () => {
+            console.log = jest.fn();
+
+            const findRecords = await repo.queryBuilder()
+                .where({ numberKey })
+                .skip(1)
+                .limit(2)
+                .sort({ id: -1 })
+                .select({
+                    "email": 0
+                })
+                .debug(true)
+                .find();
+
+            expect(console.log).toHaveBeenCalled();
+            expect(findRecords.length).toBe(2);
+            expect(findRecords[0].email).toBeUndefined();
+            expect(findRecords[0].userName).toBe(`MO${NEW_RECORDS_COUNT - 2}`)
         });
 
 

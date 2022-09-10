@@ -11,6 +11,7 @@ export class ORMOperations {
     deleteMany: Function;
     getCollection: Function;
     queryBuilder: Function;
+    _testOperations: Function;
 
     constructor(ORM) {
         this.find = ORM.find;
@@ -25,5 +26,6 @@ export class ORMOperations {
         this.deleteMany = ORM.deleteMany;
         this.getCollection = ORM.getCollection;
         this.queryBuilder = ORM.queryBuilder;
+        this._testOperations = ORM._test;
     }
 }

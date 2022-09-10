@@ -1,4 +1,16 @@
-import { EntityRefersTo } from "../orm/interfaces/orm.interfaces";
+import { RELATION_TYPES } from "../orm/interfaces/orm.interfaces";
+
+interface EntityRefersTo {
+    collection: string;
+    key: string;
+    as?: string;
+    isArray?: boolean;
+    reverseRefering?: boolean;
+    reverseReferingAs?: string;
+    maxDepth?: number;
+    type?: RELATION_TYPES;
+    message?: string;
+}
 
 export function RefersTo(refersTo: EntityRefersTo) {
     return function (target: any, propertyKey: string) {
