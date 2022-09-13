@@ -1,10 +1,10 @@
 # mongo-strict
 
-Mongo Strict is a complete MongoDB ORM, It makes the usage of MongoDB safer, easier and faster with a better performance...
+Mongo Strict is a smart MongoDB ORM, It makes the usage of MongoDB safer, easier and faster with a better performance...
+
+mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB.
 
 ## mongo-strict Allows you to
-
-**mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB**
 
 - Define the **entity data types** and ensure the data validity (Using class-validator in the background).
 - Define the **relations between the data**.
@@ -482,11 +482,11 @@ const user = await userRepository.findOneById("6309c6f839fc4980aeb34677", ["emai
 You can cache any query to get the results directly from the memory
 
 ```JavaScript
-repository.find({ where: { email: records[0].email }, cache: true })
+repository.find({ where: { email: 'email@co.co' }, cache: true }) // the default cache Timeout is 1000 MS = 1 Second
 
 or
 
-repository.find({ where: { email: records[0].email }, cache: {timeout: 3000} }) // the default cache Timeout is 1000 MS = 1 Second
+repository.find({ where: { email: 'email@co.co' }, cache: {timeout: 3000} })
 ```
 
 ### Query Builder

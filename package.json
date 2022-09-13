@@ -1,7 +1,7 @@
 {
   "name": "mongo-strict",
   "version": "0.0.2-22",
-  "description": "MongoDB ORM for typescript.",
+  "description": "MongoDB Smart ORM.",
   "author": "Kamel",
   "license": "MIT",
   "sideEffects": false,
