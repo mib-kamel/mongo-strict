@@ -9,12 +9,16 @@ const { MongoClient } = require("mongodb");
 const REF_CHECK_COLLECTION_NAME = "STRICT_ORM__REC_CHECK_COLLECTION++";
 const REF_CHECK_COLLECTION_RECORD = { message: "If you are using MONGO_STRICT please leave this collection as it helps the ORM to make the reference checks fastly" };
 
+interface DBConnection {
+    uri: string;
+}
+
 class MongoStrict {
     private connection;
     private repositoriesMap = new Map();
     private repositoriesOptions = {};
 
-    createConnection = async (connection: any, repositoriesOptions: RepositoryOptions = {}) => {
+    createConnection = async (connection: DBConnection, repositoriesOptions: RepositoryOptions = {}) => {
         if (!connection.uri) return;
         this.repositoriesOptions = { ...REPOSITORIES_DEFAULT_OPTIONS, ...repositoriesOptions };
         this.connection = await new MongoClient(connection.uri);
