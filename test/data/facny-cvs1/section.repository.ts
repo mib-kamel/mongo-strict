@@ -1,4 +1,4 @@
-import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, Allow, IsString } from '../../../src';
+import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, Allow, IsString, RELATION_TYPES } from '../../../src';
 
 @Entity({ name: 'section' })
 class SectionEntity {
@@ -8,6 +8,7 @@ class SectionEntity {
     @RefersTo({
         collection: 'cv',
         key: 'id',
+        type: RELATION_TYPES.MANY_TO_ONE,
         reverseRefering: true,
         reverseReferingAs: 'sections'
     })

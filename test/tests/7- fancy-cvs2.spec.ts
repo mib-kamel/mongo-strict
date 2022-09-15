@@ -114,6 +114,33 @@ describe('AppController', () => {
             expect(userData?.cvs[0]?.sections?.length).toEqual(6);
             expect(userData?.cvs[0]?.sections[0]?.sectionTitle).toBeDefined();
         });
+
+        it('Should get user CVs as strings', async () => {
+            const user = await userRepository.findOne({ select: ['cvs.id'] });
+
+            expect(user.cvs).toBeDefined();
+            expect(user.cvs[0]?.id).toBeDefined();
+            expect(typeof user.cvs[0]?.id).toStrictEqual("string");
+        });
+
+        it('Should get user CVs as strings 2', async () => {
+            const user = await userRepository.findOne({ select: ['cvs'] });
+
+            expect(user.cvs).toBeDefined();
+            expect(user.cvs[0]).toBeDefined();
+            expect(typeof user.cvs[0]).toStrictEqual("string");
+        });
+
+        it('Should get user sections as strings', async () => {
+            const user = await userRepository.findOne({ select: ['cvs.sections.id'] });
+            expect(typeof user.cvs[0]?.sections[0]?.id).toStrictEqual("string");
+        });
+
+        it('Should get user sections as strings 2', async () => {
+            const user = await userRepository.findOne({ select: ['cvs.sections'] });
+            console.log(user.cvs[0]?.sections)
+            expect(typeof user.cvs[0]?.sections[0]).toStrictEqual("string");
+        });
     });
 
     afterAll(async () => {

@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
+import { isObjectID } from "../utils/utils";
 const structuredClone = require('realistic-structured-clone');
 const NodeCache = require("node-cache");
 var hash = require('object-hash');
@@ -246,25 +247,28 @@ const selectItemsToProject = (selectItems) => {
 }
 
 const replaceAllData_id = (data) => {
-    if (data._id) {
+    if (data?._id) {
         data.id = data._id;
-        if (typeof data.id !== 'string' && data.id?.toString) {
-            data.id = data.id.toString();
-        }
         delete data._id;
     }
 
     const dataKeys = Object.keys(data);
 
-    if (data instanceof Object && data.length) {
-        for (let item of data) {
-            replaceAllData_id(item)
-        }
-    } else if (data instanceof Object) {
-        for (let key of dataKeys) {
-            if (data[key] instanceof Object) {
-                replaceAllData_id(data[key])
+    if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i++) {
+            if (isObjectID(data[i])) {
+                data[i] = data[i].toString();
+                continue;
             }
+            replaceAllData_id(data[i])
+        }
+    } else if (data instanceof Object && dataKeys?.length) {
+        for (let key of dataKeys) {
+            if (isObjectID(data[key])) {
+                data[key] = data[key].toString();
+                continue;
+            }
+            replaceAllData_id(data[key])
         }
     }
 }
