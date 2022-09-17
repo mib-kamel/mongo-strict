@@ -131,26 +131,26 @@ function extendReferenceEntities(repositoriesMap: any, parent: ReferenceEntity, 
     }
 }
 
-const drawMap = (repositoriesMap) => {
-    console.log("")
-    console.log("")
-    console.log("START DRAW MAP")
-    console.log("")
-    repositoriesMap.forEach((value, collectionName) => {
-        console.log(collectionName)
-        console.log("------------------->")
-        const referenceEntites = value.entityProperties.referenceEntities;
+// const drawMap = (repositoriesMap) => {
+//     console.log("")
+//     console.log("")
+//     console.log("START DRAW MAP")
+//     console.log("")
+//     repositoriesMap.forEach((value, collectionName) => {
+//         console.log(collectionName)
+//         console.log("------------------->")
+//         const referenceEntites = value.entityProperties.referenceEntities;
 
-        if (referenceEntites?.length) {
-            for (let i = 0; i < referenceEntites.length; i++) {
-                const ref = referenceEntites[i];
-                drawRefsMap(ref)
-            }
-        }
-    })
+//         if (referenceEntites?.length) {
+//             for (let i = 0; i < referenceEntites.length; i++) {
+//                 const ref = referenceEntites[i];
+//                 drawRefsMap(ref)
+//             }
+//         }
+//     })
 
-}
+// }
 
-const drawRefsMap = (ref: ReferenceEntity) => {
-    console.log(JSON.stringify(ref, null, 4));
-}
+// const drawRefsMap = (ref: ReferenceEntity) => {
+//     console.log(JSON.stringify(ref, null, 4));
+// }

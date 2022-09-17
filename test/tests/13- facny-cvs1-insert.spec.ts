@@ -95,7 +95,6 @@ describe('AppController', () => {
                 const res = await userRepository.insertOne(newUserData);
                 expect(res).toBeUndefined();
             } catch (e) {
-                console.log(e)
                 expect(e).toBeDefined();
                 expect(e.invalidKeys).toContain('email');
             }

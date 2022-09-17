@@ -1,8 +1,5 @@
-import { CVRepository } from '../data/facny-cvs1/cv.repository';
-import { SectionRepository } from '../data/facny-cvs1/section.repository';
 import { UserRepository } from '../data/facny-cvs1/user.repository';
 import { createConnection, getConnectionManager, getDB, initDBMap } from '../../src';
-import { getRandomInt } from '../utils';
 import { UserIndexRepository } from '../data/facny-cvs1/userIndex.repository';
 
 describe('AppController', () => {
@@ -61,7 +58,6 @@ describe('AppController', () => {
 
                 insertedUserIndeces.push(res);
             } catch (e) {
-                console.log(e)
                 expect(e).toBeUndefined();
             }
         });
@@ -78,7 +74,6 @@ describe('AppController', () => {
                 expect(typeof res.user.name).toBe('string');
                 expect(res.user.id).toEqual(insertedUsers[0].id);
             } catch (e) {
-                console.log(e)
                 expect(e).toBeUndefined();
             }
         });

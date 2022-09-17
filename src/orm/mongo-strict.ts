@@ -67,6 +67,10 @@ class MongoStrict {
     getDB = () => {
         return this.connection.db();
     }
+
+    getRepositoriesMap = () => {
+        return this.repositoriesMap;
+    }
 }
 
 const ORM = new MongoStrict();
@@ -76,5 +80,6 @@ const addRepository = ORM.addRepository;
 const initDBMap = ORM.initDBMap;
 const getConnectionManager = ORM.getConnectionManager;
 const getDB = ORM.getDB;
+const getRepositoriesMap = ORM.getRepositoriesMap;
 
-export { createConnection, addRepository, initDBMap, getConnectionManager, getDB };
+export { createConnection, addRepository, initDBMap, getConnectionManager, getDB, getRepositoriesMap };

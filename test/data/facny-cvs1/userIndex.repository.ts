@@ -1,6 +1,6 @@
 import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength, IsString, IsOptional, RefersTo, RELATION_TYPES } from '../../../src';
 
-@Entity({ name: 'user' })
+@Entity({ name: 'userIndex' })
 class UserIndexEntity {
     @IsString()
     @RefersTo({

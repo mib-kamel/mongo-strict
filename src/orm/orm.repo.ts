@@ -4,6 +4,7 @@ import { insertOne, validateInsert } from './operations/orm.insert';
 import update from './operations/orm.update';
 import { deleteMany, deleteOne } from './operations/orm.delete';
 import { QueryBuilder } from './QueryBuilder';
+import { getRepositoriesMap } from './mongo-strict';
 
 
 export class ORMRepo {
@@ -107,6 +108,8 @@ export class ORMRepo {
             getFindAggregateArray: (findOptions: FindOptions) => {
                 if (typeof findOptions !== "object") { findOptions = {}; }
                 return ormGetFindAggregateArray(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions, this.collectionName);
+            }, getRepositoriesMap: () => {
+                return getRepositoriesMap();
             }
         }
     }
