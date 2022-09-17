@@ -50,8 +50,6 @@ const start = async () => {
         select: ["id", "name", "cv.cvName", "cv.currentPosition", "cv.sections.sectionTitle"]
     })
 
-    console.log(JSON.stringify(userData, null, 4));
-
     await userRepository.deleteMany();
     await cvRepository.deleteMany();
     await sectionRepository.deleteMany();

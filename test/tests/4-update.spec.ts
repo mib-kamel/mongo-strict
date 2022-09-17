@@ -49,7 +49,6 @@ describe('AppController', () => {
                 records2.push(rec);
             }
         } catch (e: any) {
-            console.log(e);
             expect(e).toBeUndefined();
         }
     });
@@ -64,7 +63,6 @@ describe('AppController', () => {
         it('Should update first record', async () => {
             try {
                 const id = records[0].id;
-                console.log(id)
 
                 const updatedRec = await repo.update({ id }).setOne({
                     phone: newPhone
@@ -75,7 +73,7 @@ describe('AppController', () => {
                 expect(updatedRec.createdAt).toBeBefore(updatedRec.updatedAt);
                 expect(updatedRec.createdAt).toBeSameDayAs(updatedRec.updatedAt);
             } catch (e) {
-                console.log(e)
+                expect(e).toBeUndefined();
             }
         });
 
@@ -168,7 +166,6 @@ describe('AppController', () => {
                 const newKeyRecordsCount = await repo.count({ where: { numberKey: newNumberKey3 } });
                 expect(newKeyRecordsCount).toBe(1);
             } catch (e: any) {
-                console.log(e)
                 expect(e).toBeUndefined()
             }
         });

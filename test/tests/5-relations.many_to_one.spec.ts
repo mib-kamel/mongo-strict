@@ -29,7 +29,6 @@ describe('AppController', () => {
             }
 
         } catch (e: any) {
-            console.log(e);
             expect(e).toBeUndefined();
         }
     });
@@ -55,7 +54,6 @@ describe('AppController', () => {
                 expect(byFind.repo1?.id).toBeDefined();
                 expect(byFind.repo1.id).toEqual(byFind.repo1Email.id);
             } catch (e: any) {
-                console.log(e)
                 expect(e).toBeUndefined();
             }
         });
@@ -74,7 +72,6 @@ describe('AppController', () => {
                 expect(byFind.repo1?.id).toBeDefined();
                 expect(byFind.repo1.id).toEqual(records1[0].id);
             } catch (e: any) {
-                console.log(e)
                 expect(e).toBeUndefined();
             }
         });
@@ -88,7 +85,6 @@ describe('AppController', () => {
                 expect(rec).toBeDefined();
                 expect(rec.repo1Email).toEqual(records1[0].email);
             } catch (e: any) {
-                console.log(e)
                 expect(e).toBeUndefined();
             }
         });

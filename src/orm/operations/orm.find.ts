@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
-import { dataObjectIdToString } from "../utils/utils";
+import { dataObjectIdToString, isObjectID, isStringObjectID } from "../utils/utils";
+import { getWhereObject } from "./operationsUtils";
 const structuredClone = require('realistic-structured-clone');
 const NodeCache = require("node-cache");
 var hash = require('object-hash');
@@ -80,6 +81,7 @@ export function getFindAggregateArray(Repository,
     let selectItems = [];
 
     let where = findOptions.where || {};
+    where = getWhereObject(where, referenceEntities);
     replaceWhereIds(where, referenceEntities);
 
     let project: any = findOptions.select;
@@ -187,6 +189,7 @@ export async function count(
     }
 
     let where = findOptions.where || {};
+    where = getWhereObject(where, referenceEntities);
     replaceWhereIds(where, referenceEntities);
 
     const isWhere = where && Object.keys(where)?.length;
@@ -330,10 +333,10 @@ const replaceWhereIds = (where, referenceEntities: ReferenceEntity[]) => {
         }
     } else if (typeof where === 'object') {
         for (let key of dataKeys) {
-            if (where[key] instanceof Object) {
+            if (typeof where[key] === 'object' && !isObjectID(where[key])) {
                 replaceWhereIds(where[key], referenceEntities)
             } else {
-                if (isId(key) && typeof where[key] === "string") {
+                if (isId(key)) {
                     const searchValue = where[key];
                     delete where[key];
                     if (key === 'id') {
@@ -341,8 +344,12 @@ const replaceWhereIds = (where, referenceEntities: ReferenceEntity[]) => {
                     } else {
                         key = key.replace(/\.id$/g, '._id');
                     }
-                    where[key] = new ObjectId(searchValue);
-                } else if (typeof where[key] === "string" && isKeyRefersToId(key, referenceEntities)) {
+                    if (isObjectID(searchValue)) {
+                        where[key] = searchValue;
+                    } else if (isStringObjectID(searchValue)) {
+                        where[key] = new ObjectId(searchValue);
+                    }
+                } else if (typeof where[key] === "string" && isStringObjectID(where[key]) && isKeyRefersToId(key, referenceEntities)) {
                     where[key] = new ObjectId(where[key]);
                 }
             }
@@ -463,15 +470,6 @@ const addId_toProject = (selectItems: string[], referenceEntities: ReferenceEnti
     }
 
     return newProjectItems;
-}
-
-const isKeyRefersTo = (key: string, referenceEntities: ReferenceEntity[]) => {
-    for (let i = 0; i < referenceEntities.length; i++) {
-        if (referenceEntities[i].key === key) {
-            return true;
-        }
-    }
-    return false;
 }
 
 const isKeyRefersToId = (key: string, referenceEntities: ReferenceEntity[]) => {

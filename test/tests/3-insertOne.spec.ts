@@ -33,7 +33,6 @@ describe('AppController', () => {
                 expect(inseretResponse.updated_at).toBeDefined();
                 expect(inseretResponse.created_at).toBeSameSecondAs(inseretResponse.updated_at);
             } catch (e) {
-                console.log(e);
                 expect(e).toBeUndefined();
             }
         });

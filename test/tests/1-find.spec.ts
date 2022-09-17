@@ -35,7 +35,6 @@ describe('AppController', () => {
             cachedCountOptions = { cache: true };
             cachedCountOptionsTimout = { cache: { timeout: 3000 } };
         } catch (e: any) {
-            console.log(e);
             expect(e).toBeUndefined();
         }
     });

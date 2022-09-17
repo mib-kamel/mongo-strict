@@ -26,7 +26,6 @@ describe('AppController', () => {
                 records.push(rec);
             }
         } catch (e: any) {
-            console.log(e);
             expect(e).toBeUndefined();
         }
     });

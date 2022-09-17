@@ -185,9 +185,13 @@ export function checkDuplicatedUniqueKeys(uniqueKeys, updateData) {
     }
 }
 
-export function getWhereObject(where: any, referenceEntities: ReferenceEntity[], isWhereRequired = true) {
+export function getWhereObject(where: any, referenceEntities: ReferenceEntity[]) {
     if (where === undefined) {
         return {};
+    }
+
+    if (typeof where === 'object' && Object.keys(where).length === 0) {
+        return where;
     }
 
     if (typeof where === 'string' && isStringObjectID(where)) {
@@ -201,8 +205,6 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
                     return { _id: new ObjectId(id) };
                 } else if (isObjectID(id)) {
                     return { _id: id };
-                } else if (isWhereRequired) {
-                    throw "Invalid Condition Found";
                 }
             })
         }
@@ -227,8 +229,6 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
                 where[currentKey] = new ObjectId(currentData);
             }
         }
-    } else if (isWhereRequired) {
-        throw "Invalid Condition Found";
     }
 
     return where;

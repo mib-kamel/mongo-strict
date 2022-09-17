@@ -98,7 +98,14 @@ describe('AppController', () => {
             const allSectionsCount = await sectionRepository.count();
             expect(allSectionsCount).toEqual(SECTIONS_COUNT - 1);
 
-            insertedSections.splice(0, 1);
+            let isDeleted = false;
+            insertedSections = insertedSections.filter((sec) => {
+                if (isDeleted) return true;
+                if (sec.id !== sectionId) {
+                    isDeleted = true;
+                    return true;
+                }
+            })
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - 1);
 
             SECTIONS_COUNT = SECTIONS_COUNT - 1;
@@ -115,7 +122,24 @@ describe('AppController', () => {
             expect(res).toBeDefined();
             expect(res.deletedCount).toEqual(sectionsCount);
 
-            insertedSections.splice(0, sectionsCount);
+            insertedSections = insertedSections.filter((sec) => !ids.includes(sec.id))
+            expect(insertedSections.length).toEqual(SECTIONS_COUNT - sectionsCount);
+
+            SECTIONS_COUNT = SECTIONS_COUNT - sectionsCount;
+        });
+
+        it('Delete sections by Objects IDs Array', async () => {
+            const sectionsCount = 10;
+
+            const ids = insertedSections.slice(0, 10).map((sec) => new ObjectId(sec.id));
+            expect(typeof ids).toBe('object');
+            expect(ids.length).toEqual(sectionsCount);
+
+            const res = await sectionRepository.deleteMany(ids);
+            expect(res).toBeDefined();
+            expect(res.deletedCount).toEqual(sectionsCount);
+
+            insertedSections = insertedSections.filter((sec) => !ids.map(id => id.toString()).includes(sec.id))
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - sectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - sectionsCount;
@@ -132,7 +156,7 @@ describe('AppController', () => {
             expect(res).toBeDefined();
             expect(res.deletedCount).toEqual(cvSectionsCount);
 
-            insertedSections.splice(0, cvSectionsCount);
+            insertedSections = insertedSections.filter((sec) => sec.cv !== cvId)
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - cvSectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - cvSectionsCount;
@@ -149,28 +173,11 @@ describe('AppController', () => {
             expect(res).toBeDefined();
             expect(res.deletedCount).toEqual(cvSectionsCount);
 
-            insertedSections.splice(0, cvSectionsCount);
+            insertedSections = insertedSections.filter((sec) => sec.cv !== cvId)
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - cvSectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - cvSectionsCount;
         });
-
-        // it('Refuse setMany with unique Key', async () => {
-        //     const userCount = 10;
-
-        //     const ids = insertedUsers.slice(0, 10).map((user) => user.id);
-        //     expect(typeof ids).toBe('object');
-        //     expect(ids.length).toEqual(userCount);
-
-        //     try {
-        //         const newEmail = "nonUniqueEmail@g.co";
-        //         const res = await userRepository.update(ids).setMany({ email: newEmail });
-        //         expect(res).toBeUndefined();
-        //     } catch (e) {
-        //         expect(e).toBeDefined();
-        //         expect(e.existingUniqueKeys.length).toEqual(1)
-        //     }
-        // });
     });
 
     afterAll(async () => {

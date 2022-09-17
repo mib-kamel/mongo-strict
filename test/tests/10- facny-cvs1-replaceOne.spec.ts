@@ -152,6 +152,46 @@ describe('AppController', () => {
                 expect(e).toBeUndefined();
             }
         });
+
+        it('Refuse refuse unfound reference', async () => {
+            const cv = insertedCVs[0];
+            const cvId = cv.id;
+
+            const newCVData = {
+                cvName: cv.cvName,
+                currentPosition: cv.currentPosition,
+                user: '6309c6f839fc4980aeb34677'
+            }
+
+            try {
+                const res = await cvRepository.update(cvId).replaceOne(newCVData);
+                expect(res).toBeUndefined();
+            } catch (e) {
+                expect(e).toBeDefined();
+                expect(e.missedReferenceKeys).toContain('user');
+            }
+        });
+
+        it('Refuse refuse addional data', async () => {
+            const cv = insertedCVs[0];
+            const cvId = cv.id;
+            const invalidKey = 'invalid';
+
+            const newCVData = {
+                cvName: cv.cvName,
+                currentPosition: cv.currentPosition,
+                user: cv.user,
+                [invalidKey]: true
+            }
+
+            try {
+                const res = await cvRepository.update(cvId).replaceOne(newCVData);
+                expect(res).toBeUndefined();
+            } catch (e) {
+                expect(e).toBeDefined();
+                expect(e.invalidKeys).toContain(invalidKey);
+            }
+        });
     });
 
     afterAll(async () => {
