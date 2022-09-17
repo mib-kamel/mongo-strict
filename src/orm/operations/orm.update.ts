@@ -1,7 +1,7 @@
 import { validate } from "class-validator";
 import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
-import { dataObjectIdToString } from "../utils/utils";
+import { dataObjectIdToString, isObjectID } from "../utils/utils";
 import { checkDuplicatedUniqueKeys, checkReferenceEntities, checkRequiredKeys, fillDefaultValue, getWhereObject, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
 const structuredClone = require('realistic-structured-clone');
 
@@ -203,9 +203,19 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
             uniqueKeys.forEach((uni: any) => {
                 const { key, isIgnoreCase } = uni;
 
+                const ref = referenceEntities.find((r) => r.key === key || r.as === key);
+
                 let isKeyFound;
 
-                if (isIgnoreCase) {
+                if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
+                    isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
+                        if (isObjectID(res[key])) {
+                            return res[key].toString() === data[key];
+                        } else {
+                            return res[key] === data[key];
+                        }
+                    });
+                } else if (isIgnoreCase) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === data[key].toString().toLowerCase())
                 } else {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key] === data[key])

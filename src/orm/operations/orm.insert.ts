@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
-import { dataObjectIdToString } from "../utils/utils";
+import { dataObjectIdToString, isObjectID } from "../utils/utils";
 import { checkReferenceEntities, checkRequiredKeys, fillDefaultValue, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
 const structuredClone = require('realistic-structured-clone');
 
@@ -150,9 +150,19 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
             uniqueKeys.forEach((uni: any) => {
                 const { key, isIgnoreCase } = uni;
 
+                const ref = referenceEntities.find((r) => r.key === key || r.as === key);
+
                 let isKeyFound;
 
-                if (isIgnoreCase) {
+                if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
+                    isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
+                        if (isObjectID(res[key])) {
+                            return res[key].toString() === insertData[key];
+                        } else {
+                            return res[key] === insertData[key];
+                        }
+                    })
+                } else if (isIgnoreCase) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === insertData[key].toString().toLowerCase())
                 } else {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key] === insertData[key])
