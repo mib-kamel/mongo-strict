@@ -1,4 +1,4 @@
-import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength, IsString } from '../../../src';
+import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength, IsString, IsOptional } from '../../../src';
 
 @Entity({ name: 'user' })
 class UserEntity {
@@ -14,6 +14,7 @@ class UserEntity {
 
     @Allow()
     @IsString()
+    @IsOptional()
     country: string;
 }
 

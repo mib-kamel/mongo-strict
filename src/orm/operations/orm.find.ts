@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
-import { isObjectID } from "../utils/utils";
+import { dataObjectIdToString } from "../utils/utils";
 const structuredClone = require('realistic-structured-clone');
 const NodeCache = require("node-cache");
 var hash = require('object-hash');
@@ -45,7 +45,7 @@ export async function find(
 
     const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
 
-    replaceAllData_id(res);
+    dataObjectIdToString(res, referenceEntities);
 
     if (cacheKey) {
         let cacheTimeout = repositoryOptions.cacheTimeout;
@@ -246,33 +246,6 @@ const selectItemsToProject = (selectItems) => {
     return selectList;
 }
 
-const replaceAllData_id = (data) => {
-    if (data?._id) {
-        data.id = data._id;
-        delete data._id;
-    }
-
-    const dataKeys = Object.keys(data);
-
-    if (Array.isArray(data)) {
-        for (let i = 0; i < data.length; i++) {
-            if (isObjectID(data[i])) {
-                data[i] = data[i].toString();
-                continue;
-            }
-            replaceAllData_id(data[i])
-        }
-    } else if (data instanceof Object && dataKeys?.length) {
-        for (let key of dataKeys) {
-            if (isObjectID(data[key])) {
-                data[key] = data[key].toString();
-                continue;
-            }
-            replaceAllData_id(data[key])
-        }
-    }
-}
-
 const getLookups = (referenceEntities: ReferenceEntity[], lookupStrings: string[]) => {
     const container = [];
 
@@ -424,14 +397,11 @@ const isId = (searchKey) => {
     return searchKey === 'id' || searchKey.indexOf('.id') === searchKey.length - 3 || searchKey.indexOf('._id') === searchKey.length - 4;
 }
 
-function getDeepKeys(obj: any, isLevelOneSelect = false) {
+function getDeepKeys(obj: any) {
     const keys = [];
     for (let key in obj) {
         if (key.indexOf('$') !== 0) {
             keys.push(key);
-            if (isLevelOneSelect) {
-                continue;
-            }
         }
         if (typeof obj[key] === "object" && obj[key].length === undefined) {
             var subkeys = getDeepKeys(obj[key]);

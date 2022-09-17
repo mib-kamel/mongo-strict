@@ -29,11 +29,6 @@ export async function createTestingModule() {
 
 export const delay = ms => new Promise(res => setTimeout(res, ms));
 
-export function isObjectID(id) {
-    try {
-        new ObjectId(id.toString());
-    } catch (e) {
-        return false
-    }
-    return true
+export const getRandomInt = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }

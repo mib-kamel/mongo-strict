@@ -1,8 +1,9 @@
 
 import { ObjectId } from "mongodb";
 import { validate } from "class-validator";
-import { isObjectID } from "../utils/utils";
+import { isObjectID, isStringObjectID } from "../utils/utils";
 import { getRefCheckCollection } from "../utils/refCheckCollection";
+import { ReferenceEntity } from "../interfaces/orm.interfaces";
 
 export async function checkReferenceEntities(collection, referenceEntities, updateData) {
     if (referenceEntities?.length) {
@@ -115,23 +116,6 @@ export function updateRefObjectIdsKeys(referenceEntities, refData) {
     return refData;
 }
 
-export function revertRefsObjectIdsToString(referenceEntities, data) {
-    for (let i = 0; i < referenceEntities.length; i++) {
-        const ref = referenceEntities[i];
-
-        const refValue = data[ref.key]
-        if ((ref.refersToKey === 'id' || ref.refersToKey === '_id') && refValue) {
-            if (Array.isArray(refValue)) {
-                data[ref.key] = refValue.map((r) => isObjectID(r) ? r.toString() : r);
-            } else if (isObjectID(refValue)) {
-                data[ref.key] = refValue.toString();
-            }
-        }
-    }
-
-    return data;
-}
-
 export function checkRequiredKeys(requiredKeys, insertData) {
     const notFoundRequiredKeys = [];
 
@@ -201,35 +185,50 @@ export function checkDuplicatedUniqueKeys(uniqueKeys, updateData) {
     }
 }
 
-export function getWhereObject(where: any) {
+export function getWhereObject(where: any, referenceEntities: ReferenceEntity[], isWhereRequired = true) {
     if (where === undefined) {
         return {};
     }
 
-    if (typeof where === 'string') {
+    if (typeof where === 'string' && isStringObjectID(where)) {
         where = { _id: new ObjectId(where) };
+    } else if (isObjectID(where)) {
+        where = { _id: where };
     } else if (Array.isArray(where)) {
         where = {
             $or: where.map((id) => {
-                if (typeof id === 'string') {
+                if (typeof id === 'string' && isStringObjectID(id)) {
                     return { _id: new ObjectId(id) };
                 } else if (isObjectID(id)) {
                     return { _id: id };
-                } else {
+                } else if (isWhereRequired) {
                     throw "Invalid Condition Found";
                 }
             })
         }
-    } else if (isObjectID(where)) {
-        where = { _id: where };
-    } else {
+    } else if (typeof where === 'object') {
         if (where.id) {
             where._id = where.id;
             delete where.id;
         }
-        if (typeof where._id === 'string') {
+        if (typeof where._id === 'string' && isStringObjectID(where._id)) {
             where._id = new ObjectId(where._id);
         }
+
+        const dataKeys = Object.keys(where);
+
+        for (let i = 0; i < dataKeys.length; i++) {
+            const currentKey = dataKeys[i];
+            const currentData = where[currentKey];
+
+            const currentKeyRef = referenceEntities.find((ref) => ref.as === currentKey || ref.key === currentKey);
+
+            if (currentKeyRef && isStringObjectID(currentData)) {
+                where[currentKey] = new ObjectId(currentData);
+            }
+        }
+    } else if (isWhereRequired) {
+        throw "Invalid Condition Found";
     }
 
     return where;

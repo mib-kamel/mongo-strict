@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
-import { checkReferenceEntities, checkRequiredKeys, fillDefaultValue, revertRefsObjectIdsToString, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
+import { dataObjectIdToString } from "../utils/utils";
+import { checkReferenceEntities, checkRequiredKeys, fillDefaultValue, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
 const structuredClone = require('realistic-structured-clone');
 
 export async function insertOne(
@@ -27,9 +28,7 @@ export async function insertOne(
         repositoryOptions?.autoUpdatedAt && (insertData[updatedAtKey] = now);
         await collection.insertOne(insertData);
 
-        revertRefsObjectIdsToString(referenceEntities, insertData);
-        insertData.id = insertData._id.toString();
-        delete insertData._id;
+        dataObjectIdToString(insertData, referenceEntities);
         return insertData;
     } catch (err) {
         throw err;

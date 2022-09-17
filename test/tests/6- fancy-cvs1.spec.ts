@@ -55,6 +55,8 @@ describe('AppController', () => {
             }
 
             expect(insertedCV).toBeDefined();
+            expect(typeof insertedCV.id).toBe("string");
+            expect(typeof insertedCV.user).toBe("string");
             expect(insertedCV.user).toBeDefined();
             expect(insertedCV.cvName).toBeDefined();
             expect(insertedCV.currentPosition).toBeDefined();
@@ -74,6 +76,8 @@ describe('AppController', () => {
             }
 
             expect(insertedSections?.length).toBeDefined();
+            expect(typeof insertedSections[0].cv).toBe("string");
+            expect(typeof insertedSections[0].id).toBe("string");
             expect(insertedSections?.length).toBe(6);
         });
 
@@ -105,7 +109,7 @@ describe('AppController', () => {
 
             expect(cv).toBeDefined();
             expect(cv?.user).toBeDefined();
-            expect(typeof cv?.user).toStrictEqual("string");
+            expect(typeof cv?.user).toEqual("string");
         });
 
         it('Should get cv user as a string 2', async () => {
@@ -113,17 +117,17 @@ describe('AppController', () => {
 
             expect(cv).toBeDefined();
             expect(cv?.user?.id).toBeDefined();
-            expect(typeof cv?.user?.id).toStrictEqual("string");
+            expect(typeof cv?.user?.id).toEqual("string");
         });
 
         it('Should get cv user as a string', async () => {
             const section = await sectionRepository.findOne({ select: ['cv.user'] });
-            expect(typeof section?.cv?.user).toStrictEqual("string");
+            expect(typeof section?.cv?.user).toEqual("string");
         });
 
         it('Should get cv user as a string 2', async () => {
             const section = await sectionRepository.findOne({ select: ['cv.user.id'] });
-            expect(typeof section?.cv.user.id).toStrictEqual("string");
+            expect(typeof section?.cv.user.id).toEqual("string");
         });
     });
 

@@ -1,7 +1,8 @@
 import { validate } from "class-validator";
 import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
-import { checkDuplicatedUniqueKeys, checkReferenceEntities, checkRequiredKeys, fillDefaultValue, getWhereObject, revertRefsObjectIdsToString, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
+import { dataObjectIdToString } from "../utils/utils";
+import { checkDuplicatedUniqueKeys, checkReferenceEntities, checkRequiredKeys, fillDefaultValue, getWhereObject, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
 const structuredClone = require('realistic-structured-clone');
 
 export default function update(
@@ -22,7 +23,7 @@ export default function update(
     }
 
     try {
-        where = getWhereObject(where);
+        where = getWhereObject(where, referenceEntities);
     } catch (err) {
         throw err;
     }
@@ -45,11 +46,7 @@ export default function update(
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
             const res = await collection.findOneAndUpdate(where, { $set: updateData }, { returnDocument: 'after', returnNewDocument: true });
-            revertRefsObjectIdsToString(referenceEntities, res.value);
-            if (res?.value?._id) {
-                res.value.id = res.value._id.toString();
-                delete res.value._id;
-            }
+            dataObjectIdToString(res.value, referenceEntities);
             return res.value;
         } catch (err) {
             throw err;
@@ -107,34 +104,34 @@ export default function update(
         }
     }
 
-    const replaceMany = async (updateData: any) => {
-        updateData = structuredClone(updateData);
-        delete updateData._id;
-        delete updateData.id;
-        fillDefaultValue(defaultValues, updateData);
+    // const replaceMany = async (updateData: any) => {
+    //     updateData = structuredClone(updateData);
+    //     delete updateData._id;
+    //     delete updateData.id;
+    //     fillDefaultValue(defaultValues, updateData);
 
-        try {
-            const createdAt = updateData[createdAtKey];
+    //     try {
+    //         const createdAt = updateData[createdAtKey];
 
-            repositoryOptions?.autoCreatedAt && (delete updateData[createdAtKey]);
-            repositoryOptions?.autoUpdatedAt && (delete updateData[updatedAtKey]);
+    //         repositoryOptions?.autoCreatedAt && (delete updateData[createdAtKey]);
+    //         repositoryOptions?.autoUpdatedAt && (delete updateData[updatedAtKey]);
 
-            checkRequiredKeys(requiredKeys, updateData);
-            checkDuplicatedUniqueKeys(uniqueKeys, updateData);
-            const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions);
-            const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities, true);
-            const refPromise = checkReferenceEntities(collection, referenceEntities, updateData);
+    //         checkRequiredKeys(requiredKeys, updateData);
+    //         checkDuplicatedUniqueKeys(uniqueKeys, updateData);
+    //         const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions);
+    //         const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities, true);
+    //         const refPromise = checkReferenceEntities(collection, referenceEntities, updateData);
 
-            await Promise.all([validatePromise, uniquePromise, refPromise]);
+    //         await Promise.all([validatePromise, uniquePromise, refPromise]);
 
-            repositoryOptions?.autoCreatedAt && (updateData[createdAtKey] = createdAt);
-            repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
+    //         repositoryOptions?.autoCreatedAt && (updateData[createdAtKey] = createdAt);
+    //         repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
-            return collection.replaceMany(where, updateData);
-        } catch (err) {
-            throw err;
-        }
-    }
+    //         return collection.replaceMany(where, updateData);
+    //     } catch (err) {
+    //         throw err;
+    //     }
+    // }
 
     return {
         setOne,
@@ -144,17 +141,17 @@ export default function update(
     }
 }
 
-async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere, referenceEntities: ReferenceEntity[], isManyOperation = false) {
+async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere, referenceEntities: ReferenceEntity[]/*, isManyOperation = false*/) {
     const findUniqueKeysWhere = [];
     const foundUniqueKeys = [];
 
-    if (isManyOperation) {
-        uniqueKeys.forEach((uni) => {
-            if (data[uni.key]) {
-                foundUniqueKeys.push(uni.key);
-            }
-        })
-    }
+    // if (isManyOperation) {
+    //     uniqueKeys.forEach((uni) => {
+    //         if (data[uni.key]) {
+    //             foundUniqueKeys.push(uni.key);
+    //         }
+    //     })
+    // }
 
     if (foundUniqueKeys.length) {
         throw {

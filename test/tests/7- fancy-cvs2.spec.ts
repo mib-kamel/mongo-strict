@@ -38,6 +38,7 @@ describe('AppController', () => {
 
             expect(insertedUser).toBeDefined();
             expect(insertedUser.id).toBeDefined();
+            expect(typeof insertedUser.id).toEqual("string");
             expect(insertedUser.email).toBeDefined();
             expect(insertedUser.name).toBeDefined();
             expect(insertedUser.country).toBeDefined();
@@ -59,6 +60,7 @@ describe('AppController', () => {
 
             expect(insertedCV).toBeDefined();
             expect(insertedCV?.id).toBeDefined();
+            expect(typeof insertedCV.id).toEqual("string");
             expect(insertedCV?.cvName).toBeDefined();
             expect(insertedCV?.currentPosition).toBeDefined();
             expect(insertedCV?.sections?.length).toBe(0);
@@ -88,8 +90,10 @@ describe('AppController', () => {
                 expect(e).toBeUndefined();
             }
 
+            expect(typeof insertedSections[0].id).toEqual("string");
             expect(insertedCV).toBeDefined();
             expect(insertedCV?.sections?.length).toBe(6);
+            expect(typeof insertedCV.sections[0]).toEqual("string");
             expect(insertedSections?.length).toBe(6);
         });
 
@@ -120,7 +124,7 @@ describe('AppController', () => {
 
             expect(user.cvs).toBeDefined();
             expect(user.cvs[0]?.id).toBeDefined();
-            expect(typeof user.cvs[0]?.id).toStrictEqual("string");
+            expect(typeof user.cvs[0]?.id).toEqual("string");
         });
 
         it('Should get user CVs as strings 2', async () => {
@@ -128,18 +132,17 @@ describe('AppController', () => {
 
             expect(user.cvs).toBeDefined();
             expect(user.cvs[0]).toBeDefined();
-            expect(typeof user.cvs[0]).toStrictEqual("string");
+            expect(typeof user.cvs[0]).toEqual("string");
         });
 
         it('Should get user sections as strings', async () => {
             const user = await userRepository.findOne({ select: ['cvs.sections.id'] });
-            expect(typeof user.cvs[0]?.sections[0]?.id).toStrictEqual("string");
+            expect(typeof user.cvs[0]?.sections[0]?.id).toEqual("string");
         });
 
         it('Should get user sections as strings 2', async () => {
             const user = await userRepository.findOne({ select: ['cvs.sections'] });
-            console.log(user.cvs[0]?.sections)
-            expect(typeof user.cvs[0]?.sections[0]).toStrictEqual("string");
+            expect(typeof user.cvs[0]?.sections[0]).toEqual("string");
         });
     });
 

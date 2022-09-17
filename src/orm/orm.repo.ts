@@ -4,8 +4,6 @@ import { insertOne, validateInsert } from './operations/orm.insert';
 import update from './operations/orm.update';
 import { deleteMany, deleteOne } from './operations/orm.delete';
 import { QueryBuilder } from './QueryBuilder';
-import { ObjectId } from 'mongodb';
-import { isObjectID } from './utils/utils';
 
 
 export class ORMRepo {
@@ -93,11 +91,11 @@ export class ORMRepo {
     }
 
     deleteOne = async (where: any) => {
-        return deleteOne(this.collection, this.referenceEntities, where, this.repositoryptions);
+        return deleteOne(this.collection, this.referenceEntities, where);
     }
 
     deleteMany = async (where: any) => {
-        return deleteMany(this.collection, this.referenceEntities, where, this.repositoryptions);
+        return deleteMany(this.collection, this.referenceEntities, where);
     }
 
     queryBuilder = () => {

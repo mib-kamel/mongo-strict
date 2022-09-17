@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { RELATION_TYPES, _EntityProperties } from "../interfaces/orm.interfaces";
+import { ReferenceEntity, RELATION_TYPES, _EntityProperties } from "../interfaces/orm.interfaces";
 
 export function getEntityProperties(entity: any, defaultSelectFields = [], EntityClass: any) {
     let schema = entity.ORM_SCHEMA || {};
@@ -75,4 +75,67 @@ export function isObjectID(id) {
         return false
     }
     return true
+}
+
+export function isStringObjectID(id) {
+    if (typeof id !== 'string') {
+        return false;
+    }
+
+    try {
+        new ObjectId(id);
+    } catch (e) {
+        return false
+    }
+    return true
+}
+
+export const dataObjectIdToString = (data, referenceEntities: ReferenceEntity[] = []) => {
+    if (data?._id) {
+        data.id = data._id;
+    }
+
+    const dataKeys = Object.keys(data);
+
+    if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i++) {
+            if (isObjectID(data[i])) {
+                data[i] = data[i].toString();
+            } else if (typeof data[i] === 'object') {
+                dataObjectIdToString(data[i], referenceEntities)
+            }
+        }
+    } else if (data instanceof Object && dataKeys?.length) {
+        for (let i = 0; i < dataKeys.length; i++) {
+            const currentKey = dataKeys[i];
+
+            if (currentKey === 'id' && isObjectID(data[currentKey])) {
+                data[currentKey] = data[currentKey].toString();
+                continue;
+            }
+
+            let keyRefEntity: ReferenceEntity;
+
+            if (referenceEntities?.length) {
+                keyRefEntity = referenceEntities.find((ref) => ref.as === currentKey || ref.key === currentKey);
+            }
+
+            if (keyRefEntity && Array.isArray(data[currentKey])) {
+                for (let j = 0; j < data[currentKey].length; j++) {
+                    if (isObjectID(data[currentKey][j])) {
+                        data[currentKey][j] = data[currentKey][j].toString();
+                    } else if (typeof data[currentKey][j] === 'object') {
+                        dataObjectIdToString(data[currentKey][j], keyRefEntity.referenceEntities)
+                    }
+                }
+            } else if (keyRefEntity && typeof data[currentKey] === 'object') {
+                if (isObjectID(data[currentKey])) {
+                    data[currentKey] = data[currentKey].toString();
+                } else if (keyRefEntity && data[currentKey]) {
+                    dataObjectIdToString(data[currentKey], keyRefEntity.referenceEntities)
+                }
+            }
+        }
+        delete data._id;
+    }
 }
