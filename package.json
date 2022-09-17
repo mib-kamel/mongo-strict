@@ -1,6 +1,6 @@
 {
   "name": "mongo-strict",
-  "version": "0.0.2-24",
+  "version": "0.0.2-25",
   "description": "MongoDB Smart ORM.",
   "author": "Kamel",
   "license": "MIT",
