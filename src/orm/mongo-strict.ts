@@ -19,8 +19,8 @@ class MongoStrict {
     private repositoriesOptions = {};
 
     createConnection = async (connection: DBConnection, repositoriesOptions: RepositoryOptions = {}) => {
-        if (!connection.uri) {
-            throw 'uri is required to start a connection';
+        if (typeof connection.uri !== 'string') {
+            throw 'uri string is required to start a connection';
         }
         this.repositoriesOptions = { ...REPOSITORIES_DEFAULT_OPTIONS, ...repositoriesOptions };
         this.connection = await new MongoClient(connection.uri);

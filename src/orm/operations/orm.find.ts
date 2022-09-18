@@ -344,10 +344,10 @@ const replaceWhereIds = (where, referenceEntities: ReferenceEntity[]) => {
                     } else {
                         key = key.replace(/\.id$/g, '._id');
                     }
-                    if (isObjectID(searchValue)) {
-                        where[key] = searchValue;
-                    } else if (isStringObjectID(searchValue)) {
+                    if (isStringObjectID(searchValue)) {
                         where[key] = new ObjectId(searchValue);
+                    } else {
+                        where[key] = searchValue;
                     }
                 } else if (typeof where[key] === "string" && isStringObjectID(where[key]) && isKeyRefersToId(key, referenceEntities)) {
                     where[key] = new ObjectId(where[key]);
@@ -398,10 +398,14 @@ const replaceId = (key: string) => {
 }
 
 const isId = (searchKey) => {
-    if (!searchKey) {
+    if (searchKey === undefined) {
         return false;
     }
-    return searchKey === 'id' || searchKey.indexOf('.id') === searchKey.length - 3 || searchKey.indexOf('._id') === searchKey.length - 4;
+
+    const _idIndex = searchKey.indexOf('._id');
+    const idIndex = searchKey.indexOf('.id');
+    const keyLength = searchKey.length;
+    return searchKey === 'id' || (idIndex === keyLength - 3 && keyLength > 2) || (_idIndex === keyLength - 4 && keyLength > 3);
 }
 
 function getDeepKeys(obj: any) {
