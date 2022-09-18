@@ -521,6 +521,7 @@ class CVEntity {
     currentPosition: string;
 }
 
+@Entity({ name: 'user' })
 class UserEntity {
     @Allow()
     @IsEmail(undefined, { message: "The email should be valid :(" })
@@ -554,6 +555,7 @@ Once we select an inner value of the CVs, that will notify the mongo-strict to g
 Suppose we have user and CV repositories but the CV repo is the container of the user Id.
 
 ```JavaScript
+@Entity({ name: 'user' })
 class UserEntity {
     @Allow()
     @IsEmail(undefined, { message: "The email should be valid :(" })
