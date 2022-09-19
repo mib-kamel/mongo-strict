@@ -3,6 +3,7 @@ import { createTestingModule } from '../utils';
 
 const NEW_RECORDS_COUNT = 20;
 const numberKey = 365;
+const log = console.log;
 
 describe('AppController', () => {
     let repo;
@@ -99,7 +100,9 @@ describe('AppController', () => {
             expect(console.log).toHaveBeenCalled();
             expect(findRecords.length).toBe(2);
             expect(findRecords[0].email).toBeUndefined();
-            expect(findRecords[0].userName).toBe(`MO${NEW_RECORDS_COUNT - 2}`)
+            expect(findRecords[0].userName).toBe(`MO${NEW_RECORDS_COUNT - 2}`);
+
+            console.log = log;
         });
 
 
@@ -141,6 +144,26 @@ describe('AppController', () => {
         it('Should get cached Data with timeout', async () => {
             const count = await repo.queryBuilder().cache({ timeout: 3000 }).count();
             expect(count).toBe(records.length);
+        });
+
+        it('Should find and count', async () => {
+            const findAndCountRecords = await repo.queryBuilder().limit(1).findAndCount();
+            expect(findAndCountRecords.data.length).toBe(1);
+            expect(findAndCountRecords.count).toBe(NEW_RECORDS_COUNT);
+        });
+
+        it('Should find one', async () => {
+            const findRecords = await repo.queryBuilder().findOne();
+            expect(typeof findRecords.id).toBe('string');
+        });
+
+        it('find where id', async () => {
+            const findRecords = await repo.queryBuilder()
+                .where(records[0].id)
+                .select(["email"])
+                .find();
+            expect(findRecords[0].email).toBe(records[0].email);
+            expect(findRecords[0].id).toBe(records[0].id);
         });
 
     });

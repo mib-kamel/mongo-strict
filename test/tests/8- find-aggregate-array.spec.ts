@@ -1,15 +1,11 @@
-import { CVRepository } from '../data/facny-cvs2/cv.repository';
-import { SectionRepository } from '../data/facny-cvs2/section.repository';
 import { UserRepository } from '../data/facny-cvs2/user.repository';
 import { createConnection, getConnectionManager, getDB, initDBMap } from '../../src';
 import { ObjectId } from 'mongodb';
+import { CircularRepository } from '../_database/Repositories/circular.repository';
 
 describe('AppController', () => {
     let userRepository;
-    let cvRepository;
-    let sectionRepository;
-    let insertedUser;
-    let insertedCV;
+    let circularRepository;
 
     beforeAll(async () => {
         await createConnection({
@@ -17,8 +13,7 @@ describe('AppController', () => {
         });
 
         userRepository = new UserRepository();
-        cvRepository = new CVRepository();
-        sectionRepository = new SectionRepository();
+        circularRepository = new CircularRepository();
 
         // Should be called after initializing all the repositories
         initDBMap();
@@ -229,6 +224,43 @@ describe('AppController', () => {
         expect($limit).toBeDefined();
         expect($lookup).toBeDefined();
         expect($project).toBeDefined();
+    });
+
+    it('Test search with 3 and 2 chars keys', async () => {
+        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ where: { 'key': "121212", 'ke': 123322 }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
+
+        const $match = aggregateArray[0]?.$match;
+        const $limit = aggregateArray[1]?.$limit;
+        const $lookup = aggregateArray[2]?.$lookup;
+        const $project = aggregateArray[3]?.$project;
+
+        expect(aggregateArray).toBeDefined();
+        expect(aggregateArray.length).toBe(4);
+        expect($match).toBeDefined();
+        expect($limit).toBeDefined();
+        expect($lookup).toBeDefined();
+        expect($project).toBeDefined();
+        expect($match.key).toBeDefined();
+        expect($match.ke).toBeDefined();
+    });
+
+    it('Find circular repository', async () => {
+        const aggregateArray = circularRepository._testOperations().getFindAggregateArray({ select: ['parent', 'parent.parent', 'parent.parent.parent', 'parent.parent.parent.parent'] });
+        const $limit = aggregateArray[0]?.$limit;
+        const $lookup0 = aggregateArray[1]?.$lookup;
+        const $lookup1 = aggregateArray[1]?.$lookup?.pipeline[1];
+        const $lookup2 = aggregateArray[1]?.$lookup?.pipeline[1]?.$lookup?.pipeline[1];
+        const $lookup3 = aggregateArray[1]?.$lookup?.pipeline[1]?.$lookup?.pipeline[1]?.$lookup?.pipeline[1];
+        const $unwind = aggregateArray[2]?.$unwind;
+
+        expect(aggregateArray).toBeDefined();
+        expect(aggregateArray.length).toBe(4);
+        expect($limit).toBeDefined();
+        expect($unwind).toBeDefined();
+        expect($lookup0).toBeDefined();
+        expect($lookup1).toBeDefined();
+        expect($lookup2).toBeDefined();
+        expect($lookup3).toBeUndefined();
     });
 
     afterAll(async () => {

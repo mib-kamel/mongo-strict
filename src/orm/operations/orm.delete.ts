@@ -7,7 +7,6 @@ export async function deleteOne(
     where: any
 ) {
     where = getWhereObject(where, referenceEntities);
-
     return Repository.deleteOne(where);
 }
 
@@ -17,6 +16,5 @@ export async function deleteMany(
     where: any
 ) {
     where = getWhereObject(where, referenceEntities);
-
     return Repository.deleteMany(where);
 }

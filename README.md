@@ -1,6 +1,11 @@
 # mongo-strict
 
-**mongo-strict is compatible with mongo 5 and 6**
+![Statements](https://img.shields.io/badge/statements-91.48%25-brightgreen.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-83.69%25-yellow.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-88.33%25-yellow.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-93.76%25-brightgreen.svg?style=flat)
+
+**mongo-strict is compatible with mongo >= 5**
 
 Mongo Strict is a TypeScript based smart MongoDB ORM, It makes the usage of MongoDB safer, easier and faster with a better performance...
 

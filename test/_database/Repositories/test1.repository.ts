@@ -8,9 +8,16 @@ class Test1Entity {
     id;
 
     @Allow()
+    @IsNumber()
+    @Min(0)
+    @Max(500)
+    @Default(20)
+    numberKey;
+
+    @Allow()
     @IsString()
-    @IsRequired({ message: 'The Email Address is Required' })
     @IsUnique({ isIgnoreCase: true, message: 'This email is already registered' })
+    @IsRequired({ message: 'The Email Address is Required' })
     @IsEmail()
     @MaxLength(100)
     email;
@@ -30,13 +37,6 @@ class Test1Entity {
     @MaxLength(10)
     @MinLength(3)
     userName;
-
-    @Allow()
-    @IsNumber()
-    @Min(0)
-    @Max(500)
-    @Default(20)
-    numberKey;
 
     @Allow()
     @IsBoolean()

@@ -126,6 +126,9 @@ describe('AppController', () => {
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - sectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - sectionsCount;
+
+            const newSectionsCount = await sectionRepository.count();
+            expect(newSectionsCount).toEqual(SECTIONS_COUNT);
         });
 
         it('Delete sections by Objects IDs Array', async () => {
@@ -177,6 +180,15 @@ describe('AppController', () => {
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - cvSectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - cvSectionsCount;
+        });
+
+        it('Delete All', async () => {
+            const res = await sectionRepository.deleteMany();
+            expect(res).toBeDefined();
+            expect(res.deletedCount).toEqual(insertedSections.length);
+
+            const newSectionsCount = await sectionRepository.count();
+            expect(newSectionsCount).toEqual(0);
         });
     });
 
