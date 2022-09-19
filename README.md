@@ -1,5 +1,7 @@
 # mongo-strict
 
+**mongo-strict is compatible with mongo 5 and 6**
+
 Mongo Strict is a TypeScript based smart MongoDB ORM, It makes the usage of MongoDB safer, easier and faster with a better performance...
 
 mongo-strict gives you the safety of the SQL DBs with keeping the flexibility and the ease of use of MongoDB.
