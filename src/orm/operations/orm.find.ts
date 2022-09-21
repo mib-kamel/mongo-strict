@@ -25,6 +25,7 @@ export async function find(
     collectionName: string
 ): Promise<any> {
     let cacheKey;
+    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
 
     if (isFindoptionsCache(findOptions)) {
         const findClone: any = structuredClone(findOptions);
@@ -43,6 +44,10 @@ export async function find(
         referenceEntities,
         repositoryOptions,
         collectionName);
+
+    if (isDebug) {
+        console.log(JSON.stringify(aggregateArray, null, 4));
+    }
 
     const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
 
@@ -68,8 +73,6 @@ export function getFindAggregateArray(Repository,
     repositoryOptions: RepositoryOptions,
     collectionName: string
 ) {
-    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
-
     const takeOption = !isNaN(findOptions.limit) ? parseInt(String(findOptions.limit)) : PAGINATION_OPTIONS_DEFAULTS.limit;
     const skipOption = !isNaN(findOptions.skip)
         ? findOptions.skip
@@ -155,10 +158,6 @@ export function getFindAggregateArray(Repository,
 
     if (project && isPorject) {
         aggregateArray.push({ $project: project });
-    }
-
-    if (isDebug) {
-        console.log(JSON.stringify(aggregateArray, null, 4));
     }
 
     return aggregateArray;

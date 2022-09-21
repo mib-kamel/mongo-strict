@@ -167,6 +167,31 @@ describe('AppController', () => {
                 expect(e.existingUniqueKeys.length).toEqual(1)
             }
         });
+
+        it('Move CV sections to another CV', async () => {
+            const fromCVId = insertedCVs[0].id;
+            const toCvId = insertedCVs[1].id;
+
+            expect(typeof fromCVId).toBe('string');
+            expect(typeof toCvId).toBe('string');
+
+            const fromCVSectionsCount = insertedSections.filter((section) => section.cv === fromCVId).length;
+            const toCVSectionsCount = insertedSections.filter((section) => section.cv === toCvId).length;
+            expect(typeof fromCVSectionsCount).toBe('number');
+            expect(typeof toCVSectionsCount).toBe('number');
+
+            const res = await sectionRepository.update({ cv: fromCVId }).setMany({ cv: toCvId });
+            expect(res.matchedCount).toEqual(fromCVSectionsCount);
+            expect(res.modifiedCount).toEqual(fromCVSectionsCount);
+
+            const newFromCVSectionsCount = await sectionRepository.count({ where: { cv: fromCVId } });
+            expect(newFromCVSectionsCount).toEqual(0);
+
+            const newToCVSectionsCount = await sectionRepository.count({ where: { cv: toCvId } });
+            expect(newToCVSectionsCount).toEqual(fromCVSectionsCount + toCVSectionsCount);
+
+            insertedSections = await sectionRepository.find({});
+        });
     });
 
     afterAll(async () => {

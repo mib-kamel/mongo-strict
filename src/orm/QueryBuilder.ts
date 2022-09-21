@@ -64,8 +64,8 @@ export class QueryBuilder {
         this.whereOption && (options.where = this.whereOption);
         this.selectOption && (options.select = this.selectOption);
         this.sortOption && (options.sort = this.sortOption);
-        this.cacheOption && (options.cache = this.cacheOption);
-        this.debugOption && (options.debug = this.debugOption);
+        this.cacheOption !== undefined && (options.cache = this.cacheOption);
+        this.debugOption !== undefined && (options.debug = this.debugOption);
 
         return options;
     }

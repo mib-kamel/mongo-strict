@@ -1,4 +1,3 @@
-import { validate } from "class-validator";
 import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
 import { dataObjectIdToString, isObjectID } from "../utils/utils";
@@ -22,18 +21,15 @@ export default function update(
         throw "Update Condition Not Found";
     }
 
-    try {
-        where = getWhereObject(where, referenceEntities);
-    } catch (err) {
-        throw err;
-    }
+    where = getWhereObject(where, referenceEntities);
 
     const setOne = async (updateData: any) => {
         updateData = structuredClone(updateData);
         delete updateData._id;
         delete updateData.id;
 
-        repositoryOptions?.autoCreatedAt && (delete updateData[updatedAtKey]);
+        repositoryOptions?.autoCreatedAt && (delete updateData[createdAtKey]);
+        repositoryOptions?.autoUpdatedAt && (delete updateData[updatedAtKey]);
 
         try {
             const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions, true);
@@ -59,6 +55,7 @@ export default function update(
         delete updateData.id;
 
         repositoryOptions?.autoCreatedAt && (delete updateData[createdAtKey]);
+        repositoryOptions?.autoUpdatedAt && (delete updateData[updatedAtKey]);
 
         try {
             checkDuplicatedUniqueKeys(uniqueKeys, updateData);
@@ -143,7 +140,7 @@ export default function update(
 
 async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere, referenceEntities: ReferenceEntity[]/*, isManyOperation = false*/) {
     const findUniqueKeysWhere = [];
-    const foundUniqueKeys = [];
+    // const foundUniqueKeys = [];
 
     // if (isManyOperation) {
     //     uniqueKeys.forEach((uni) => {
@@ -153,16 +150,16 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
     //     })
     // }
 
-    if (foundUniqueKeys.length) {
-        throw {
-            message: 'Duplicated unique keys',
-            existingUniqueKeys: foundUniqueKeys,
-            errorMessages: foundUniqueKeys.map((key) => {
-                const keyMessage = uniqueKeys.find((uni) => uni.key === key)?.message
-                return keyMessage || `${key} is duplicated while it should be unique`
-            })
-        };
-    }
+    // if (foundUniqueKeys.length) {
+    //     throw {
+    //         message: 'Duplicated unique keys',
+    //         existingUniqueKeys: foundUniqueKeys,
+    //         errorMessages: foundUniqueKeys.map((key) => {
+    //             const keyMessage = uniqueKeys.find((uni) => uni.key === key)?.message
+    //             return keyMessage || `${key} is duplicated while it should be unique`
+    //         })
+    //     };
+    // }
 
     uniqueKeys.forEach((uni: any) => {
         const obj = {};
@@ -209,11 +206,11 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
 
                 if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
-                        if (isObjectID(res[key])) {
-                            return res[key].toString() === data[key];
-                        } else {
-                            return res[key] === data[key];
-                        }
+                        // if (isObjectID(res[key])) {
+                        return res[key].toString() === data[key];
+                        // } else {
+                        //     return res[key] === data[key];
+                        // }
                     });
                 } else if (isIgnoreCase) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === data[key].toString().toLowerCase())

@@ -169,6 +169,15 @@ describe('AppController', () => {
                 expect(e).toBeUndefined()
             }
         });
+        
+        it('throw error when no where', async () => {
+            try {
+                const res = await repo.update().replaceOne({ numberKey: 33 });
+                expect(res).toBeUndefined();
+            } catch (e: any) {
+                expect(e).toBeDefined()
+            }
+        });
 
         // it('Should NOT replace many by the same old value', async () => {
         //     const record = records[7];

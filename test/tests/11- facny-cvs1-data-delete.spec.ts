@@ -166,7 +166,7 @@ describe('AppController', () => {
         });
 
         it('Delete sections by CV Object ID', async () => {
-            const cvId = insertedCVs[5].id;
+            const cvId = insertedCVs[0].id;
             expect(typeof cvId).toBe('string');
 
             const cvSectionsCount = insertedSections.filter((section) => section.cv === cvId).length;
@@ -180,6 +180,21 @@ describe('AppController', () => {
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - cvSectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - cvSectionsCount;
+        });
+
+        it('Delete sections where or', async () => {
+            const id = insertedSections[0].id;
+            const sectionTitle = insertedSections[1].sectionTitle;
+
+            const res = await sectionRepository.deleteMany({
+                $or: [{ _id: new ObjectId(id) }, { sectionTitle }]
+            });
+
+            expect(res).toBeDefined();
+            expect(res.deletedCount).toEqual(2);
+
+            insertedSections = insertedSections.slice(2, insertedSections.length);
+            SECTIONS_COUNT = SECTIONS_COUNT - 2;
         });
 
         it('Delete All', async () => {

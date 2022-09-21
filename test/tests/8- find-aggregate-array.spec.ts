@@ -183,6 +183,15 @@ describe('AppController', () => {
             expect($lookup).toBeDefined();
             expect($project).toBeDefined();
         });
+        
+        it('Test Aggregate Array 11', async () => {
+            const aggregateArray = userRepository._testOperations().getFindAggregateArray();
+
+            expect(aggregateArray).toBeDefined();
+            expect(aggregateArray.length).toBeDefined();
+            expect(aggregateArray.length).toBe(1);
+            expect(aggregateArray[0].$limit).toBeDefined();
+        });
     });
 
     it('Test Aggregate Array 11', async () => {

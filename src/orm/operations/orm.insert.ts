@@ -98,6 +98,8 @@ export async function validateInsert(
 
         insertData = updateRefObjectIdsKeys(referenceEntities, insertData);
         await checkReferenceEntities(collection, referenceEntities, insertData);
+
+        return true;
     } catch (err) {
         throw err;
     }
@@ -118,23 +120,23 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
 
         const isIdKey = keyFromRefs?.refersToKey === 'id' || keyFromRefs?.refersToKey === '_id';
 
-        if (!Array.isArray(insertData)) {
-            if (isIgnoreCase && typeof insertData[key] === 'string') {
-                obj[key] = { $regex: new RegExp(`^${insertData[key]}$`), $options: 'i' };
-            } else if (isIdKey) {
-                obj[key] = new ObjectId(insertData[key]);
-            } else {
-                obj[key] = insertData[key];
-            }
+        // if (!Array.isArray(insertData)) {
+        if (isIgnoreCase && typeof insertData[key] === 'string') {
+            obj[key] = { $regex: new RegExp(`^${insertData[key]}$`), $options: 'i' };
+        } else if (isIdKey) {
+            obj[key] = new ObjectId(insertData[key]);
         } else {
-            if (isIgnoreCase && typeof insertData[key] === 'string') {
-                obj[key] = { $in: [insertData.map((d) => new RegExp(`^${d[key]}$`), '$i')] };
-            } else if (isIdKey) {
-                obj[key] = { $in: [insertData.map((d) => new ObjectId(d[key]))] };
-            } else {
-                obj[key] = { $in: [insertData.map((d) => d[key])] };
-            }
+            obj[key] = insertData[key];
         }
+        // } else {
+        //     if (isIgnoreCase && typeof insertData[key] === 'string') {
+        //         obj[key] = { $in: [insertData.map((d) => new RegExp(`^${d[key]}$`), '$i')] };
+        //     } else if (isIdKey) {
+        //         obj[key] = { $in: [insertData.map((d) => new ObjectId(d[key]))] };
+        //     } else {
+        //         obj[key] = { $in: [insertData.map((d) => d[key])] };
+        //     }
+        // }
 
         findUniqueKeysWhere.push(obj);
     });
@@ -156,11 +158,11 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
 
                 if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
-                        if (isObjectID(res[key])) {
-                            return res[key].toString() === insertData[key];
-                        } else {
-                            return res[key] === insertData[key];
-                        }
+                        // if (isObjectID(res[key])) {
+                        return res[key].toString() === insertData[key];
+                        // } else {
+                        //     return res[key] === insertData[key];
+                        // }
                     })
                 } else if (isIgnoreCase) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === insertData[key].toString().toLowerCase())

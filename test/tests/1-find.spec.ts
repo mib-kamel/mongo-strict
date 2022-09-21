@@ -6,6 +6,7 @@ const numberKey = 365;
 
 describe('AppController', () => {
     let repo;
+    let refCheckRepo;
     let records: any[] = [];
     let cachedFindOptions;
     let cachedFindOptionsTimout;
@@ -15,6 +16,7 @@ describe('AppController', () => {
     beforeAll(async () => {
         const testingMdolule = await createTestingModule();
         repo = testingMdolule.repo1;
+        refCheckRepo = testingMdolule.refCheckRepo;
 
         try {
             for (let i = 0; i < NEW_RECORDS_COUNT; i++) {
@@ -40,6 +42,16 @@ describe('AppController', () => {
     });
 
     describe('root', () => {
+        it('Get collection', async () => {
+            const collection = await repo.getCollection();
+            expect(collection).toBeDefined();
+        });
+
+        it('Get RefCheckRepository', async () => {
+            const refCheckRepoCount = await refCheckRepo.count();
+            expect(refCheckRepoCount).toBe(1);
+        });
+
         it(NEW_RECORDS_COUNT + ' records should be inserted', async () => {
             const insetedRecordsCount = await repo.count();
             expect(insetedRecordsCount).toBe(NEW_RECORDS_COUNT);
@@ -150,6 +162,16 @@ describe('AppController', () => {
         it('Should get cached Data with timeout', async () => {
             const count = await repo.count(cachedCountOptionsTimout);
             expect(count).toBe(records.length);
+        });
+
+        it('find first one when pass no options', async () => {
+            const found = await repo.findOne();
+            expect(typeof found.id).toBe('string');
+        });
+
+        it('find not found', async () => {
+            const findRecords = await repo.findOne({ where: { email: records[0].email + 'aaa' } });
+            expect(findRecords).toBeUndefined();
         });
     });
 

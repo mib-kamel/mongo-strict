@@ -18,6 +18,11 @@ describe('AppController', () => {
     });
 
     describe('root', () => {
+        it('should validate data', async () => {
+            const inseretResponse = await repo.validateInsertData(repo1Data.validData1);
+            expect(inseretResponse).toBe(true);
+        });
+
         it('should insert valid data', async () => {
             const inseretResponse = await repo.insertOne(repo1Data.validData1);
             expect(inseretResponse.id).toBeDefined();

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { createConnection, initDBMap } from '../src';
+import { RefCheckRepository } from './_database/Repositories/ref_check.repository';
 import { Test1Repository } from './_database/Repositories/test1.repository';
 import { Test2Repository } from './_database/Repositories/test2.repository';
 import { Test3Repository } from './_database/Repositories/test3.repository';
@@ -19,11 +20,12 @@ export async function createTestingModule() {
     const repo3 = new Test3Repository();
     const repo4 = new Test4Repository();
     const repo5 = new Test5Repository();
+    const refCheckRepo = new RefCheckRepository();
 
     initDBMap();
 
     return {
-        repo1, repo2, repo3, repo4, repo5
+        repo1, repo2, repo3, repo4, repo5, refCheckRepo
     }
 }
 
