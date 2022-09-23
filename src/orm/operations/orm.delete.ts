@@ -1,5 +1,5 @@
 import { ReferenceEntity } from "../interfaces/orm.interfaces";
-import { getWhereObject } from "./operationsUtils";
+import { getWhereObject } from "./whereObjectHandle";
 
 export async function deleteOne(
     Repository,

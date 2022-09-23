@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
 import { dataObjectIdToString, isObjectID, isStringObjectID } from "../utils/utils";
-import { getWhereObject } from "./operationsUtils";
+import { getWhereObject } from "./whereObjectHandle";
+
 const structuredClone = require('realistic-structured-clone');
 const NodeCache = require("node-cache");
 var hash = require('object-hash');

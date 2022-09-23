@@ -185,51 +185,11 @@ export function checkDuplicatedUniqueKeys(uniqueKeys, updateData) {
     }
 }
 
-export function getWhereObject(where: any, referenceEntities: ReferenceEntity[]) {
-    if (where === undefined) {
-        return {};
-    }
+export function getCurrentReference(key: string, referenceEntities: ReferenceEntity[]) {
+    return referenceEntities.find((ref) => ref.key === key);
+}
 
-    if (typeof where === 'object' && Object.keys(where).length === 0) {
-        return where;
-    }
-
-    if (typeof where === 'string' && isStringObjectID(where)) {
-        where = { _id: new ObjectId(where) };
-    } else if (isObjectID(where)) {
-        where = { _id: where };
-    } else if (Array.isArray(where)) {
-        where = {
-            $or: where.map((id) => {
-                if (typeof id === 'string' && isStringObjectID(id)) {
-                    return { _id: new ObjectId(id) };
-                } else if (isObjectID(id)) {
-                    return { _id: id };
-                }
-            })
-        }
-    } else if (typeof where === 'object') {
-        if (where.id) {
-            where._id = where.id;
-            delete where.id;
-        }
-        if (typeof where._id === 'string' && isStringObjectID(where._id)) {
-            where._id = new ObjectId(where._id);
-        }
-
-        const dataKeys = Object.keys(where);
-
-        for (let i = 0; i < dataKeys.length; i++) {
-            const currentKey = dataKeys[i];
-            const currentData = where[currentKey];
-
-            const currentKeyRef = referenceEntities.find((ref) => ref.as === currentKey || ref.key === currentKey);
-
-            if (currentKeyRef && isStringObjectID(currentData)) {
-                where[currentKey] = new ObjectId(currentData);
-            }
-        }
-    }
-
-    return where;
+export function isRefersToId(referenceEntity: ReferenceEntity) {
+    if (!referenceEntity) return false;
+    return referenceEntity.refersToKey === 'id' || referenceEntity.refersToKey === '_id';
 }

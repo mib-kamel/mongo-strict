@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
 import { dataObjectIdToString, isObjectID } from "../utils/utils";
-import { checkDuplicatedUniqueKeys, checkReferenceEntities, checkRequiredKeys, fillDefaultValue, getWhereObject, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
+import { checkDuplicatedUniqueKeys, checkReferenceEntities, checkRequiredKeys, fillDefaultValue, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
+import { getWhereObject } from "./whereObjectHandle";
 const structuredClone = require('realistic-structured-clone');
 
 export default function update(

@@ -1,10 +1,11 @@
-import { _EntityProperties, FindOptions } from './interfaces/orm.interfaces';
+import { _EntityProperties, FindOptions, ReferenceEntity } from './interfaces/orm.interfaces';
 import { find as ormFind, count as ormCount, getFindAggregateArray as ormGetFindAggregateArray } from './operations/orm.find';
 import { insertOne, validateInsert } from './operations/orm.insert';
 import update from './operations/orm.update';
 import { deleteMany, deleteOne } from './operations/orm.delete';
 import { QueryBuilder } from './QueryBuilder';
 import { getRepositoriesMap } from './mongo-strict';
+import { getWhereObject } from './operations/whereObjectHandle';
 
 
 export class ORMRepo {
@@ -110,6 +111,9 @@ export class ORMRepo {
                 return ormGetFindAggregateArray(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions, this.collectionName);
             }, getRepositoriesMap: () => {
                 return getRepositoriesMap();
+            },
+            getWhereObject: (where: any) => {
+                return getWhereObject(where, this.referenceEntities);
             }
         }
     }
