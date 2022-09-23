@@ -18,7 +18,8 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
 
     const comparisonKeys = ['$eq', '$ne'];
     const arrayKeys = ['$in', '$ni', '$all'];
-    const logicalKeys = ['$or', '$and', '$nor'];
+    const arrayLogicalKeys = ['$or', '$and', '$nor'];
+    const logicalKeys = ['$not'];
 
     if (typeof where === 'object' && !Array.isArray(where)) {
         let newWhere: any = {};
@@ -55,7 +56,7 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
                 } else {
                     newWhere[key] = value
                 }
-            } else if (logicalKeys.includes(key)) {
+            } else if (arrayLogicalKeys.includes(key)) {
                 if (!Array.isArray(value)) {
                     throw `${key} operation should be an array`;
                 }
@@ -65,6 +66,13 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
                     newArr.push(getWhereObject(value[j], referenceEntities));
                 }
                 newWhere[key] = newArr;
+
+            } else if (logicalKeys.includes(key)) {
+                if (Array.isArray(value) || typeof value !== 'object') {
+                    throw `${key} operation should be an object`;
+                }
+
+                newWhere[key] = getWhereObject(value, referenceEntities, parentKey);
 
             } else if (parentKey !== undefined && arrayKeys.includes(key)) {
                 if (!Array.isArray(value)) {

@@ -146,6 +146,15 @@ describe('AppController', () => {
             }
         });
 
+        it('Get error where object 11', async () => {
+            try {
+                const where = cvRepository._testOperations().getWhereObject({ $not: "123123123231" });
+                expect(where).not.toBeDefined();
+            } catch (e) {
+                expect(e).toBeDefined();
+            }
+        });
+
         it('Get get a valid where 1', async () => {
             const where = cvRepository._testOperations().getWhereObject(validObjectId);
             expect(where).toBeDefined();
@@ -212,15 +221,6 @@ describe('AppController', () => {
             expect(isObjectID(where?.cvName?.$eq)).toBe(false);
         });
 
-
-
-
-
-
-
-
-
-
         it('Get get a valid where 11', async () => {
             const where = cvRepository._testOperations().getWhereObject({ user: { $in: [validObjectId, validObjectId, validObjectId] } });
             expect(where?.user?.$in[1]).toBeDefined();
@@ -240,6 +240,24 @@ describe('AppController', () => {
         });
 
         it('Get get a valid where 14', async () => {
+            const where = cvRepository._testOperations().getWhereObject({ cvName: { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where?.cvName?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where?.cvName?.$not.$in[1])).toBe(false);
+        });
+
+        it('Get get a valid where 15', async () => {
+            const where = cvRepository._testOperations().getWhereObject({ id: { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where?._id?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where?._id?.$not.$in[1])).toBe(true);
+        });
+
+        it('Get get a valid where 15', async () => {
+            const where = cvRepository._testOperations().getWhereObject({ user: { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where?.user?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where?.user?.$not.$in[1])).toBe(true);
+        });
+
+        it('Get get a valid where 16', async () => {
             const where = cvRepository._testOperations().getWhereObject({
                 $or: [{
                     cvName: 'Mo',
