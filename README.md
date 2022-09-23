@@ -1,9 +1,9 @@
 # mongo-strict
 
-![Lines](https://img.shields.io/badge/lines-96.17%25-brightgreen.svg?style=flat)
-![Statements](https://img.shields.io/badge/statements-96.21%25-brightgreen.svg?style=flat)
-![Functions](https://img.shields.io/badge/functions-98.21%25-brightgreen.svg?style=flat)
-![Branches](https://img.shields.io/badge/branches-85.37%25-yellow.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-96.64%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-96.55%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-98.25%25-brightgreen.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-86.44%25-yellow.svg?style=flat)
 
 **mongo-strict is compatible with mongo >= 5**
 
