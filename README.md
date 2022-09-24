@@ -53,7 +53,8 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
     - [Query Builder](#query-builder)
     - [Find reference Entities](#find-reference-entities)
       - [Reverse Refering](#reverse-refering)
-    - [inserOne](#inserone)
+    - [insertOne](#insertone)
+      - [validateInsertData](#validateinsertdata)
     - [Update(filter: object | id: string)](#updatefilter-object--id-string)
       - [1- setOne(data)](#1--setonedata)
       - [2- setMany(data)](#2--setmanydata)
@@ -617,7 +618,7 @@ userRepository.find({select: ['cv.cvName']})
 
 **The problem here that the user repository contains nothing about the CV repository so to get the user CVs the DB will have to loop through all the CV entities to get the CVs which refer to the wanted user**
 
-### inserOne
+### insertOne
 
 mongo-strict uses a simple insertOne operation and returns the inserted document.
 
@@ -640,6 +641,22 @@ You can simply insert an Object contains your entity data.
 mongo-strict will validate the inserted entity and check if any uniques key are previously existing or not, check for the existence of the reference keys and all the other checks, in case of any any error it will throw an error.
 
 We doesn't fully support the mongoDB advanced insert operations.
+
+#### validateInsertData
+
+If you want to validate the date before inserting you can call validateInsertData
+
+```JavaScript
+const isValidUserData = await userRepository.validateInsertData({
+                    email: 'email@co.co',
+                    name: 'mongo user',
+                    country: 'mongolia'
+                });
+
+// It will not insert the data into the repository
+// Returns true in case of valid data
+// Throws error in case of invalid data
+```
 
 ### Update(filter: object | id: string)
 
