@@ -105,65 +105,15 @@ export default function update(
         }
     }
 
-    // const replaceMany = async (updateData: any) => {
-    //     updateData = structuredClone(updateData);
-    //     delete updateData._id;
-    //     delete updateData.id;
-    //     fillDefaultValue(defaultValues, updateData);
-
-    //     try {
-    //         const createdAt = updateData[createdAtKey];
-
-    //         repositoryOptions?.autoCreatedAt && (delete updateData[createdAtKey]);
-    //         repositoryOptions?.autoUpdatedAt && (delete updateData[updatedAtKey]);
-
-    //         checkRequiredKeys(requiredKeys, updateData);
-    //         checkDuplicatedUniqueKeys(uniqueKeys, updateData);
-    //         const validatePromise = validateData(EntityDataValidator, updateData, repositoryOptions);
-    //         const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities, true);
-    //         const refPromise = checkReferenceEntities(collection, referenceEntities, updateData);
-
-    //         await Promise.all([validatePromise, uniquePromise, refPromise]);
-
-    //         repositoryOptions?.autoCreatedAt && (updateData[createdAtKey] = createdAt);
-    //         repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
-
-    //         return collection.replaceMany(where, updateData);
-    //     } catch (err) {
-    //         throw err;
-    //     }
-    // }
-
     return {
         setOne,
         setMany,
-        replaceOne,
-        // replaceMany
+        replaceOne
     }
 }
 
 async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere, referenceEntities: ReferenceEntity[]/*, isManyOperation = false*/) {
     const findUniqueKeysWhere = [];
-    // const foundUniqueKeys = [];
-
-    // if (isManyOperation) {
-    //     uniqueKeys.forEach((uni) => {
-    //         if (data[uni.key]) {
-    //             foundUniqueKeys.push(uni.key);
-    //         }
-    //     })
-    // }
-
-    // if (foundUniqueKeys.length) {
-    //     throw {
-    //         message: 'Duplicated unique keys',
-    //         existingUniqueKeys: foundUniqueKeys,
-    //         errorMessages: foundUniqueKeys.map((key) => {
-    //             const keyMessage = uniqueKeys.find((uni) => uni.key === key)?.message
-    //             return keyMessage || `${key} is duplicated while it should be unique`
-    //         })
-    //     };
-    // }
 
     uniqueKeys.forEach((uni: any) => {
         const obj = {};
@@ -175,17 +125,18 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
 
         if (data[key] === undefined) return;
 
-        if (isIgnoreCase && typeof data[key] === 'string') {
+        const keyFromRefs = referenceEntities.find((ref: ReferenceEntity) => ref.key === key || ref.as === key)
+
+        const isIdKey = keyFromRefs?.refersToKey === 'id' || keyFromRefs?.refersToKey === '_id';
+
+        if (isIdKey) {
+            obj[key] = new ObjectId(data[key]);
+        } else if (isIgnoreCase && typeof data[key] === 'string') {
             obj[key] = { $regex: new RegExp(`^${data[key]}$`), $options: 'i' };
         } else {
             obj[key] = data[key];
         }
 
-        const keyFromRefs = referenceEntities.find((ref: ReferenceEntity) => ref.key === key && !!ref.refersToCollectionName)
-
-        if (keyFromRefs?.refersToKey === 'id') {
-            obj[key] = new ObjectId(data[key]);
-        }
 
         findUniqueKeysWhere.push(obj);
     });
@@ -210,11 +161,7 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
 
                 if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
-                        // if (isObjectID(res[key])) {
                         return res[key].toString() === data[key];
-                        // } else {
-                        //     return res[key] === data[key];
-                        // }
                     });
                 } else if (isIgnoreCase) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === data[key].toString().toLowerCase())

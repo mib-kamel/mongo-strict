@@ -2,11 +2,13 @@ import { CVRepository } from '../data/facny-cvs1/cv.repository';
 import { SectionRepository } from '../data/facny-cvs1/section.repository';
 import { UserRepository } from '../data/facny-cvs1/user.repository';
 import { createConnection, getConnectionManager, getDB, initDBMap } from '../../src';
+import { UserIndexRepository } from '../data/facny-cvs1/userIndex.repository';
 
 describe('AppController', () => {
     let userRepository;
     let cvRepository;
     let sectionRepository;
+    let userIndexRepository;
     let insertedUser;
     let insertedCV;
     let insertedSections: any[] = [];
@@ -19,6 +21,7 @@ describe('AppController', () => {
         userRepository = new UserRepository();
         cvRepository = new CVRepository();
         sectionRepository = new SectionRepository();
+        userIndexRepository = new UserIndexRepository();
 
         // Should be called after initializing all the repositories
         initDBMap();
@@ -81,64 +84,83 @@ describe('AppController', () => {
             expect(insertedSections?.length).toBe(6);
         });
 
-        it('Should not insert data because of invalid ref objectId', async () => {
+        it('Should validate insert false 1', async () => {
             try {
-                await sectionRepository.insertOne({
-                    cv: '12222',
-                    sectionTitle: 'A new section'
-                });
+                const isValid = await userRepository.validateInsertData({ email: 'email@mail.coms' });
+                expect(isValid).toBeUndefined();
             } catch (e) {
-                expect(e).toBeDefined()
+                expect(e).toBeDefined();
+                expect(e.notFoundRequiredKeys).toBeDefined();
+                expect(e.notFoundRequiredKeys).toContain('name');
             }
         });
 
-        it('Should get user inserted data', async () => {
-            let userData;
+        it('Should validate insert false 2', async () => {
             try {
-                userData = await userRepository.findOne({
-                    select: ["id", "name", "cv.cvName", "cv.currentPosition", "cv.sections.sectionTitle"]
-                })
+                const isValid = await userRepository.validateInsertData({ email: 'invalid email', name: "name" });
+                expect(isValid).toBeUndefined();
+            } catch (e) {
+                expect(e).toBeDefined();
+                expect(e.invalidKeys).toBeDefined();
+                expect(e.invalidKeys).toContain('email');
+            }
+        });
+
+        it('Should validate insert false 3', async () => {
+            try {
+                const isValid = await userRepository.validateInsertData({
+                    email: 'email@co.co',
+                    name: 'mongo user',
+                    country: 'mongolia'
+                });
+                expect(isValid).toBeUndefined();
+            } catch (e) {
+                expect(e).toBeDefined();
+                expect(e.existingUniqueKeys).toBeDefined();
+                expect(e.existingUniqueKeys).toContain('email');
+            }
+        });
+
+        it('Should validate insert false 4', async () => {
+            try {
+                const isValid = await cvRepository.validateInsertData({
+                    user: '212121',
+                    cvName: 'cvName',
+                    currentPosition: 'currentPosition'
+                });
+                expect(isValid).toBeUndefined();
+            } catch (e) {
+                expect(e).toBeDefined();
+            }
+        });
+
+        it('Should validate insert true 1', async () => {
+            try {
+                const data = {
+                    user: insertedUser.id
+                };
+                const isValid = await userIndexRepository.validateInsertData(data);
+                expect(isValid).toBe(true);
+
+                const inserData = await userIndexRepository.insertOne(data);
+                expect(inserData.id).toBeDefined();
             } catch (e) {
                 expect(e).toBeUndefined();
             }
-
-            expect(userData).toBeDefined();
-            expect(userData?.id).toBeDefined();
-            expect(userData?.name).toBeDefined();
-            expect(userData?.cv).toBeDefined();
-            expect(userData?.cv?.length).toEqual(1);
-            expect(userData?.cv[0]).toBeDefined();
-            expect(typeof userData?.cv[0].id).toBe('string');
-            expect(userData?.cv[0]?.cvName).toBeDefined();
-            expect(userData?.cv[0]?.currentPosition).toBeDefined();
-            expect(userData?.cv[0]?.sections?.length).toEqual(6);
-            expect(userData?.cv[0]?.sections[0]?.sectionTitle).toBeDefined();
         });
 
-        it('Should get cv user as a string', async () => {
-            const cv = await cvRepository.findOne({ select: ['user'] });
-
-            expect(cv).toBeDefined();
-            expect(cv?.user).toBeDefined();
-            expect(typeof cv?.user).toEqual("string");
-        });
-
-        it('Should get cv user as a string 2', async () => {
-            const cv = await cvRepository.findOne({ select: ['user.id'] });
-
-            expect(cv).toBeDefined();
-            expect(cv?.user?.id).toBeDefined();
-            expect(typeof cv?.user?.id).toEqual("string");
-        });
-
-        it('Should get cv user as a string', async () => {
-            const section = await sectionRepository.findOne({ select: ['cv.user'] });
-            expect(typeof section?.cv?.user).toEqual("string");
-        });
-
-        it('Should get cv user as a string 2', async () => {
-            const section = await sectionRepository.findOne({ select: ['cv.user.id'] });
-            expect(typeof section?.cv.user.id).toEqual("string");
+        it('Should validate insert false 5', async () => {
+            try {
+                const isValid = await userIndexRepository.validateInsertData({
+                    user: insertedUser.id
+                });
+                expect(isValid).toBeUndefined();
+            } catch (e) {
+                console.log(e)
+                expect(e).toBeDefined();
+                expect(e.existingUniqueKeys).toBeDefined();
+                expect(e.existingUniqueKeys).toContain('user');
+            }
         });
     });
 

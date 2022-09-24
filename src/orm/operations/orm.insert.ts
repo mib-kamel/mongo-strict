@@ -35,47 +35,6 @@ export async function insertOne(
     }
 }
 
-// export async function insertMany(
-//     collection,
-//     uniqueKeys: any[],
-//     EntityDataValidator: any,
-//     referenceEntities: ReferenceEntity[],
-//     insertData: any[],
-//     defaultValues: string[],
-//     requiredKeys: any[],
-//     repositoryOptions: RepositoryOptions,
-//     ordered = true
-// ) {
-//     const createdAtKey = repositoryOptions.createdAtKey;
-//     const updatedAtKey = repositoryOptions.updatedAtKey;
-
-//     try {
-//         insertData = structuredClone(insertData);
-
-//         for (let i = 0; i < insertData.length; i++) {
-//             const cur = insertData[i];
-//             delete cur._id;
-//             delete cur.id;
-//             fillDefaultValue(defaultValues, cur);
-//             checkRequiredKeys(requiredKeys, cur);
-//         }
-
-//         await validateInsert(collection, uniqueKeys, EntityDataValidator, referenceEntities, insertData, false, requiredKeys, repositoryOptions);
-
-//         // const now = new Date();
-//         // repositoryOptions?.autoCreatedAt && (insertData[createdAtKey] = now);
-//         // repositoryOptions?.autoUpdatedAt && (insertData[updatedAtKey] = now);
-//         // await collection.insertOne(insertData);
-
-//         // revertRefsObjectIdsToString(referenceEntities, insertData);
-//         // insertData.id = insertData._id.toString();
-//         // delete insertData._id;
-//         // return insertData;
-//     } catch (err) {
-//         throw err;
-//     }
-// }
-
 export async function validateInsert(
     collection,
     uniqueKeys: any[],
@@ -121,23 +80,13 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
 
         const isIdKey = keyFromRefs?.refersToKey === 'id' || keyFromRefs?.refersToKey === '_id';
 
-        // if (!Array.isArray(insertData)) {
-        if (isIgnoreCase && typeof insertData[key] === 'string') {
-            obj[key] = { $regex: new RegExp(`^${insertData[key]}$`), $options: 'i' };
-        } else if (isIdKey) {
+        if (isIdKey) {
             obj[key] = new ObjectId(insertData[key]);
+        } else if (isIgnoreCase && typeof insertData[key] === 'string') {
+            obj[key] = { $regex: new RegExp(`^${insertData[key]}$`), $options: 'i' };
         } else {
             obj[key] = insertData[key];
         }
-        // } else {
-        //     if (isIgnoreCase && typeof insertData[key] === 'string') {
-        //         obj[key] = { $in: [insertData.map((d) => new RegExp(`^${d[key]}$`), '$i')] };
-        //     } else if (isIdKey) {
-        //         obj[key] = { $in: [insertData.map((d) => new ObjectId(d[key]))] };
-        //     } else {
-        //         obj[key] = { $in: [insertData.map((d) => d[key])] };
-        //     }
-        // }
 
         findUniqueKeysWhere.push(obj);
     });
@@ -159,11 +108,7 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
 
                 if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
-                        // if (isObjectID(res[key])) {
                         return res[key].toString() === insertData[key];
-                        // } else {
-                        //     return res[key] === insertData[key];
-                        // }
                     })
                 } else if (isIgnoreCase) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === insertData[key].toString().toLowerCase())
