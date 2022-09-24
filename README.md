@@ -66,6 +66,8 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
     - [deleteOne(filter: any | id: string)](#deleteonefilter-any--id-string)
     - [deleteMany(filter: any | ids: string[])](#deletemanyfilter-any--ids-string)
     - [getCollection()](#getcollection)
+    - [getDB()](#getdb)
+    - [getConnectionManager()](#getconnectionmanager)
 
 ## Instalation
 
@@ -818,4 +820,22 @@ If you want to make any operation we don't support until now you can get the Mon
 
 ```JavaScript
 userRepository.getCollection().find({}).limit(10).toArray();
+```
+
+### getDB()
+
+If you want to drop the DB or make any DB operation you can use getDB()
+
+```JavaScript
+const db = getDB();
+await db.dropDatabase();
+```
+
+### getConnectionManager()
+
+If you want to close the connection any connection operation you can use getConnectionManager()
+
+```JavaScript
+const connection = getConnectionManager();
+connection.close();
 ```
