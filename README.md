@@ -68,6 +68,7 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
     - [getCollection()](#getcollection)
     - [getDB()](#getdb)
     - [getConnectionManager()](#getconnectionmanager)
+  - [Road Map](#road-map)
 
 ## Instalation
 
@@ -839,3 +840,9 @@ If you want to close the connection any connection operation you can use getConn
 const connection = getConnectionManager();
 connection.close();
 ```
+
+## Road Map
+
+- InsertMany()
+- ReplaceMany()
+- onDelete() // strict, cascade, setNull ...
