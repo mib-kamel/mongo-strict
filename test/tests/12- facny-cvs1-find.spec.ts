@@ -215,6 +215,11 @@ describe('AppController', () => {
             const user = await userRepository.findOne({ where: { 'cv.sections.id': sectionId }});
             expect(targetUser.id).toEqual(user.id);
         });
+
+        it('FindOne undefined', async () => {
+            const cv = await userRepository.findOne({ where: { 'email': 122121212121 }});
+            expect(cv).toBeUndefined();
+        });
     });
 
     afterAll(async () => {

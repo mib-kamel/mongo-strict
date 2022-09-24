@@ -81,6 +81,18 @@ describe('AppController', () => {
             expect(insertedSections?.length).toBe(6);
         });
 
+        it('Should not insert data because of invalid ref objectId', async () => {
+            try {
+                await sectionRepository.insertOne({
+                    cv: '12222',
+                    sectionTitle: 'A new section'
+                });
+            } catch (e) {
+                console.log(e);
+                expect(e).toBeDefined()
+            }
+        });
+
         it('Should get user inserted data', async () => {
             let userData;
             try {

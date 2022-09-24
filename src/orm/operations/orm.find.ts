@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
 import { dataObjectIdToString, isObjectID, isStringObjectID } from "../utils/utils";
+import { isId } from "./operationsUtils";
 import { getWhereObject } from "./whereObjectHandle";
 
 const structuredClone = require('realistic-structured-clone');
@@ -86,7 +87,6 @@ export function getFindAggregateArray(Repository,
 
     let where = findOptions.where || {};
     where = getWhereObject(where, referenceEntities);
-    replaceWhereIds(where, referenceEntities);
 
     let project: any = findOptions.select;
 
@@ -105,15 +105,26 @@ export function getFindAggregateArray(Repository,
     const isWhere = where && Object.keys(where)?.length;
     const isPorject = project && Object.keys(project)?.length;
 
-    const projectKeys = getDeepKeys(project);
-    const whereKeys = getDeepKeys(where);
-    const sortKeys = !!sort ? getDeepKeys(sort) : [];
+    const projectKeys = getDeepKeys(project).filter(key => isValidRefKey(key, referenceEntities));
+    const whereKeys = getDeepKeys(where).filter(key => isValidRefKey(key, referenceEntities));
+    const sortKeys = !!sort ? getDeepKeys(sort).filter(key => isValidRefKey(key, referenceEntities)) : [];
 
     const lookups: any = getLookups(referenceEntities, [...projectKeys, ...whereKeys]);
 
     const lookup_preWhere = !!whereKeys?.length && hasValidRefKeys(whereKeys, referenceEntities);
     const lookup_preSort = !!sortKeys?.length && hasValidRefKeys(sortKeys, referenceEntities);
     const lookup_preLimit = lookup_preWhere || lookup_preSort;
+
+    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
+    if (isDebug) {
+        console.log(projectKeys)
+        console.log(whereKeys)
+        console.log(hasValidRefKeys(whereKeys, referenceEntities))
+        console.log(sortKeys)
+        console.log(lookup_preWhere)
+        console.log(lookup_preSort)
+        console.log(lookup_preLimit)
+    }
 
     project = { ...project, ...addId_toProject(projectKeys, referenceEntities) };
 
@@ -190,7 +201,6 @@ export async function count(
 
     let where = findOptions.where || {};
     where = getWhereObject(where, referenceEntities);
-    replaceWhereIds(where, referenceEntities);
 
     const isWhere = where && Object.keys(where)?.length;
     const whereKeys = getDeepKeys(where);
@@ -324,39 +334,6 @@ const getLookups = (referenceEntities: ReferenceEntity[], lookupStrings: string[
     return container;
 }
 
-const replaceWhereIds = (where, referenceEntities: ReferenceEntity[]) => {
-    const dataKeys = Object.keys(where);
-
-    if (Array.isArray(where)) {
-        for (let whereItem of where) {
-            replaceWhereIds(whereItem, referenceEntities)
-        }
-    } else if (typeof where === 'object') {
-        for (let key of dataKeys) {
-            if (typeof where[key] === 'object' && !isObjectID(where[key])) {
-                replaceWhereIds(where[key], referenceEntities)
-            } else {
-                if (isId(key)) {
-                    const searchValue = where[key];
-                    delete where[key];
-                    if (key === 'id') {
-                        key = '_id';
-                    } else {
-                        key = key.replace(/\.id$/g, '._id');
-                    }
-                    if (isStringObjectID(searchValue)) {
-                        where[key] = new ObjectId(searchValue);
-                    } else {
-                        where[key] = searchValue;
-                    }
-                } else if (typeof where[key] === "string" && isStringObjectID(where[key]) && isKeyRefersToId(key, referenceEntities)) {
-                    where[key] = new ObjectId(where[key]);
-                }
-            }
-        }
-    }
-}
-
 const replaceProjectIds = (project) => {
     const dataKeys = Object.keys(project);
 
@@ -397,17 +374,6 @@ const replaceId = (key: string) => {
     return key;
 }
 
-const isId = (searchKey) => {
-    if (searchKey === undefined) {
-        return false;
-    }
-
-    const _idIndex = searchKey.indexOf('._id');
-    const idIndex = searchKey.indexOf('.id');
-    const keyLength = searchKey.length;
-    return searchKey === 'id' || (idIndex === keyLength - 3 && keyLength > 2) || (_idIndex === keyLength - 4 && keyLength > 3);
-}
-
 function getDeepKeys(obj: any) {
     const keys = [];
     for (let key in obj) {
@@ -440,11 +406,14 @@ const isValidRefKey = (key: string, referenceEntities: ReferenceEntity[]) => {
         return false;
     }
 
-    const currentKey = splittedKey[0];
-    const ref = referenceEntities.find((r) => r.key === currentKey || r.as === currentKey);
+    let curRefs = referenceEntities;
 
-    if (ref) {
-        return true;
+    for (let i = 0; i < splittedKey.length && curRefs !== undefined; i++) {
+        const curKey = splittedKey[i];
+        const ref = curRefs.find((ref) => ref.key === curKey || ref.as === curKey);
+        if (ref) {
+            return true
+        }
     }
 
     return false;

@@ -34,8 +34,10 @@ export async function checkReferenceEntities(collection, referenceEntities, upda
                     }
 
                     let findValue = refCreateDateArray[j];
-                    if (findKey === '_id' && typeof findValue === 'string') {
+                    if (findKey === '_id' && isStringObjectID(findValue)) {
                         findValue = new ObjectId(findValue);
+                    } else if (findKey === '_id' && !isObjectID(findValue)) {
+                        throw `${findKey} refers to ${ref.refersToCollectionName}.${ref.refersToKey} and should be a valid ObjectId`;
                     }
 
                     toBeCheckedKeys.push({
@@ -105,10 +107,12 @@ export function updateRefObjectIdsKeys(referenceEntities, refData) {
         const ref = referenceEntities[i];
         const refValue = refData[ref.key]
         if ((ref.refersToKey === 'id' || ref.refersToKey === '_id') && refValue) {
-            if (typeof refValue === 'string') {
+            if (typeof refValue === 'string' && isStringObjectID(refValue)) {
                 refData[ref.key] = new ObjectId(refValue);
             } else if (Array.isArray(refValue)) {
                 refData[ref.key] = refValue.map((r) => typeof r === 'string' ? new ObjectId(r) : r);
+            } else if (!isObjectID(refValue)) {
+                throw `${ref.key} refers to ${ref.refersToCollectionName}.${ref.refersToKey} and should be a valid ObjectId`;
             }
         }
     }
@@ -186,10 +190,37 @@ export function checkDuplicatedUniqueKeys(uniqueKeys, updateData) {
 }
 
 export function getCurrentReference(key: string, referenceEntities: ReferenceEntity[]) {
-    return referenceEntities.find((ref) => ref.key === key);
+    const splittedKey = key.split('.');
+    let returnRef;
+    let curRefs = referenceEntities;
+
+    for (let i = 0; i < splittedKey.length && curRefs !== undefined; i++) {
+        const curKey = splittedKey[i];
+        returnRef = curRefs.find((ref) => ref.key === curKey || (ref.refersToCollectionName && ref.as === curKey));
+        if (returnRef) {
+            curRefs = returnRef.referenceEntities;
+            if (!curRefs && i !== splittedKey.length - 1) {
+                returnRef = undefined;
+            }
+        } else {
+            curRefs = undefined;
+        }
+    }
+    return returnRef;
 }
 
 export function isRefersToId(referenceEntity: ReferenceEntity) {
     if (!referenceEntity) return false;
     return referenceEntity.refersToKey === 'id' || referenceEntity.refersToKey === '_id';
+}
+
+export function isId(searchKey) {
+    if (searchKey === undefined) {
+        return false;
+    }
+
+    const _idIndex = searchKey.indexOf('._id');
+    const idIndex = searchKey.indexOf('.id');
+    const keyLength = searchKey.length;
+    return searchKey === 'id' || searchKey === '_id' || (idIndex === keyLength - 3 && keyLength > 2) || (_idIndex === keyLength - 4 && keyLength > 3);
 }

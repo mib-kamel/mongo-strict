@@ -37,8 +37,9 @@ export default function update(
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities);
             await Promise.all([validatePromise, uniquePromise]);
 
-            updateData = updateRefObjectIdsKeys(referenceEntities, updateData);
             await checkReferenceEntities(collection, referenceEntities, updateData);
+
+            updateData = updateRefObjectIdsKeys(referenceEntities, updateData);
 
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
@@ -64,8 +65,9 @@ export default function update(
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities);
             await Promise.all([validatePromise, uniquePromise]);
 
-            updateData = updateRefObjectIdsKeys(referenceEntities, updateData);
             await checkReferenceEntities(collection, referenceEntities, updateData);
+
+            updateData = updateRefObjectIdsKeys(referenceEntities, updateData);
 
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
@@ -91,8 +93,9 @@ export default function update(
             const uniquePromise = checkUpdateUniqueKeys(collection, uniqueKeys, updateData, where, referenceEntities);
             await Promise.all([validatePromise, uniquePromise]);
 
-            updateData = updateRefObjectIdsKeys(referenceEntities, updateData);
             await checkReferenceEntities(collection, referenceEntities, updateData);
+            updateData = updateRefObjectIdsKeys(referenceEntities, updateData);
+
             repositoryOptions?.autoCreatedAt && (updateData[createdAtKey] = createdAt);
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 

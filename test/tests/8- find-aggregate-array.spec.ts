@@ -39,6 +39,26 @@ describe('AppController', () => {
             expect(aggregateArray[1].$project).toBeDefined();
         });
 
+        it('Test Aggregate Array 2.1', async () => {
+            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ select: ["id", "cvs2.aaa"] });
+
+            expect(aggregateArray).toBeDefined();
+            expect(aggregateArray.length).toBeDefined();
+            expect(aggregateArray.length).toBe(2);
+            expect(aggregateArray[0].$limit).toBeDefined();
+            expect(aggregateArray[1].$project).toBeDefined();
+        });
+
+        it('Test Aggregate Array 2.2', async () => {
+            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ where: { "cvs2.aaa": 1 }, select: ["id", "cvs2.aaa"] });
+            expect(aggregateArray).toBeDefined();
+            expect(aggregateArray.length).toBeDefined();
+            expect(aggregateArray.length).toBe(3);
+            expect(aggregateArray[0].$match).toBeDefined();
+            expect(aggregateArray[1].$limit).toBeDefined();
+            expect(aggregateArray[2].$project).toBeDefined();
+        });
+
         it('Test Aggregate Array 3', async () => {
             const aggregateArray = userRepository._testOperations().getFindAggregateArray({ debug: false, select: ["id", "id3", "3id", "name", 'cvs.id', 'cvs.ide', 'cvs.eid'] });
 
@@ -183,7 +203,7 @@ describe('AppController', () => {
             expect($lookup).toBeDefined();
             expect($project).toBeDefined();
         });
-        
+
         it('Test Aggregate Array 11', async () => {
             const aggregateArray = userRepository._testOperations().getFindAggregateArray();
 

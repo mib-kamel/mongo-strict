@@ -251,51 +251,153 @@ describe('AppController', () => {
             expect(isObjectID(where?._id?.$not.$in[1])).toBe(true);
         });
 
-        it('Get get a valid where 15', async () => {
+        it('Get get a valid where 16', async () => {
             const where = cvRepository._testOperations().getWhereObject({ user: { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
             expect(where?.user?.$not.$in[1]).toBeDefined();
             expect(isObjectID(where?.user?.$not.$in[1])).toBe(true);
         });
 
-        it('Get get a valid where 16', async () => {
-            const where = cvRepository._testOperations().getWhereObject({
+        it('Get get a valid where 17', async () => {
+            const where = cvRepository._testOperations().getWhereObject({ 'user.id': { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where['user._id']?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where['user._id']?.$not.$in[1])).toBe(true);
+        });
+
+        it('Get get a valid where 18', async () => {
+            const where = sectionRepository._testOperations().getWhereObject({ 'cv.id': { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where['cv._id']?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where['cv._id']?.$not.$in[1])).toBe(true);
+        });
+
+        it('Get get a valid where 19', async () => {
+            const where = sectionRepository._testOperations().getWhereObject({ 'cv.user': { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where['cv.user']?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where['cv.user']?.$not.$in[1])).toBe(true);
+        });
+
+        it('Get get a valid where 20', async () => {
+            const where = sectionRepository._testOperations().getWhereObject({ 'cv.user.id': { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where['cv.user._id']?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where['cv.user._id']?.$not.$in[1])).toBe(true);
+        });
+
+        it('Get get a valid where 20', async () => {
+            const where = sectionRepository._testOperations().getWhereObject({ 'cv.cvName': { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where['cv.cvName']?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where['cv.cvName']?.$not.$in[1])).toBe(false);
+        });
+
+        it('Get get a valid where 20', async () => {
+            const where = sectionRepository._testOperations().getWhereObject({ 'cv.user.email': { $not: { $in: [validObjectId, validObjectId, validObjectId] } } });
+            expect(where['cv.user.email']?.$not.$in[1]).toBeDefined();
+            expect(isObjectID(where['cv.user.email']?.$not.$in[1])).toBe(false);
+        });
+
+        it('Get get a valid where 30', async () => {
+            const where = sectionRepository._testOperations().getWhereObject({
                 $or: [{
-                    cvName: 'Mo',
+                    sectionTitle: 'Mo',
                     id: validObjectId,
-                    user: validObjectId
+                    cv: validObjectId
                 }, {
-                    cvName: {
+                    sectionTitle: {
                         $in: [1, 2, 3, 4]
                     }
                 }, {
-                    user: {
+                    cv: {
                         $in: [validObjectId, validObjectId]
                     }
                 }, {
-                    cvName: { $eq: 'name' }
+                    sectionTitle: { $eq: 'name' }
                 }, {
                     id: { $eq: validObjectId }
                 }, {
                     id: { $in: [validObjectId, validObjectId] }
                 }, {
-                    user: { $ne: validObjectId }
+                    cv: { $ne: validObjectId }
                 }, {
                     _id: { $ne: validObjectId }
+                }, {
+                    'cv._id': { $ne: validObjectId }
+                }, {
+                    'cv.user': { $ne: validObjectId }
+                }, {
+                    'cv.user._id': { $ne: validObjectId }
+                }, {
+                    'cv.user.email': { $ne: validObjectId }
+                }, {
+                    'cv1221.user.email': { $ne: validObjectId }
                 }]
             });
             expect(where?.$or).toBeDefined();
-            expect(where?.$or.length).toBe(8);
-            expect(typeof where?.$or[0].cvName).toBe('string');
+            expect(where?.$or.length).toBe(13);
+            expect(typeof where?.$or[0].sectionTitle).toBe('string');
             expect(isObjectID(where?.$or[0]._id)).toBe(true);
-            expect(isObjectID(where?.$or[0].user)).toBe(true);
-            expect(Array.isArray(where?.$or[1].cvName.$in)).toBe(true);
-            expect(Array.isArray(where?.$or[2].user.$in)).toBe(true);
-            expect(isObjectID(where?.$or[2].user.$in[1])).toBe(true);
-            expect(typeof where?.$or[3].cvName.$eq).toBe('string');
+            expect(isObjectID(where?.$or[0].cv)).toBe(true);
+            expect(Array.isArray(where?.$or[1].sectionTitle.$in)).toBe(true);
+            expect(Array.isArray(where?.$or[2].cv.$in)).toBe(true);
+            expect(isObjectID(where?.$or[2].cv.$in[1])).toBe(true);
+            expect(typeof where?.$or[3].sectionTitle.$eq).toBe('string');
             expect(isObjectID(where?.$or[4]._id.$eq)).toBe(true);
             expect(isObjectID(where?.$or[5]._id.$in[1])).toBe(true);
-            expect(isObjectID(where?.$or[6].user.$ne)).toBe(true);
+            expect(isObjectID(where?.$or[6].cv.$ne)).toBe(true);
             expect(isObjectID(where?.$or[7]._id.$ne)).toBe(true);
+            expect(isObjectID(where?.$or[8]['cv._id'].$ne)).toBe(true);
+            expect(isObjectID(where?.$or[9]['cv.user'].$ne)).toBe(true);
+            expect(isObjectID(where?.$or[10]['cv.user._id'].$ne)).toBe(true);
+            expect(isObjectID(where?.$or[11]['cv.user.email'].$ne)).toBe(false);
+        });
+
+        it('Get get a valid where 30', async () => {
+            const aggregate = sectionRepository._testOperations().getFindAggregateArray({
+                where: {
+                    $or: [{
+                        sectionTitle: 'Mo',
+                        id: validObjectId,
+                        cv: validObjectId
+                    }, {
+                        sectionTitle: {
+                            $in: [1, 2, 3, 4]
+                        }
+                    }, {
+                        cv: {
+                            $in: [validObjectId, validObjectId]
+                        }
+                    }, {
+                        sectionTitle: { $eq: 'name' }
+                    }, {
+                        id: { $eq: validObjectId }
+                    }, {
+                        id: { $in: [validObjectId, validObjectId] }
+                    }, {
+                        cv: { $ne: validObjectId }
+                    }, {
+                        _id: { $ne: validObjectId }
+                    }, {
+                        'cv._id': { $ne: validObjectId }
+                    }, {
+                        'cv.user': { $ne: validObjectId }
+                    }, {
+                        'cv.user._id': { $ne: validObjectId }
+                    }, {
+                        'cv.user.email': { $ne: validObjectId }
+                    }, {
+                        'cv1221.user.email': { $ne: validObjectId }
+                    }]
+                }, debug: false
+            });
+
+            expect(aggregate).toBeDefined();
+            expect(aggregate.length).toBe(4);
+            expect(aggregate[0].$lookup).toBeDefined();
+            expect(aggregate[0].$lookup.from).toBe('cv');
+            expect(Array.isArray(aggregate[0].$lookup.pipeline)).toBe(true);
+            expect(Array.isArray(aggregate[0].$lookup.pipeline[0].$limit)).toBeDefined();
+            expect(Array.isArray(aggregate[0].$lookup.pipeline[1].$lookup)).toBeDefined();
+            expect(aggregate[0].$lookup.pipeline[1].$lookup.from).toBe('user');
+            expect(aggregate[1].$unwind).toBeDefined();
+            expect(aggregate[2].$match).toBeDefined();
+            expect(aggregate[3].$limit).toBeDefined();
         });
 
     });

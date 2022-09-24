@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { ReferenceEntity } from "../interfaces/orm.interfaces";
 import { isObjectID, isStringObjectID } from "../utils/utils";
-import { getCurrentReference, isRefersToId } from "./operationsUtils";
+import { getCurrentReference, isId, isRefersToId } from "./operationsUtils";
 
 export function getWhereObject(where: any, referenceEntities: ReferenceEntity[], parentKey?) {
     if (where === undefined) {
@@ -31,27 +31,29 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
 
         if (typeof where._id === 'string' && isStringObjectID(where._id)) {
             where._id = new ObjectId(where._id);
+        } else if (typeof where._id === 'string') {
+            throw `id should be a valid ObjectId`;
         } else if (where._id !== undefined) {
             where._id = where._id;
         }
 
         const keys = Object.keys(where);
         for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
+            let key = keys[i];
             const value = where[key];
 
             if (parentKey !== undefined && comparisonKeys.includes(key)) {
                 let isToId = false;
                 const currentRefersTo = getCurrentReference(parentKey, referenceEntities);
-                const isId = parentKey === '_id' || parentKey === 'id';
+                const isKeyId = isId(parentKey);
 
                 if (currentRefersTo) {
                     isToId = isRefersToId(currentRefersTo);
                 }
 
-                if ((isToId || isId) && isStringObjectID(value)) {
+                if ((isToId || isKeyId) && isStringObjectID(value)) {
                     newWhere[key] = new ObjectId(value);
-                } else if ((isToId || isId) && !isObjectID(value)) {
+                } else if ((isToId || isKeyId) && !isObjectID(value)) {
                     throw `${parentKey} refers to ${currentRefersTo.refersToCollectionName}.${currentRefersTo.refersToKey} and should be a valid ObjectId`;
                 } else {
                     newWhere[key] = value
@@ -81,22 +83,23 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
 
                 let isToId = false;
                 const currentRefersTo = getCurrentReference(parentKey, referenceEntities);
-                const isId = parentKey === '_id' || parentKey === 'id';
+                const isKeyId = isId(parentKey);
 
                 if (currentRefersTo) {
                     isToId = isRefersToId(currentRefersTo);
                 }
 
                 newWhere[key] = value.map(v => {
-                    if ((isToId || isId) && isStringObjectID(v)) {
+                    if ((isToId || isKeyId) && isStringObjectID(v)) {
                         return new ObjectId(v);
-                    } else if ((isToId || isId) && !isObjectID(v)) {
+                    } else if ((isToId || isKeyId) && !isObjectID(v)) {
                         throw `${parentKey} refers to ${currentRefersTo.refersToCollectionName}.${currentRefersTo.refersToKey} and should be a valid ObjectId`;
                     } else {
                         return v;
                     }
                 })
             } else {
+                key = key.replace(/\.id$/g, '._id');
                 if (typeof value === 'object' && !isObjectID(value) && !Array.isArray(value)) {
                     newWhere[key] = getWhereObject(value, referenceEntities, key);
                 } else if (typeof value === 'string') {
@@ -107,7 +110,9 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
                         isToId = isRefersToId(currentRefersTo);
                     }
 
-                    if (isToId && isStringObjectID(value)) {
+                    const isKeyId = isId(key);
+
+                    if ((isToId || isKeyId) && isStringObjectID(value)) {
                         newWhere[key] = new ObjectId(value);
                     } else if (isToId && !isObjectID(value)) {
                         throw `${key} refers to ${currentRefersTo.refersToCollectionName}.${currentRefersTo.refersToKey} and should be a valid ObjectId`;

@@ -166,6 +166,8 @@ describe('AppController', () => {
 
         it('find first one when pass no options', async () => {
             const found = await repo.findOne();
+            expect(found).toBeDefined();
+            expect(Array.isArray(found)).toBe(false);
             expect(typeof found.id).toBe('string');
         });
 

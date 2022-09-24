@@ -96,8 +96,9 @@ export async function validateInsert(
         const uniquePromise = checkInsertUniqueKeys(collection, uniqueKeys, insertData, referenceEntities);
         await Promise.all([validatePromise, uniquePromise]);
 
-        insertData = updateRefObjectIdsKeys(referenceEntities, insertData);
         await checkReferenceEntities(collection, referenceEntities, insertData);
+
+        insertData = updateRefObjectIdsKeys(referenceEntities, insertData);
 
         return true;
     } catch (err) {
