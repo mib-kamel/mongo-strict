@@ -68,7 +68,7 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
     - [getCollection()](#getcollection)
     - [getDB()](#getdb)
     - [getConnectionManager()](#getconnectionmanager)
-  - [Road Map](#road-map)
+  - [Roadmap](#roadmap)
 
 ## Instalation
 
@@ -841,7 +841,7 @@ const connection = getConnectionManager();
 connection.close();
 ```
 
-## Road Map
+## Roadmap
 
 - InsertMany()
 - ReplaceMany()
