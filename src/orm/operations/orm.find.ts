@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from "../interfaces/orm.interfaces";
 import { dataObjectIdToString, isObjectID, isStringObjectID } from "../utils/utils";
 import { isId } from "./operationsUtils";
@@ -28,7 +27,6 @@ export async function find(
 ): Promise<any> {
     let cacheKey;
     const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
-
     if (isFindoptionsCache(findOptions)) {
         const findClone: any = structuredClone(findOptions);
         delete findClone.cache;
@@ -55,10 +53,10 @@ export async function find(
 
     dataObjectIdToString(res, referenceEntities);
 
-    if (cacheKey) {
+    if (cacheKey !== undefined) {
         let cacheTimeout = repositoryOptions.cacheTimeout;
 
-        if (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout)) {
+        if (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout))) {
             cacheTimeout = Number(findOptions.cache.timeout);
         }
 
@@ -75,8 +73,8 @@ export function getFindAggregateArray(Repository,
     repositoryOptions: RepositoryOptions,
     collectionName: string
 ) {
-    const takeOption = !isNaN(findOptions.limit) ? parseInt(String(findOptions.limit)) : PAGINATION_OPTIONS_DEFAULTS.limit;
-    const skipOption = !isNaN(findOptions.skip)
+    const takeOption = !isNaN(Number(findOptions.limit)) ? parseInt(String(findOptions.limit)) : PAGINATION_OPTIONS_DEFAULTS.limit;
+    const skipOption = !isNaN(Number(findOptions.skip))
         ? findOptions.skip
         : PAGINATION_OPTIONS_DEFAULTS.skip;
     let sort = findOptions.sort ? findOptions.sort : PAGINATION_OPTIONS_DEFAULTS.sort;
@@ -116,15 +114,6 @@ export function getFindAggregateArray(Repository,
     const lookup_preLimit = lookup_preWhere || lookup_preSort;
 
     const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
-    if (isDebug) {
-        console.log(projectKeys)
-        console.log(whereKeys)
-        console.log(hasValidRefKeys(whereKeys, referenceEntities))
-        console.log(sortKeys)
-        console.log(lookup_preWhere)
-        console.log(lookup_preSort)
-        console.log(lookup_preLimit)
-    }
 
     project = { ...project, ...addId_toProject(projectKeys, referenceEntities) };
 
@@ -176,7 +165,7 @@ export function getFindAggregateArray(Repository,
 }
 
 const isFindoptionsCache = (findOptions: FindOptions) => {
-    return findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout));
+    return findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout)));
 }
 
 export async function count(
@@ -188,7 +177,7 @@ export async function count(
 ): Promise<any> {
     let cacheKey;
 
-    if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout))) {
+    if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout)))) {
         const findClone: any = structuredClone(findOptions);
         delete findClone.cache;
         findClone.collectionName = collectionName;
@@ -237,7 +226,7 @@ export async function count(
 
     if (!!cacheKey) {
         let cacheTimeout = repositoryOptions.cacheTimeout;
-        if (typeof findOptions.cache === 'object' && !isNaN(findOptions.cache?.timeout)) {
+        if (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout))) {
             cacheTimeout = Number(findOptions.cache.timeout);
         }
         queryCache.set(cacheKey, count, cacheTimeout);
@@ -443,14 +432,4 @@ const addId_toProject = (selectItems: string[], referenceEntities: ReferenceEnti
     }
 
     return newProjectItems;
-}
-
-const isKeyRefersToId = (key: string, referenceEntities: ReferenceEntity[]) => {
-    for (let i = 0; i < referenceEntities.length; i++) {
-        const ref = referenceEntities[i];
-        if (ref.key === key && !!ref.refersToKey && isId(ref.refersToKey)) {
-            return true;
-        }
-    }
-    return false;
 }

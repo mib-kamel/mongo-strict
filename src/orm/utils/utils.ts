@@ -100,7 +100,7 @@ export const dataObjectIdToString = (data, referenceEntities: ReferenceEntity[] 
     if (Array.isArray(data)) {
         for (let i = 0; i < data.length; i++) {
             if (isObjectID(data[i])) {
-                data[i] = data[i].toString();
+                data[i] = data[i]?.toString();
             } else if (typeof data[i] === 'object') {
                 dataObjectIdToString(data[i], referenceEntities)
             }
@@ -110,7 +110,7 @@ export const dataObjectIdToString = (data, referenceEntities: ReferenceEntity[] 
             const currentKey = dataKeys[i];
 
             if (currentKey === 'id' && isObjectID(data[currentKey])) {
-                data[currentKey] = data[currentKey].toString();
+                data[currentKey] = data[currentKey]?.toString();
                 continue;
             }
 
@@ -123,14 +123,14 @@ export const dataObjectIdToString = (data, referenceEntities: ReferenceEntity[] 
             if (keyRefEntity && Array.isArray(data[currentKey])) {
                 for (let j = 0; j < data[currentKey].length; j++) {
                     if (isObjectID(data[currentKey][j])) {
-                        data[currentKey][j] = data[currentKey][j].toString();
+                        data[currentKey][j] = data[currentKey][j]?.toString();
                     } else if (typeof data[currentKey][j] === 'object') {
                         dataObjectIdToString(data[currentKey][j], keyRefEntity.referenceEntities)
                     }
                 }
             } else if (keyRefEntity && typeof data[currentKey] === 'object') {
                 if (isObjectID(data[currentKey])) {
-                    data[currentKey] = data[currentKey].toString();
+                    data[currentKey] = data[currentKey]?.toString();
                 } else if (keyRefEntity && data[currentKey]) {
                     dataObjectIdToString(data[currentKey], keyRefEntity.referenceEntities)
                 }

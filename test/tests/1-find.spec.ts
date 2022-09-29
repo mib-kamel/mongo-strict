@@ -32,10 +32,10 @@ describe('AppController', () => {
                 records.push(rec);
             }
             cachedFindOptions = { where: { email: records[0].email }, cache: true };
-            cachedFindOptionsTimout = { where: { email: records[0].email }, cache: { timeout: 3000 } };
+            cachedFindOptionsTimout = { where: { email: records[0].email }, cache: { timeout: 5000 } };
 
             cachedCountOptions = { cache: true };
-            cachedCountOptionsTimout = { cache: { timeout: 3000 } };
+            cachedCountOptionsTimout = { cache: { timeout: 4000 } };
         } catch (e: any) {
             expect(e).toBeUndefined();
         }
@@ -155,13 +155,34 @@ describe('AppController', () => {
         });
 
         it('Should cache and get Data with timeout', async () => {
-            const count = await repo.count(cachedCountOptionsTimout);
+            const count = await repo.count({ where: { booleanKey: false }, ...cachedCountOptionsTimout });
             expect(count).toBe(records.length);
         });
 
         it('Should get cached Data with timeout', async () => {
-            const count = await repo.count(cachedCountOptionsTimout);
+            const count = await repo.count({ where: { booleanKey: false }, ...cachedCountOptionsTimout });
             expect(count).toBe(records.length);
+        });
+
+        it('Should not cache and get Data with timeout', async () => {
+            const find = await repo.find({ where: { booleanKey: true }, cache: { timeoout: 'aaa' } });
+            expect(find.length).toBe(0);
+        });
+
+        it('Should not get cached Data with timeout', async () => {
+            const find = await repo.find({ where: { booleanKey: true }, cache: { timeoout: 'aaa' } });
+            expect(find.length).toBe(0);
+        });
+
+
+        it('Should not cache and get Data with timeout', async () => {
+            const count = await repo.count({ where: { booleanKey: true }, cache: { timeoout: 'aaa' } });
+            expect(count).toBe(0);
+        });
+
+        it('Should not get cached Data with timeout', async () => {
+            const count = await repo.count({ where: { booleanKey: true }, cache: { timeoout: 'aaa' } });
+            expect(count).toBe(0);
         });
 
         it('find first one when pass no options', async () => {

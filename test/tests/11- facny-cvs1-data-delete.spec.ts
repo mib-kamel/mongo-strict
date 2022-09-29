@@ -142,7 +142,7 @@ describe('AppController', () => {
             expect(res).toBeDefined();
             expect(res.deletedCount).toEqual(sectionsCount);
 
-            insertedSections = insertedSections.filter((sec) => !ids.map(id => id.toString()).includes(sec.id))
+            insertedSections = insertedSections.filter((sec) => !ids.map(id => id?.toString()).includes(sec.id))
             expect(insertedSections.length).toEqual(SECTIONS_COUNT - sectionsCount);
 
             SECTIONS_COUNT = SECTIONS_COUNT - sectionsCount;

@@ -108,10 +108,10 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
 
                 if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
-                        return res[key].toString() === insertData[key];
+                        return res[key]?.toString() === insertData[key];
                     })
                 } else if (isIgnoreCase) {
-                    isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === insertData[key].toString().toLowerCase())
+                    isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key]?.toString().toLowerCase() === insertData[key].toString()?.toLowerCase())
                 } else {
                     isKeyFound = insertData[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key] === insertData[key])
                 }

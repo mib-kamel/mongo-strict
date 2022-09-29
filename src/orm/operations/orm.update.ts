@@ -161,10 +161,10 @@ async function checkUpdateUniqueKeys(collection, uniqueKeys, data, itemFindWhere
 
                 if (ref && (ref.refersToKey === 'id' || ref.refersToKey === '_id')) {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => {
-                        return res[key].toString() === data[key];
+                        return res[key]?.toString() === data[key];
                     });
                 } else if (isIgnoreCase) {
-                    isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString().toLowerCase() === data[key].toString().toLowerCase())
+                    isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key].toString()?.toLowerCase() === data[key].toString()?.toLowerCase())
                 } else {
                     isKeyFound = data[key] !== undefined && existingUniquesKeysRecords.find((res: any) => res[key] === data[key])
                 }
