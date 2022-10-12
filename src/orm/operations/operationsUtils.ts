@@ -18,7 +18,7 @@ export async function checkReferenceEntities(collection, referenceEntities, upda
             let refCreateData = updateData[ref.key];
 
             if (!!refCreateData && ref.isArray && !Array.isArray(refCreateData)) {
-                throw new Error(ref.localKeyName + ' is not array.');
+                throw new Error(ref.key + ' is not array.');
             } else if (!!refCreateData) {
 
                 let refCreateDateArray = refCreateData;

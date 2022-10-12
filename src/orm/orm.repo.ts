@@ -7,7 +7,6 @@ import { QueryBuilder } from './QueryBuilder';
 import { getRepositoriesMap } from './mongo-strict';
 import { getWhereObject } from './operations/whereObjectHandle';
 
-
 export class ORMRepo {
     private defaultSelectFields;
     private referenceEntities;
@@ -17,6 +16,7 @@ export class ORMRepo {
     private defaultValues;
     private repositoryptions;
     private collectionName;
+    private lifecycle;
 
     constructor(
         private collection: any, entityProperties: _EntityProperties, repositoryptions: any, collectionName: string
@@ -29,6 +29,8 @@ export class ORMRepo {
         this.defaultValues = entityProperties.defaultValues;
         this.repositoryptions = repositoryptions;
         this.collectionName = collectionName;
+
+        this.lifecycle = repositoryptions?.lifecycle;
     }
 
     getCollection = () => {

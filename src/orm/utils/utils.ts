@@ -91,6 +91,10 @@ export function isStringObjectID(id) {
 }
 
 export const dataObjectIdToString = (data, referenceEntities: ReferenceEntity[] = []) => {
+    if (!data) {
+        return;
+    }
+
     if (data?._id) {
         data.id = data._id;
     }

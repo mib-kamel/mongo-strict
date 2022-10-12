@@ -51,6 +51,18 @@ export interface RepositoryOptions {
     cacheTimeout?: number;
     reverseRefering?: boolean;
     entityClassValidatorOptions?: ValidatorOptions;
+    lifecycle?: Lifecycle;
+}
+
+export interface Lifecycle {
+    beforeFind?: Function;
+    afterFind?: Function;
+    beforeCreate?: Function;
+    afterCreate?: Function;
+    beforeUpdate?: Function;
+    afterUpdate?: Function;
+    beforeDelete?: Function;
+    afterDelete?: Function;
 }
 
 export interface CacheOptions {
