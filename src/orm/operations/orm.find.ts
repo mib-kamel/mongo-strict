@@ -2,6 +2,7 @@ import { FindOptions, ReferenceEntity, RELATION_TYPES, RepositoryOptions } from 
 import { dataObjectIdToString, isObjectID, isStringObjectID } from "../utils/utils";
 import { isId } from "./operationsUtils";
 import { getWhereObject } from "./whereObjectHandle";
+import { stringify } from 'telejson';
 
 const structuredClone = require('realistic-structured-clone');
 const NodeCache = require("node-cache");
@@ -32,7 +33,7 @@ export async function find(
         delete findClone.cache;
         findClone.collectionName = collectionName;
         findClone.operation = "FIND";
-        cacheKey = hash(findClone);
+        cacheKey = hash(stringify(findClone));
         if (queryCache.has(cacheKey)) {
             return queryCache.get(cacheKey);
         }
@@ -182,7 +183,7 @@ export async function count(
         delete findClone.cache;
         findClone.collectionName = collectionName;
         findClone.operation = "COUNT";
-        cacheKey = hash(findClone);
+        cacheKey = hash(stringify(findClone));
         if (queryCache.has(cacheKey)) {
             return queryCache.get(cacheKey);
         }
