@@ -47,7 +47,6 @@
     "mongodb": "^4.9.1",
     "node-cache": "^5.1.2",
     "object-hash": "^3.0.0",
-    "realistic-structured-clone": "^3.0.0",
     "telejson": "^6.0.8"
   }
 }

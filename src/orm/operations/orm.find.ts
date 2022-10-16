@@ -4,7 +4,6 @@ import { isId } from "./operationsUtils";
 import { getWhereObject } from "./whereObjectHandle";
 import { stringify } from 'telejson';
 
-const structuredClone = require('realistic-structured-clone');
 const NodeCache = require("node-cache");
 var hash = require('object-hash');
 
@@ -29,7 +28,7 @@ export async function find(
     let cacheKey;
     const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
     if (isFindoptionsCache(findOptions)) {
-        const findClone: any = structuredClone(findOptions);
+        const findClone: any = Object.assign({}, findOptions);
         delete findClone.cache;
         findClone.collectionName = collectionName;
         findClone.operation = "FIND";
@@ -179,7 +178,7 @@ export async function count(
     let cacheKey;
 
     if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout)))) {
-        const findClone: any = structuredClone(findOptions);
+        const findClone: any = Object.assign({}, findOptions);
         delete findClone.cache;
         findClone.collectionName = collectionName;
         findClone.operation = "COUNT";

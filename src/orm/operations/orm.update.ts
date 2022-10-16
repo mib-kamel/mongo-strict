@@ -3,7 +3,6 @@ import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces
 import { dataObjectIdToString, isObjectID } from "../utils/utils";
 import { checkDuplicatedUniqueKeys, checkReferenceEntities, checkRequiredKeys, fillDefaultValue, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
 import { getWhereObject } from "./whereObjectHandle";
-const structuredClone = require('realistic-structured-clone');
 
 export default function update(
     collection,
@@ -25,7 +24,7 @@ export default function update(
     where = getWhereObject(where, referenceEntities);
 
     const setOne = async (updateData: any) => {
-        updateData = structuredClone(updateData);
+        updateData = Object.assign({}, updateData);
         delete updateData._id;
         delete updateData.id;
 
@@ -52,7 +51,7 @@ export default function update(
     }
 
     const setMany = async (updateData: any) => {
-        updateData = structuredClone(updateData);
+        updateData = Object.assign({}, updateData);
         delete updateData._id;
         delete updateData.id;
 
@@ -78,7 +77,7 @@ export default function update(
     }
 
     const replaceOne = async (updateData: any) => {
-        updateData = structuredClone(updateData);
+        updateData = Object.assign({}, updateData);
         delete updateData._id;
         delete updateData.id;
         fillDefaultValue(defaultValues, updateData);

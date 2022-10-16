@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb";
 import { ReferenceEntity, RepositoryOptions } from "../interfaces/orm.interfaces";
 import { dataObjectIdToString, isObjectID } from "../utils/utils";
 import { checkReferenceEntities, checkRequiredKeys, fillDefaultValue, updateRefObjectIdsKeys, validateData } from "./operationsUtils";
-const structuredClone = require('realistic-structured-clone');
 
 export async function insertOne(
     collection,
@@ -18,7 +17,7 @@ export async function insertOne(
     const updatedAtKey = repositoryOptions.updatedAtKey;
 
     try {
-        insertData = structuredClone(insertData);
+        insertData = Object.assign({}, insertData);
         delete insertData._id;
         delete insertData.id;
         fillDefaultValue(defaultValues, insertData);
@@ -47,7 +46,7 @@ export async function validateInsert(
 ) {
     try {
         if (isClone) {
-            insertData = structuredClone(insertData);
+            insertData = Object.assign({}, insertData);
         }
 
         checkRequiredKeys(requiredKeys, insertData);
