@@ -17,6 +17,20 @@ const PAGINATION_OPTIONS_DEFAULTS = {
     sort: undefined
 }
 
+const FIND_KEYS = ['where', 'select', 'skip', 'limit', 'selectFields', 'sort', 'cache', 'debug']
+
+const checkAllFindOptionsKeysValid = (findOptions) => {
+    const keys = Object.keys(findOptions);
+
+    for (const key of keys) {
+        if (!FIND_KEYS.includes(key)) {
+            throw {
+                message: `${key} is not a valid find options key`
+            }
+        }
+    };
+}
+
 export async function find(
     Repository,
     defaultSelectFields: string[] = [],
@@ -25,6 +39,7 @@ export async function find(
     repositoryOptions: RepositoryOptions,
     collectionName: string
 ): Promise<any> {
+    checkAllFindOptionsKeysValid(findOptions);
     let cacheKey;
     const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
     if (isFindoptionsCache(findOptions)) {
@@ -175,6 +190,8 @@ export async function count(
     repositoryOptions: RepositoryOptions,
     collectionName: string
 ): Promise<any> {
+    checkAllFindOptionsKeysValid(findOptions);
+
     let cacheKey;
 
     if (findOptions.cache === true || (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout)))) {

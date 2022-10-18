@@ -18,7 +18,11 @@ export async function checkReferenceEntities(collection, referenceEntities, upda
             let refCreateData = updateData[ref.key];
 
             if (!!refCreateData && ref.isArray && !Array.isArray(refCreateData)) {
-                throw new Error(ref.key + ' is not array.');
+                throw {
+                    message: 'Invalid Data Found',
+                    invalidKeys: [ref.key],
+                    errorMessages: [ref.key + ' is not array.']
+                }
             } else if (!!refCreateData) {
 
                 let refCreateDateArray = refCreateData;
@@ -37,7 +41,11 @@ export async function checkReferenceEntities(collection, referenceEntities, upda
                     if (findKey === '_id' && isStringObjectID(findValue)) {
                         findValue = new ObjectId(findValue);
                     } else if (findKey === '_id' && !isObjectID(findValue)) {
-                        throw `${findKey} refers to ${ref.refersToCollectionName}.${ref.refersToKey} and should be a valid ObjectId`;
+                        throw {
+                            message: 'Invalid Data Found',
+                            invalidKeys: [findKey],
+                            errorMessages: [`${findKey} refers to ${ref.refersToCollectionName}.${ref.refersToKey} and should be a valid ObjectId`]
+                        }
                     }
 
                     toBeCheckedKeys.push({
@@ -112,7 +120,11 @@ export function updateRefObjectIdsKeys(referenceEntities, refData) {
             } else if (Array.isArray(refValue)) {
                 refData[ref.key] = refValue.map((r) => typeof r === 'string' ? new ObjectId(r) : r);
             } else if (!isObjectID(refValue)) {
-                throw `${ref.key} refers to ${ref.refersToCollectionName}.${ref.refersToKey} and should be a valid ObjectId`;
+                throw {
+                    message: 'Invalid Data Found',
+                    invalidKeys: [ref.key],
+                    errorMessages: [`${ref.key} refers to ${ref.refersToCollectionName}.${ref.refersToKey} and should be a valid ObjectId`]
+                }
             }
         }
     }

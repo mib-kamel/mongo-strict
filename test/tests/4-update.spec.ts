@@ -126,14 +126,14 @@ describe('AppController', () => {
         });
 
         it('Should set many by array of keys', async () => {
-            const ids = records.map(rec => rec.id);
+            const ids = records.map((rec: any) => rec.id);
 
             try {
                 await repo.update(ids).setMany({
                     numberKey: newNumberKey
                 });
 
-                const newKeyRecordsCount = await repo.count({ numberKey: newNumberKey });
+                const newKeyRecordsCount = await repo.count({ where: { numberKey: newNumberKey } });
                 expect(newKeyRecordsCount).toBe(ids.length);
             } catch (e: any) {
                 expect(e.existingUniqueKeys).toContain("phone")
@@ -169,7 +169,7 @@ describe('AppController', () => {
                 expect(e).toBeUndefined()
             }
         });
-        
+
         it('throw error when no where', async () => {
             try {
                 const res = await repo.update().replaceOne({ numberKey: 33 });

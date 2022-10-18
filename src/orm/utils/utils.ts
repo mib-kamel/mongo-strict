@@ -26,7 +26,7 @@ export function getEntityProperties(entity: any, defaultSelectFields = [], Entit
     }
 
     referenceEntities.forEach((ref) => {
-        if (ref.refersToKey && (ref.type === RELATION_TYPES.ONE_TO_MANY || ref.type === RELATION_TYPES.ONE_TO_ONE) && !uniqueKeys.find((uni) => uni.key === ref.key)) {
+        if (ref.refersToKey && (ref.type === RELATION_TYPES.ONE_TO_ONE) && !uniqueKeys.find((uni) => uni.key === ref.key)) {
             uniqueKeys.push({
                 key: ref.key
             });

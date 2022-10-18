@@ -196,6 +196,15 @@ describe('AppController', () => {
             const findRecords = await repo.findOne({ where: { email: records[0].email + 'aaa' } });
             expect(findRecords).toBeUndefined();
         });
+
+        it('Invalid findoptions key', async () => {
+            try {
+                const findRecords = await repo.findOne({ email: records[0].email + 'aaa' });
+                expect(findRecords).toBeUndefined();
+            } catch (e) {
+                expect(e.message).toBeDefined();
+            }
+        });
     });
 
     afterAll(async () => {

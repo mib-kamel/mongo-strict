@@ -92,6 +92,8 @@ describe('AppController', () => {
 
             const cv = await cvRepository.find({ where: cvId });
 
+            expect(typeof cvId).toBe('string');
+
             expect(cv).toBeDefined();
             expect(cv.length).toBe(1);
             expect(typeof cv[0].id).toBe('string');
@@ -126,7 +128,11 @@ describe('AppController', () => {
             const cvSectionsCount = insertedSections.filter((section) => section.cv === cvId).length;
             expect(typeof cvSectionsCount).toBe('number');
 
-            const sections = await sectionRepository.find({ where: { cv: cvId } });
+            const findObj = { cv: cvId };
+            expect(typeof findObj.cv).toBe('string');
+            const sections = await sectionRepository.find({ where: findObj });
+            expect(typeof findObj.cv).toBe('string');
+
             expect(sections.length).toEqual(cvSectionsCount);
         });
 
@@ -212,12 +218,12 @@ describe('AppController', () => {
             const targetUser = insertedUsers.find((user) => user.id === cv.user)
             expect(targetUser).toBeDefined();
 
-            const user = await userRepository.findOne({ where: { 'cv.sections.id': sectionId }});
+            const user = await userRepository.findOne({ where: { 'cv.sections.id': sectionId } });
             expect(targetUser.id).toEqual(user.id);
         });
 
         it('FindOne undefined', async () => {
-            const cv = await userRepository.findOne({ where: { 'email': 122121212121 }});
+            const cv = await userRepository.findOne({ where: { 'email': 122121212121 } });
             expect(cv).toBeUndefined();
         });
     });
