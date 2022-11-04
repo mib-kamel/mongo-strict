@@ -52,6 +52,7 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
     - [Query Caching](#query-caching)
     - [Query Builder](#query-builder)
     - [Find reference Entities](#find-reference-entities)
+    - [Populate](#populate)
       - [Reverse Refering](#reverse-refering)
     - [insertOne](#insertone)
       - [validateInsertData](#validateinsertdata)
@@ -424,6 +425,7 @@ To make a find query you have to pass the find options object which can contain 
 |  sort  |  returns the documents in sorted order (mongodb aggregation [$sort](https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/)) |
 |  limit  |  Limits the number of the returned documents (mongodb aggregation [$limit](https://www.mongodb.com/docs/manual/reference/operator/aggregation/limit/)) |
 |  skip  |  Skips over the specified number of documents (mongodb aggregation [$skip](https://www.mongodb.com/docs/manual/reference/operator/aggregation/skip/)) |
+| populate | populate reference entity or multiple reference entities (accepts string or array of strings) |
 | debug | true or false to print the final lookup DB method in the console, default = false |
 
 #### find example
@@ -560,6 +562,30 @@ userRepository.find({select: ['cvs.cvName']})
 
 Once we select an inner value of the CVs, that will notify the mongo-strict to get the referenced entity.
 **We can select, match and sort by cvs.cvName or any cvs inner key**
+Or we can user populate
+
+### Populate
+
+In the above example we can do:
+
+```JavaScript
+userRepository.find({populate: ['cvs']});
+```
+
+This will return the user caontainig the complete cvs data
+
+You can populate multipe entites: 
+
+```JavaScript
+userRepository.find({populate: ['cvs', 'ref1', 'ref2']});
+```
+
+Once can populate the referenceies by any depth:
+
+```JavaScript
+userRepository.find({populate: ['cvs.ref.ref.ref']});
+// this will poplate all the sub referncies
+```
 
 #### Reverse Refering
 

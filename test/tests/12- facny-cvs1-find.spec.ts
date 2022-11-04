@@ -147,7 +147,7 @@ describe('AppController', () => {
             expect(sections.length).toEqual(cvSectionsCount);
         });
 
-        it('Find sections by CV lookuo ID', async () => {
+        it('Find sections by CV lookup ID', async () => {
             const cvId = insertedCVs[0].id;
             expect(typeof cvId).toBe('string');
 
@@ -225,6 +225,30 @@ describe('AppController', () => {
         it('FindOne undefined', async () => {
             const cv = await userRepository.findOne({ where: { 'email': 122121212121 } });
             expect(cv).toBeUndefined();
+        });
+
+        it('Find section and populate cv', async () => {
+            const section = await sectionRepository.findOne({ populate: 'cv' });
+            expect(section.cv).toBeDefined();
+            expect(section.cv.id).toBeDefined();
+            expect(section.cv.user).toBeDefined();
+            expect(section.cv.user?.id).toBeUndefined();
+        });
+
+        it('Find section and populate cv and user', async () => {
+            const section = await sectionRepository.findOne({ populate: 'cv.user' });
+            expect(section.cv).toBeDefined();
+            expect(section.cv.id).toBeDefined();
+            expect(section.cv.user).toBeDefined();
+            expect(section.cv.user?.id).toBeDefined();
+        });
+
+        it('Find section and populate cv and user2', async () => {
+            const section = await sectionRepository.findOne({ populate: ['cv.user', 'cv'] });
+            expect(section.cv).toBeDefined();
+            expect(section.cv.id).toBeDefined();
+            expect(section.cv.user).toBeDefined();
+            expect(section.cv.user?.id).toBeDefined();
         });
     });
 

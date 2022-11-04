@@ -134,7 +134,7 @@ describe('AppController', () => {
         });
 
         it('Test Aggregate Array 7', async () => {
-            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ debug: false, sort: { 'cvs.id': -1 }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
+            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ debug: false, sort: { 'cvs.id': -1 }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'], populate: ['cvs', 'cvs.sections'] });
 
             const $lookup = aggregateArray[0].$lookup;
             const $sort = aggregateArray[1]?.$sort;
@@ -235,7 +235,7 @@ describe('AppController', () => {
     });
 
     it('Test Aggregate Array 12', async () => {
-        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs': -1 }, where: { 'cvs.id': "6309c6f839fc4980aeb34677" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
+        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs': -1 }, where: { 'cvs.id': "6309c6f839fc4980aeb34677" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'], populate: 'cvs' });
 
         const $sort = aggregateArray[0]?.$sort;
         const $lookup = aggregateArray[1].$lookup;
@@ -274,7 +274,7 @@ describe('AppController', () => {
     });
 
     it('Find circular repository', async () => {
-        const aggregateArray = circularRepository._testOperations().getFindAggregateArray({ select: ['parent', 'parent.parent', 'parent.parent.parent', 'parent.parent.parent.parent'] });
+        const aggregateArray = circularRepository._testOperations().getFindAggregateArray({ select: ['parent', 'parent.parent', 'parent.parent.parent', 'parent.parent.parent.parent'], populate: 'parent.parent.parent' });
         const $limit = aggregateArray[0]?.$limit;
         const $lookup0 = aggregateArray[1]?.$lookup;
         const $lookup1 = aggregateArray[1]?.$lookup?.pipeline[1];

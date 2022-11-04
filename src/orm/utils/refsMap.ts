@@ -6,7 +6,7 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
     repositoriesMap.forEach((value, collectionName) => {
         for (let i = 0; i < value.entityProperties?.referenceEntities?.length || 0; i++) {
             const ref = value.entityProperties.referenceEntities[i];
-            if (!ref.type) {
+            if (!ref.type && !ref.isArray) {
                 ref.type = RELATION_TYPES.MANY_TO_ONE;
             }
 

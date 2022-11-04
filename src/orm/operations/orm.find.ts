@@ -17,7 +17,7 @@ const PAGINATION_OPTIONS_DEFAULTS = {
     sort: undefined
 }
 
-const FIND_KEYS = ['where', 'select', 'skip', 'limit', 'selectFields', 'sort', 'cache', 'debug']
+const FIND_KEYS = ['where', 'select', 'skip', 'limit', 'selectFields', 'sort', 'cache', 'debug', 'populate']
 
 const checkAllFindOptionsKeysValid = (findOptions) => {
     const keys = Object.keys(findOptions);
@@ -96,6 +96,16 @@ export function getFindAggregateArray(Repository,
 
     sort && (sort = replaceObjectIds(sort));
 
+    let populate = findOptions.populate ? findOptions.populate : undefined;
+
+    if (typeof populate === 'string') populate = [populate];
+
+    if (Array.isArray(populate)) {
+        populate = populate.map((item) => {
+            return item + '.id';
+        });
+    }
+
     let selectItems = [];
 
     let where = findOptions.where || {};
@@ -121,14 +131,21 @@ export function getFindAggregateArray(Repository,
     const projectKeys = getDeepKeys(project).filter(key => isValidRefKey(key, referenceEntities));
     const whereKeys = getDeepKeys(where).filter(key => isValidRefKey(key, referenceEntities));
     const sortKeys = !!sort ? getDeepKeys(sort).filter(key => isValidRefKey(key, referenceEntities)) : [];
+    const populateKeys = !!populate?.length ? populate.filter(key => isValidRefKey(key, referenceEntities)) : [];
 
-    const lookups: any = getLookups(referenceEntities, [...projectKeys, ...whereKeys]);
+    const lookups: any = getLookups(referenceEntities, [...projectKeys, ...whereKeys, ...sortKeys, ...populateKeys]);
 
     const lookup_preWhere = !!whereKeys?.length && hasValidRefKeys(whereKeys, referenceEntities);
     const lookup_preSort = !!sortKeys?.length && hasValidRefKeys(sortKeys, referenceEntities);
     const lookup_preLimit = lookup_preWhere || lookup_preSort;
 
     const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
+
+    if (isDebug) {
+        console.log("populate", populate);
+        console.log('populateKeys', populateKeys);
+    }
+
 
     project = { ...project, ...addId_toProject(projectKeys, referenceEntities) };
 
