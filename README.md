@@ -1,9 +1,9 @@
 # mongo-strict
 
-![Lines](https://img.shields.io/badge/lines-96.89%25-brightgreen.svg?style=flat)
-![Statements](https://img.shields.io/badge/statements-96.78%25-brightgreen.svg?style=flat)
-![Functions](https://img.shields.io/badge/functions-98.27%25-brightgreen.svg?style=flat)
-![Branches](https://img.shields.io/badge/branches-86.56%25-yellow.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-96.92%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-96.82%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-98.29%25-brightgreen.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-86.76%25-yellow.svg?style=flat)
 
 **mongo-strict is compatible with mongo >= 5**
 
@@ -872,3 +872,4 @@ connection.close();
 - InsertMany()
 - ReplaceMany()
 - onDelete() // strict, cascade, setNull ...
+- lifeCycle

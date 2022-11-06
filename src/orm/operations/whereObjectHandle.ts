@@ -17,7 +17,7 @@ export function getWhereObject(where: any, referenceEntities: ReferenceEntity[],
     }
 
     const comparisonKeys = ['$eq', '$ne'];
-    const arrayKeys = ['$in', '$ni', '$all'];
+    const arrayKeys = ['$in', '$nin', '$all'];
     const arrayLogicalKeys = ['$or', '$and', '$nor'];
     const logicalKeys = ['$not'];
 

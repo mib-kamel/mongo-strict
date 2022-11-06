@@ -8,6 +8,7 @@ export class QueryBuilder {
     private sortOption: object;
     private debugOption: boolean;
     private cacheOption: any;
+    private populateOptions: string | string[];
 
     private findFunction: Function;
     private findOneFunction: Function;
@@ -56,6 +57,11 @@ export class QueryBuilder {
         return this;
     }
 
+    populate = (populateOptions: string | string[]) => {
+        this.populateOptions = populateOptions;
+        return this;
+    }
+
     private getStoredFindOptions = () => {
         const options: FindOptions = {};
 
@@ -66,6 +72,7 @@ export class QueryBuilder {
         this.sortOption && (options.sort = this.sortOption);
         this.cacheOption !== undefined && (options.cache = this.cacheOption);
         this.debugOption !== undefined && (options.debug = this.debugOption);
+        this.populateOptions !== undefined && (options.populate = this.populateOptions);
 
         return options;
     }
