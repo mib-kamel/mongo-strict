@@ -227,7 +227,7 @@ export async function count(
 
     const isWhere = where && Object.keys(where)?.length;
     const whereKeys = getDeepKeys(where);
-    const isLookup = whereKeys.some((key) => isValidRefKey(key, referenceEntities)) && !isAllFirstLevelIds(whereKeys);
+    const isLookup = whereKeys.some((key) => isValidRefKey(key, referenceEntities));
 
     const aggregateArray = [];
 
@@ -440,13 +440,6 @@ const isValidRefKey = (key: string, referenceEntities: ReferenceEntity[]) => {
     }
 
     return false;
-}
-
-const isAllFirstLevelIds = (keys: string[]) => {
-    return keys.every((key) => {
-        if (key.split('.').length === 1) return true;
-        return key.split('.').length === 2 && key.indexOf('._id') === key.length - 4;
-    });
 }
 
 const addId_toProject = (selectItems: string[], referenceEntities: ReferenceEntity[]) => {
