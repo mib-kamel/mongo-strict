@@ -1,5 +1,5 @@
 import { _EntityProperties, FindOptions, ReferenceEntity } from './interfaces/orm.interfaces';
-import { find as ormFind, count as ormCount, getFindAggregateArray as ormGetFindAggregateArray } from './operations/orm.find';
+import { find as ormFind, count as ormCount, getFindAggregateArray as ormGetFindAggregateArray, getCountAggregateArray as omrGetCountAggregateArray } from './operations/orm.find';
 import { insertOne, validateInsert } from './operations/orm.insert';
 import update from './operations/orm.update';
 import { deleteMany, deleteOne } from './operations/orm.delete';
@@ -111,7 +111,12 @@ export class ORMRepo {
             getFindAggregateArray: (findOptions: FindOptions) => {
                 if (typeof findOptions !== "object") { findOptions = {}; }
                 return ormGetFindAggregateArray(this.collection, this.defaultSelectFields, findOptions, this.referenceEntities, this.repositoryptions, this.collectionName);
-            }, getRepositoriesMap: () => {
+            },
+            getCountAggregateArray: (findOptions: FindOptions) => {
+                if (typeof findOptions !== "object") { findOptions = {}; }
+                return omrGetCountAggregateArray(findOptions, this.referenceEntities, this.repositoryptions);
+            },
+            getRepositoriesMap: () => {
                 return getRepositoriesMap();
             },
             getWhereObject: (where: any) => {

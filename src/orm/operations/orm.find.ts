@@ -208,6 +208,7 @@ export async function count(
     collectionName: string
 ): Promise<any> {
     checkAllFindOptionsKeysValid(findOptions);
+    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
 
     let cacheKey;
 
@@ -221,6 +222,34 @@ export async function count(
             return queryCache.get(cacheKey);
         }
     }
+
+    const aggregateArray = getCountAggregateArray(findOptions, referenceEntities, repositoryOptions);
+
+    if (isDebug) {
+        console.log(JSON.stringify(aggregateArray, null, 4));
+    }
+
+    const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
+
+    const count = res[0]?.count[0]?.total || 0;
+
+    if (!!cacheKey) {
+        let cacheTimeout = repositoryOptions.cacheTimeout;
+        if (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout))) {
+            cacheTimeout = Number(findOptions.cache.timeout);
+        }
+        queryCache.set(cacheKey, count, cacheTimeout);
+    }
+
+    return count;
+}
+
+export function getCountAggregateArray(
+    findOptions: FindOptions,
+    referenceEntities: ReferenceEntity[],
+    repositoryOptions: RepositoryOptions,
+): any[] {
+    checkAllFindOptionsKeysValid(findOptions);
 
     let where = findOptions.where || {};
     where = getWhereObject(where, referenceEntities);
@@ -248,25 +277,7 @@ export async function count(
         }
     });
 
-    const isDebug = findOptions.debug === true || (findOptions.debug !== false && repositoryOptions.debug === true);
-
-    if (isDebug) {
-        console.log(JSON.stringify(aggregateArray, null, 4));
-    }
-
-    const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
-
-    const count = res[0]?.count[0]?.total || 0;
-
-    if (!!cacheKey) {
-        let cacheTimeout = repositoryOptions.cacheTimeout;
-        if (typeof findOptions.cache === 'object' && !isNaN(Number(findOptions.cache?.timeout))) {
-            cacheTimeout = Number(findOptions.cache.timeout);
-        }
-        queryCache.set(cacheKey, count, cacheTimeout);
-    }
-
-    return count;
+    return aggregateArray;
 }
 
 const selectItemsToProject = (selectItems) => {
