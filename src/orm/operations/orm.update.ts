@@ -45,7 +45,14 @@ export default function update(
             const res = await collection.findOneAndUpdate(where, { $set: updateData }, { returnDocument: 'after', returnNewDocument: true });
             dataObjectIdToString(res.value, referenceEntities);
             return res.value;
-        } catch (err) {
+        } catch (err: any) {
+            if (err.code === 11000 || err.code === 11001) {
+                throw {
+                    message: 'Existing unique keys',
+                    // existingUniqueKeys: foundUniqueKeys,
+                    errorMessages: ['Unique key already exists']
+                };
+            }
             throw err;
         }
     }
@@ -71,7 +78,14 @@ export default function update(
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
             return collection.updateMany(where, { $set: updateData });;
-        } catch (err) {
+        } catch (err: any) {
+            if (err.code === 11000 || err.code === 11001) {
+                throw {
+                    message: 'Existing unique keys',
+                    // existingUniqueKeys: foundUniqueKeys,
+                    errorMessages: ['Unique key already exists']
+                };
+            }
             throw err;
         }
     }
@@ -99,7 +113,14 @@ export default function update(
             repositoryOptions?.autoUpdatedAt && (updateData[updatedAtKey] = new Date());
 
             return collection.replaceOne(where, updateData);
-        } catch (err) {
+        } catch (err: any) {
+            if (err.code === 11000 || err.code === 11001) {
+                throw {
+                    message: 'Existing unique keys',
+                    // existingUniqueKeys: foundUniqueKeys,
+                    errorMessages: ['Unique key already exists']
+                };
+            }
             throw err;
         }
     }

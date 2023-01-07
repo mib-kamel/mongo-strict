@@ -1,7 +1,9 @@
 import { ObjectId } from "mongodb";
-import { ReferenceEntity, RELATION_TYPES, _EntityProperties } from "../interfaces/orm.interfaces";
+import { ReferenceEntity, RELATION_TYPES, RepositoryOptions, _EntityProperties } from "../interfaces/orm.interfaces";
 
-export function getEntityProperties(entity: any, defaultSelectFields = [], EntityClass: any) {
+export function getEntityProperties(entity: any, repositoryOptions: RepositoryOptions, EntityClass: any) {
+    let defaultSelectFields = repositoryOptions.defaultSelectFields || [];
+    let isAutoCreateUniqueIndex = !!repositoryOptions.isAutoCreateUniqueIndex;
     let schema = entity.ORM_SCHEMA || {};
 
     let referenceEntities = Object.keys(schema).filter((key) => schema[key].refersTo).map((key) => {
@@ -17,9 +19,37 @@ export function getEntityProperties(entity: any, defaultSelectFields = [], Entit
         }
     });
 
-    let uniqueKeys = Object.keys(schema).filter((key) => schema[key].uniqueOptions !== undefined).map((key) => {
-        return schema[key].uniqueOptions;
-    });
+    const uniqueOptions = Object.keys(schema)
+        .filter((key) => schema[key].uniqueOptions !== undefined) || [];
+
+    let uniqueKeys = [];
+    let uniqueIndexes = [];
+
+    if (isAutoCreateUniqueIndex) {
+        uniqueKeys = uniqueOptions
+            .filter((key) => schema[key].uniqueOptions.isAutoCreateUniqueIndex === false)
+            .map((key) => {
+                return schema[key].uniqueOptions;
+            });
+
+        uniqueIndexes = uniqueOptions
+            .filter((key) => schema[key].uniqueOptions.isAutoCreateUniqueIndex !== false)
+            .map((key) => {
+                return schema[key].uniqueOptions;
+            });
+    } else {
+        uniqueKeys = uniqueOptions
+            .filter((key) => schema[key].uniqueOptions.isAutoCreateUniqueIndex !== true)
+            .map((key) => {
+                return schema[key].uniqueOptions;
+            });
+
+        uniqueIndexes = uniqueOptions
+            .filter((key) => schema[key].uniqueOptions.isAutoCreateUniqueIndex === true)
+            .map((key) => {
+                return schema[key].uniqueOptions;
+            });
+    }
 
     if (!uniqueKeys) {
         uniqueKeys = [];
@@ -55,6 +85,7 @@ export function getEntityProperties(entity: any, defaultSelectFields = [], Entit
     const entityProperties: _EntityProperties = {
         referenceEntities,
         uniqueKeys,
+        uniqueIndexes,
         defaultValues,
         requiredKeys,
         defaultSelectFields,
@@ -74,6 +105,7 @@ export function isObjectID(id) {
     } catch (e) {
         return false
     }
+
     return true
 }
 

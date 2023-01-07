@@ -11,7 +11,7 @@ const databaseName = process.env.TEST_DATABASE_NAME || 'relation_ORM_test_DB';
 const mongoHostName = process.env.DATABASE_HOST_NAME || 'localhost';
 
 export async function createTestingModule() {
-    await createConnection({
+    createConnection({
         uri: `mongodb://${mongoHostName}:27017/${databaseName}`
     }, { debug: false });
 
@@ -22,7 +22,7 @@ export async function createTestingModule() {
     const repo5 = new Test5Repository();
     const refCheckRepo = new RefCheckRepository();
 
-    initDBMap();
+    await initDBMap();
 
     return {
         repo1, repo2, repo3, repo4, repo5, refCheckRepo

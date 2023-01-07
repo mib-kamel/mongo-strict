@@ -2,12 +2,12 @@ import { REPOSITORIES_DEFAULT_OPTIONS } from "./contsants/constants";
 import { _EntityProperties, RepositoryOptions } from "./interfaces/orm.interfaces";
 import { ORMRepo } from "./orm.repo";
 import { setRefCheckCollection } from "./utils/refCheckCollection";
+import refCollectionHandle from "./utils/refCollection";
 import initRefsMap from "./utils/refsMap";
+import handleUniqueIndexes from "./utils/uniqueIndexes";
 import { getEntityProperties } from "./utils/utils";
 
 const { MongoClient } = require("mongodb");
-const REF_CHECK_COLLECTION_NAME = "STRICT_ORM__REC_CHECK_COLLECTION++";
-const REF_CHECK_COLLECTION_RECORD = { message: "If you are using MONGO_STRICT please leave this collection as it helps the ORM to make the reference checks fastly" };
 
 interface DBConnection {
     uri: string;
@@ -18,34 +18,22 @@ class MongoStrict {
     private repositoriesMap = new Map();
     private repositoriesOptions = {};
 
-    createConnection = async (connection: DBConnection, repositoriesOptions: RepositoryOptions = {}) => {
+    createConnection = (connection: DBConnection, repositoriesOptions: RepositoryOptions = {}) => {
         // if (typeof connection.uri !== 'string') {
         //     throw 'uri string is required to start a connection';
         // }
         this.repositoriesOptions = { ...REPOSITORIES_DEFAULT_OPTIONS, ...repositoriesOptions };
-        this.connection = await new MongoClient(connection.uri);
-        let refCheckCollection = await this.connection.db().collection(REF_CHECK_COLLECTION_NAME);
-        if (!refCheckCollection) {
-            await this.connection.db().createCollection(REF_CHECK_COLLECTION_NAME);
-            refCheckCollection = this.connection.db().getCollection(REF_CHECK_COLLECTION_NAME);
-            await refCheckCollection.insertOne(REF_CHECK_COLLECTION_RECORD);
-        } else {
-            const tmpDataCount = await refCheckCollection.count();
-            if (!tmpDataCount) {
-                await refCheckCollection.insertOne(REF_CHECK_COLLECTION_RECORD);
-            }
-        }
-        setRefCheckCollection(refCheckCollection);
+        this.connection = new MongoClient(connection.uri);
         return this.connection;
     }
 
     addRepository = (EntityClass: any, repositoryOptions: RepositoryOptions = {}) => {
+        repositoryOptions = { ...this.repositoriesOptions, ...repositoryOptions };
         const entity: any = new EntityClass();
         const collectionName = entity.ORM_ENTITY_OPTIONS.name;
         const mongoCollection = this.connection.db().collection(collectionName);
-        const entityProperties: _EntityProperties = getEntityProperties(entity, repositoryOptions.defaultSelectFields, EntityClass);
 
-        repositoryOptions = { ...this.repositoriesOptions, ...repositoryOptions };
+        const entityProperties: _EntityProperties = getEntityProperties(entity, repositoryOptions, EntityClass);
 
         const ORM = new ORMRepo(mongoCollection, entityProperties, repositoryOptions, collectionName);
 
@@ -55,11 +43,13 @@ class MongoStrict {
             repositoryOptions
         });
 
-        return ORM
+        return ORM;
     }
 
-    initDBMap = () => {
+    initDBMap = async () => {
         initRefsMap(this.repositoriesMap);
+        await refCollectionHandle(this.connection.db());
+        await handleUniqueIndexes(this.repositoriesMap, this.connection.db());
     }
 
     getConnectionManager = () => {

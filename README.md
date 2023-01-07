@@ -65,7 +65,7 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
       - [Existing Unique Keys](#existing-unique-keys)
       - [Not Found Reference Keys](#not-found-reference-keys)
     - [deleteOne(filter: any | id: string)](#deleteonefilter-any--id-string)
-    - [deleteMany(filter: any | ids: string[])](#deletemanyfilter-any--ids-string)
+    - [deleteMany(filter: any | ids: string\[\])](#deletemanyfilter-any--ids-string)
     - [getCollection()](#getcollection)
     - [getDB()](#getdb)
     - [getConnectionManager()](#getconnectionmanager)
@@ -86,7 +86,7 @@ Create your Database connection with the connection URL
 ```JavaScript
 import { createConnection } from 'mongo-strict';
 
-await createConnection({
+createConnection({
     uri: `mongodb://localhost:27017/fancy-cvs`
 });
 ```
@@ -192,7 +192,7 @@ import { CVRepository } from './cv.repository';
 import { UserRepository } from './user.repository';
 
 const start = async () => {
-    await createConnection({
+    createConnection({
         uri: `mongodb://localhost:27017/fancy-cvs`
     });
 
@@ -201,7 +201,7 @@ const start = async () => {
     const sectionRepository = new SectionRepository();
 
     // Should be called after initializing all the repositories
-    initDBMap();
+    await initDBMap();
 
     let insertedUser;
     try {
@@ -260,7 +260,7 @@ You should pass the connection options which should contains the connection uri.
 You can pass the default repository Options which will be applied to the all repositories.
 
 ```JavaScript
-await createConnection({
+createConnection({
     uri: `mongodb://localhost:27017/fancy-cvs`
 }, repositoryOptions);
 ```
@@ -289,6 +289,7 @@ addRepository(EntityClass, repositoryOptions)
 |    cacheTimeout    |      default 1000 MS       |
 |    entityClassValidator    |      Entity Class Validator Options (defaults: {whitelist: true, forbidNonWhitelisted: true, validationError: { target: false }})       |
 |    reverseRefering    |      Determine if you want to be able to select a reference from the refers to collection (default : false), **BE CAREFUL BEFORE ENABLING THIS BECAUSE IT MAY AFFECT YOUR APP PERFORMANCE**       |
+| isAutoCreateUniqueIndex | You can force all unique keys implementation by creating a MongoDB unique index by setting isAutoCreateUniqueIndex to true |
 
 ## Entity Class
 
@@ -348,8 +349,14 @@ You can mark any key as unique key through the collection.
 You can determine if you need it case sensitive or not.
 
 ```JavaScript
-@IsUnique({message 'The use email should be unique', isIgnoreCase: true}) // isIgnoreCase default false
+@IsUnique({message 'The use email should be unique', isIgnoreCase: boolean, isAutoCreateUniqueIndex: boolean}) // isIgnoreCase default false // isAutoCreateUniqueIndex default false
 userEmail;
+```
+
+```note
+By default, mongo-strict will implement the unique property manually by checking the existence of the unique key by a normal find query before the record insert/update.
+
+You can force unique key implementation by creating a MongoDB unique index by setting isAutoCreateUniqueIndex to true
 ```
 
 #### Default
@@ -394,7 +401,7 @@ user;
 You should call initDBMap() function after initializing all the repositories to inialize your database reference Map, Example:
 
 ```Javascript
-    await createConnection({
+    createConnection({
         uri: `mongodb://localhost:27017/fancy-cvs`
     });
 
@@ -403,7 +410,7 @@ You should call initDBMap() function after initializing all the repositories to 
     const sectionRepository = new SectionRepository();
 
     // Should be called after initializing all the repositories
-    initDBMap();
+    await initDBMap();
 
     // You can find the complete example in the Samples folder
 ```

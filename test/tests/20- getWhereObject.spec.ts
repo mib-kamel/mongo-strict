@@ -12,7 +12,7 @@ describe('AppController', () => {
     const validObjectId = "5da8c5f02ca1a60e086ffc80";
 
     beforeAll(async () => {
-        await createConnection({
+        createConnection({
             uri: `mongodb://localhost:27017/fancy-cvs`
         });
 
@@ -21,7 +21,7 @@ describe('AppController', () => {
         sectionRepository = new SectionRepository();
 
         // Should be called after initializing all the repositories
-        initDBMap();
+        await initDBMap();
     });
 
     describe('root', () => {

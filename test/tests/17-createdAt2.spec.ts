@@ -13,7 +13,7 @@ describe('AppController', () => {
 
     beforeAll(async () => {
         try {
-            await createConnection({
+            createConnection({
                 uri: `mongodb://localhost:27017/cr`
             }, {
                 autoCreatedAt: false,
@@ -29,7 +29,7 @@ describe('AppController', () => {
             cr5epository = new CR5Repository();
 
             // Should be called after initializing all the repositories
-            initDBMap();
+            await initDBMap();
 
         } catch (e: any) {
             expect(e).toBeUndefined();

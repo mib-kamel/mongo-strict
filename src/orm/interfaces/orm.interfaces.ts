@@ -36,6 +36,7 @@ export interface _EntityProperties {
     defaultSelectFields: string[];
     referenceEntities: ReferenceEntity[];
     uniqueKeys: string[];
+    uniqueIndexes: string[];
     dataValidators: any;
     requiredKeys: string[];
     defaultValues: any[];
@@ -51,6 +52,7 @@ export interface RepositoryOptions {
     defaultSelectFields?: string[];
     cacheTimeout?: number;
     reverseRefering?: boolean;
+    isAutoCreateUniqueIndex?: boolean;
     entityClassValidatorOptions?: ValidatorOptions;
     lifecycle?: Lifecycle;
 }

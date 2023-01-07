@@ -18,7 +18,7 @@ describe('AppController', () => {
     let SECTIONS_COUNT = 300;
 
     beforeAll(async () => {
-        await createConnection({
+        createConnection({
             uri: `mongodb://localhost:27017/fancy-cvs`
         });
 
@@ -27,7 +27,7 @@ describe('AppController', () => {
         sectionRepository = new SectionRepository();
 
         // Should be called after initializing all the repositories
-        initDBMap();
+        await initDBMap();
     });
 
     describe('root', () => {

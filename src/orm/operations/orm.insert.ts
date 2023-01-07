@@ -29,7 +29,14 @@ export async function insertOne(
 
         dataObjectIdToString(insertData, referenceEntities);
         return insertData;
-    } catch (err) {
+    } catch (err: any) {
+        if (err.code === 11000 || err.code === 11001) {
+            throw {
+                message: 'Existing unique keys',
+                // existingUniqueKeys: foundUniqueKeys,
+                errorMessages: ['Unique key already exists']
+            };
+        }
         throw err;
     }
 }

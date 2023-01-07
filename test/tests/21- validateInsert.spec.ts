@@ -14,7 +14,7 @@ describe('AppController', () => {
     let insertedSections: any[] = [];
 
     beforeAll(async () => {
-        await createConnection({
+        createConnection({
             uri: `mongodb://localhost:27017/fancy-cvs`
         });
 
@@ -24,7 +24,7 @@ describe('AppController', () => {
         userIndexRepository = new UserIndexRepository();
 
         // Should be called after initializing all the repositories
-        initDBMap();
+        await initDBMap();
     });
 
     describe('root', () => {

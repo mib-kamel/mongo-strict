@@ -106,6 +106,10 @@ export class ORMRepo {
         return new QueryBuilder(this.find, this.findOne, this.count, this.findAndCount);
     }
 
+    listIndexes = async () => {
+        return this.collection.listIndexes().toArray();
+    }
+
     _test = () => {
         return {
             getFindAggregateArray: (findOptions: FindOptions) => {
