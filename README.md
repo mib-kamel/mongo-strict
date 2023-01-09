@@ -39,9 +39,9 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
       - [IsUnique](#isunique)
       - [Default](#default)
       - [RefersTo](#refersto)
-      - [RefersTo Options](#refersto-options)
+        - [RefersTo Options](#refersto-options)
       - [Referers](#referers)
-      - [Referer Options](#referer-options)
+        - [Referer Options](#referer-options)
   - [Initialize the DB Map](#initialize-the-db-map)
   - [Operations](#operations)
     - [find(findOptions: FindOptions)](#findfindoptions-findoptions)
@@ -384,7 +384,7 @@ You can mark any key as a reference key.
 user;
 ```
 
-#### RefersTo Options
+##### RefersTo Options
 
 | Option | Description |
 |--------|-------------|
@@ -459,7 +459,7 @@ userRepository.find({select: ['cvs.cvName']})
 
 **The problem here that the user repository contains nothing about the CV repository so to get the user CVs the DB will have to loop through all the CV entities to get the CVs which refer to the wanted user which is not good for the performance**
 
-#### Referer Options
+##### Referer Options
 
 | Option | Description |
 |--------|-------------|
