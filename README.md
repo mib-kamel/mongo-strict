@@ -40,8 +40,8 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
       - [Default](#default)
       - [RefersTo](#refersto)
         - [RefersTo Options](#refersto-options)
-      - [Referers](#referers)
-        - [Referer Options](#referer-options)
+    - [Referers](#referers)
+      - [Referer Options](#referer-options)
   - [Initialize the DB Map](#initialize-the-db-map)
   - [Operations](#operations)
     - [find(findOptions: FindOptions)](#findfindoptions-findoptions)
@@ -396,7 +396,7 @@ user;
 |    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
 |    message    |       The error message in case of insert or update refers to entity not found      |
 
-#### Referers
+### Referers
 
 Suppose we have user and CV repositories but the CV repo is the container of the user Id.
 
@@ -459,7 +459,7 @@ userRepository.find({select: ['cvs.cvName']})
 
 **The problem here that the user repository contains nothing about the CV repository so to get the user CVs the DB will have to loop through all the CV entities to get the CVs which refer to the wanted user which is not good for the performance**
 
-##### Referer Options
+#### Referer Options
 
 | Option | Description |
 |--------|-------------|
