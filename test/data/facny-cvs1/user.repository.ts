@@ -1,7 +1,14 @@
-import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength, IsString, IsOptional } from '../../../src';
+import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength, IsString, IsOptional, Referers } from '../../../src';
 
 @Entity({ name: 'user' })
 class UserEntity {
+    @Referers([{
+        collection: 'cv',
+        key: 'user',
+        as: 'cvs'
+    }])
+    id: string;
+
     @Allow()
     @IsEmail(undefined, { message: "The email should be valid :(" })
     @IsUnique({ isIgnoreCase: true })

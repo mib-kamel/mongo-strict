@@ -6,17 +6,29 @@ export function getEntityProperties(entity: any, repositoryOptions: RepositoryOp
     let isAutoCreateUniqueIndex = !!repositoryOptions.isAutoCreateUniqueIndex;
     let schema = entity.ORM_SCHEMA || {};
 
-    let referenceEntities = Object.keys(schema).filter((key) => schema[key].refersTo).map((key) => {
+    let referenceEntities: any = Object.keys(schema).filter((key) => schema[key].refersTo).map((key) => {
         return {
             key,
             refersToCollectionName: schema[key].refersTo.collection,
             refersToKey: schema[key].refersTo.key,
             maxDepth: !isNaN(schema[key].refersTo.maxDepth) ? schema[key].refersTo.maxDepth : 1,
             isArray: !!schema[key].refersTo.isArray,
-            reverseRefering: schema[key].refersTo.reverseRefering,
-            reverseReferingAs: schema[key].refersTo.reverseReferingAs,
             type: schema[key].refersTo.type
         }
+    });
+
+    Object.keys(schema).filter((key) => schema[key].referers).forEach((key) => {
+        const referers = schema[key].referers;
+
+        referers.forEach((referer: any) => {
+            referenceEntities.push({
+                key,
+                _refererCollectionName: referer.collection,
+                _refererKey: referer.key,
+                as: referer.as,
+                maxDepth: !isNaN(referer.maxDepth) ? referer.maxDepth : 1,
+            })
+        })
     });
 
     const uniqueOptions = Object.keys(schema)

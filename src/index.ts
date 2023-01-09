@@ -5,5 +5,6 @@ export * from './decorators/IsRequired';
 export * from './decorators/RefersTo';
 export * from './decorators/DefaultDecorator';
 export * from './decorators/Entity';
+export * from './decorators/Referers';
 export * from './orm/orm.operations';
 export * from 'class-validator';

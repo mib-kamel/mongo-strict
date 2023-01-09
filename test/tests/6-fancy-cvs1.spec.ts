@@ -96,7 +96,7 @@ describe('AppController', () => {
             let userData;
             try {
                 userData = await userRepository.findOne({
-                    select: ["id", "name", "cv.cvName", "cv.currentPosition", "cv.sections.sectionTitle"]
+                    select: ["id", "name", "cvs.cvName", "cvs.currentPosition", "cvs.sections.sectionTitle"]
                 })
             } catch (e) {
                 expect(e).toBeUndefined();
@@ -105,14 +105,14 @@ describe('AppController', () => {
             expect(userData).toBeDefined();
             expect(userData?.id).toBeDefined();
             expect(userData?.name).toBeDefined();
-            expect(userData?.cv).toBeDefined();
-            expect(userData?.cv?.length).toEqual(1);
-            expect(userData?.cv[0]).toBeDefined();
-            expect(typeof userData?.cv[0].id).toBe('string');
-            expect(userData?.cv[0]?.cvName).toBeDefined();
-            expect(userData?.cv[0]?.currentPosition).toBeDefined();
-            expect(userData?.cv[0]?.sections?.length).toEqual(6);
-            expect(userData?.cv[0]?.sections[0]?.sectionTitle).toBeDefined();
+            expect(userData?.cvs).toBeDefined();
+            expect(userData?.cvs?.length).toEqual(1);
+            expect(userData?.cvs[0]).toBeDefined();
+            expect(typeof userData?.cvs[0].id).toBe('string');
+            expect(userData?.cvs[0]?.cvName).toBeDefined();
+            expect(userData?.cvs[0]?.currentPosition).toBeDefined();
+            expect(userData?.cvs[0]?.sections?.length).toEqual(6);
+            expect(userData?.cvs[0]?.sections[0]?.sectionTitle).toBeDefined();
         });
 
         it('Should get cv user as a string', async () => {

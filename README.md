@@ -1,9 +1,9 @@
 # mongo-strict
 
-![Lines](https://img.shields.io/badge/lines-97.03%25-brightgreen.svg?style=flat)
-![Statements](https://img.shields.io/badge/statements-97.01%25-brightgreen.svg?style=flat)
-![Functions](https://img.shields.io/badge/functions-98.85%25-brightgreen.svg?style=flat)
-![Branches](https://img.shields.io/badge/branches-87.07%25-yellow.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-97.18%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-97.07%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-98.43%25-brightgreen.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-87.45%25-yellow.svg?style=flat)
 
 **mongo-strict is compatible with mongo >= 5**
 
@@ -40,6 +40,8 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
       - [Default](#default)
       - [RefersTo](#refersto)
       - [RefersTo Options](#refersto-options)
+      - [Referers](#referers)
+      - [Referer Options](#referer-options)
   - [Initialize the DB Map](#initialize-the-db-map)
   - [Operations](#operations)
     - [find(findOptions: FindOptions)](#findfindoptions-findoptions)
@@ -53,7 +55,6 @@ mongo-strict gives you the safety of the SQL DBs with keeping the flexibility an
     - [Query Builder](#query-builder)
     - [Find reference Entities](#find-reference-entities)
     - [Populate](#populate)
-      - [Reverse Refering](#reverse-refering)
     - [insertOne](#insertone)
       - [validateInsertData](#validateinsertdata)
     - [Update(filter: object | id: string)](#updatefilter-object--id-string)
@@ -265,6 +266,8 @@ createConnection({
 }, repositoryOptions);
 ```
 
+The repository options will be applied to all added repositories.
+
 [Repository Options](#repository-options)
 
 ## Add Repository
@@ -288,7 +291,6 @@ addRepository(EntityClass, repositoryOptions)
 |    defaultSelectFields    |      default undefined       |
 |    cacheTimeout    |      default 1000 MS       |
 |    entityClassValidator    |      Entity Class Validator Options (defaults: {whitelist: true, forbidNonWhitelisted: true, validationError: { target: false }})       |
-|    reverseRefering    |      Determine if you want to be able to select a reference from the refers to collection (default : false), **BE CAREFUL BEFORE ENABLING THIS BECAUSE IT MAY AFFECT YOUR APP PERFORMANCE**       |
 | isAutoCreateUniqueIndex | You can force all unique keys implementation by creating a MongoDB unique index by setting isAutoCreateUniqueIndex to true |
 
 ## Entity Class
@@ -356,7 +358,7 @@ userEmail;
 ```note
 By default, mongo-strict will implement the unique property manually by checking the existence of the unique key by a normal find query before the record insert/update.
 
-You can force unique key implementation by creating a MongoDB unique index by setting isAutoCreateUniqueIndex to true
+You can force unique index implementation by creating a MongoDB unique index by setting isAutoCreateUniqueIndex to true
 ```
 
 #### Default
@@ -390,11 +392,82 @@ user;
 |    key    |       The key which the refer key refers to      |
 |    as    |       Select the reference as (defaults to the collection name)     |
 |    isArray    |      Determine if the key is an array (for example we may have array of users refer to many users with different Ids) (default false)      |
-|    reverseRefering    |       Determine if want to be able to select the current collection from the refers to collection (default false)     |
-|    reverseReferingAs    |       Select the current key form the refers to collection as      |
 |    maxDepth    |      Max Depth in case of circular references       |
 |    type    |       The relation type =>  RELATION_TYPES.ONE_ONE - RELATION_TYPES.ONE_TO_MANY - RELATION_TYPES.MANY_TO_ONE - RELATION_TYPES.MANY_TO_MANY (default many to one) |
 |    message    |       The error message in case of insert or update refers to entity not found      |
+
+#### Referers
+
+Suppose we have user and CV repositories but the CV repo is the container of the user Id.
+
+```JavaScript
+@Entity({ name: 'user' })
+class UserEntity {
+    @Referers([{
+        collection: 'cv',
+        key: 'user',
+        as: 'cvs'
+    }])
+    id: string;
+
+    @Allow()
+    @IsEmail(undefined, { message: "The email should be valid :(" })
+    @IsUnique({ isIgnoreCase: true })
+    email: string;
+}
+
+@Entity({ name: 'cv' })
+class CVEntity {
+    @Allow()
+    @IsRequired()
+    @IsString()
+    @RefersTo({
+        collection: 'user',
+        key: 'id'
+    })
+    user: string;
+
+    @Allow()
+    @IsRequired()
+    @IsString()
+    cvName: string;
+
+    @Allow()
+    @IsRequired()
+    @IsString()
+    currentPosition: string;
+}
+```
+
+We can easly get the user of any CV by doing:
+
+```JavaScript
+cvRepository.find({select: ['user.email', 'user.id']})
+```
+
+But in case if we need to get the user CVs we will need to use the @Referes().
+
+In the User entity we have nothing indicates that this user has CV/s.
+
+Fortunutly mongo-strict supports this operation by using the @Referers decorator as the above example.
+
+Then we can do:
+
+```JavaScript
+userRepository.find({select: ['cvs.cvName']})
+```
+
+**The problem here that the user repository contains nothing about the CV repository so to get the user CVs the DB will have to loop through all the CV entities to get the CVs which refer to the wanted user which is not good for the performance**
+
+#### Referer Options
+
+| Option | Description |
+|--------|-------------|
+|    collection    | The collection which refers to the current key|
+|    key    |       The key in the referer's collection which refers to the current key    |
+|    as    |       Select the referer as     |
+
+**The @Referers Decorator accepts an array of referers Object**
 
 ## Initialize the DB Map
 
@@ -593,66 +666,6 @@ Once can populate the referenceies by any depth:
 userRepository.find({populate: ['cvs.ref.ref.ref']});
 // this will poplate all the sub referncies
 ```
-
-#### Reverse Refering
-
-Suppose we have user and CV repositories but the CV repo is the container of the user Id.
-
-```JavaScript
-@Entity({ name: 'user' })
-class UserEntity {
-    @Allow()
-    @IsEmail(undefined, { message: "The email should be valid :(" })
-    @IsUnique({ isIgnoreCase: true })
-    email: string;
-}
-
-@Entity({ name: 'cv' })
-class CVEntity {
-    @Allow()
-    @IsRequired()
-    @IsString()
-    @RefersTo({
-        collection: 'user',
-        key: 'id',
-        reverseRefering: true,
-        reverseReferingAs: 'cv'
-    })
-    user: string;
-
-    @Allow()
-    @IsRequired()
-    @IsString()
-    cvName: string;
-
-    @Allow()
-    @IsRequired()
-    @IsString()
-    currentPosition: string;
-}
-```
-
-We can easly get the user of any CV by doing:
-
-```JavaScript
-cvRepository.find({select: ['user.email', 'user.id']})
-```
-
-But in case if we need to get the user CVs we will need to use the **Reverse Refering**.
-
-In the User entity we have nothing indicates that this user has CV/s.
-
-Fortunutly mongo-strict supports this operation but it will not be good for the app performance.
-
-So to be able to use that we had to add => reverseRefering: true, reverseReferingAs: 'cv' **(Be carefull before doing that)**.
-
-Then we can do:
-
-```JavaScript
-userRepository.find({select: ['cv.cvName']})
-```
-
-**The problem here that the user repository contains nothing about the CV repository so to get the user CVs the DB will have to loop through all the CV entities to get the CVs which refer to the wanted user**
 
 ### insertOne
 

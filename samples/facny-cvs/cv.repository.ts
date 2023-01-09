@@ -1,14 +1,20 @@
-import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, IsBoolean, Allow } from 'mongo-strict';
+import { addRepository, Entity, IsRequired, ORMOperations, RefersTo, IsString, Referers, Allow } from 'mongo-strict';
 
 @Entity({ name: 'cv' })
 class CVEntity {
+    @Referers([{
+        collection: 'section',
+        key: 'cv',
+        as: 'sections'
+    }])
+    id: string;
+
     @Allow()
     @IsRequired()
     @IsString()
     @RefersTo({
         collection: 'user',
-        key: 'id',
-        reverseReferingAs: 'cv'
+        key: 'id'
     })
     user: string;
 

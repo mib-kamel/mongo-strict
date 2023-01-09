@@ -4,7 +4,7 @@ import { CVRepository } from './cv.repository';
 import { UserRepository } from './user.repository';
 
 const start = async () => {
-    await createConnection({
+    createConnection({
         uri: `mongodb://localhost:27017/fancy-cvs`
     });
 
@@ -13,7 +13,7 @@ const start = async () => {
     const sectionRepository = new SectionRepository();
 
     // Should be called after initializing all the repositories
-    initDBMap();
+    await initDBMap();
 
     let insertedUser;
     try {
