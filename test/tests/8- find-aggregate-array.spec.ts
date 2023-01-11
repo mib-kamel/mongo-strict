@@ -159,7 +159,7 @@ describe('AppController', () => {
         });
 
         it('Test Aggregate Array 9', async () => {
-            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs.id': -1 }, where: { 'cvs.name': "Mo" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'] });
+            const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs.id': -1 }, where: { 'cvs.name': "Mo" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'], limit: "-" });
 
             const $lookup = aggregateArray[0].$lookup;
             const $match = aggregateArray[1]?.$match;
@@ -202,7 +202,7 @@ describe('AppController', () => {
     });
 
     it('Test Aggregate Array 11', async () => {
-        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs': -1 }, where: { 'cvs': "6309c6f839fc4980aeb34677" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'], limit: 20 });
+        const aggregateArray = userRepository._testOperations().getFindAggregateArray({ sort: { 'cvs': -1 }, where: { 'cvs': "6309c6f839fc4980aeb34677" }, select: ['cvs.ide', 'cvs.eid', 'cvs.sections'], limit: '20' });
 
         const $match = aggregateArray[0]?.$match;
         const $sort = aggregateArray[1]?.$sort;
