@@ -88,7 +88,7 @@ export function getFindAggregateArray(Repository,
     repositoryOptions: RepositoryOptions,
     collectionName: string
 ) {
-    const takeOption = !isNaN(Number(findOptions.limit)) ? parseInt(String(findOptions.limit)) : PAGINATION_OPTIONS_DEFAULTS.limit;
+    const takeOption = !isNaN(Number(findOptions.limit)) ? parseInt(String(findOptions.limit)) : undefined;
     const skipOption = !isNaN(Number(findOptions.skip))
         ? findOptions.skip
         : PAGINATION_OPTIONS_DEFAULTS.skip;
@@ -181,9 +181,11 @@ export function getFindAggregateArray(Repository,
         );
     }
 
-    aggregateArray.push(
-        { $limit: takeOption }
-    );
+    if (!isNaN(takeOption)) {
+        aggregateArray.push(
+            { $limit: takeOption }
+        );
+    }
 
     if (!lookup_preLimit && lookups?.length) {
         aggregateArray.push(...lookups);

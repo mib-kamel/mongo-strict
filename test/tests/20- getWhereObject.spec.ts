@@ -388,7 +388,7 @@ describe('AppController', () => {
             });
 
             expect(aggregate).toBeDefined();
-            expect(aggregate.length).toBe(4);
+            expect(aggregate.length).toBe(3);
             expect(aggregate[0].$lookup).toBeDefined();
             expect(aggregate[0].$lookup.from).toBe('cv');
             expect(Array.isArray(aggregate[0].$lookup.pipeline)).toBe(true);
@@ -397,7 +397,6 @@ describe('AppController', () => {
             expect(aggregate[0].$lookup.pipeline[1].$lookup.from).toBe('user');
             expect(aggregate[1].$unwind).toBeDefined();
             expect(aggregate[2].$match).toBeDefined();
-            expect(aggregate[3].$limit).toBeDefined();
         });
 
     });
