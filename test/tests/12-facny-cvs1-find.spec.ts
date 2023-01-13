@@ -219,7 +219,7 @@ describe('AppController', () => {
             const targetUser = insertedUsers.find((user) => user.id === cv.user)
             expect(targetUser).toBeDefined();
 
-            const user = await userRepository.findOne({ where: { 'cv.sections.id': sectionId } });
+            const user = await userRepository.findOne({ where: { 'cvs.sections.id': sectionId } });
             expect(targetUser.id).toEqual(user.id);
         });
 

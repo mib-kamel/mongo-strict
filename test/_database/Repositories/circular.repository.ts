@@ -9,8 +9,6 @@ class CircularEntity {
         collection: 'circular',
         key: 'id',
         maxDepth: 3,
-        reverseRefering: true,
-        reverseReferingAs: 'fail'
     })
     parent: string;
 }

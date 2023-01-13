@@ -7,8 +7,7 @@ class SectionEntity {
     @IsString()
     @RefersTo({
         collection: 'cv',
-        key: 'id',
-        reverseReferingAs: 'sections'
+        key: 'id'
     })
     cv: string;
 

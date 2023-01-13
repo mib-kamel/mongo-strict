@@ -1,7 +1,14 @@
-import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, IsDate, MinLength, IsString } from 'mongo-strict';
+import { addRepository, Entity, IsRequired, IsUnique, ORMOperations, Allow, IsEmail, Referers, MinLength, IsString } from 'mongo-strict';
 
 @Entity({ name: 'user' })
 class UserEntity {
+    @Referers([{
+        collection: 'cv',
+        key: 'user',
+        as: 'cvs'
+    }])
+    id: string;
+
     @Allow()
     @IsEmail(undefined, { message: "The email should be valid :(" })
     @IsUnique({ isIgnoreCase: true })

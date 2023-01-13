@@ -8,9 +8,7 @@ class SectionEntity {
     @RefersTo({
         collection: 'cv',
         key: 'id',
-        type: RELATION_TYPES.MANY_TO_ONE,
-        reverseRefering: true,
-        reverseReferingAs: 'sections'
+        type: RELATION_TYPES.MANY_TO_ONE
     })
     cv: string;
 

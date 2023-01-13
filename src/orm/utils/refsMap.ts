@@ -20,42 +20,35 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
 
     repositoriesMap.forEach((value, collectionName) => {
         const referenceEntites = value.entityProperties.referenceEntities;
-        const repositoryOptions = value.repositoryOptions;
 
         for (let i = 0; i < referenceEntites?.length || 0; i++) {
             const ref = referenceEntites[i];
 
-            if (!ref.refersToCollectionName || ref._refererCollectionName || ref.refersToCollectionName === collectionName) continue;
+            if (!ref._refererCollectionName || ref._refererCollectionName === collectionName) continue;
 
-            if (ref.reverseRefering === false ||
-                (ref.reverseRefering !== true && repositoryOptions.reverseRefering === false)) {
+            const refererCollectionProps = repositoriesMap.get(ref._refererCollectionName);
+
+            if (!refererCollectionProps?.entityProperties?.referenceEntities?.length) {
                 continue;
             }
 
-            const refersTo = repositoriesMap.get(ref.refersToCollectionName);
+            const referer = refererCollectionProps.entityProperties.referenceEntities.find((r) => r.key === ref._refererKey);
 
-            if (!refersTo.entityProperties.referenceEntities === undefined) {
-                refersTo.entityProperties.referenceEntities = [];
+            if (!referer) {
+                continue;
             }
 
             let newRelationType = '';
 
-            if (ref.type === RELATION_TYPES.MANY_TO_ONE) {
+            if (referer.type === RELATION_TYPES.MANY_TO_ONE) {
                 newRelationType = RELATION_TYPES.ONE_TO_MANY;
-            } else if (ref.type === RELATION_TYPES.ONE_TO_MANY) {
+            } else if (referer.type === RELATION_TYPES.ONE_TO_MANY) {
                 newRelationType = RELATION_TYPES.MANY_TO_ONE;
             } else {
                 newRelationType = ref.type;
             }
 
-            refersTo.entityProperties.referenceEntities.push({
-                key: ref.refersToKey,
-                _refererCollectionName: collectionName,
-                _refererKey: ref.key,
-                as: ref.reverseReferingAs || collectionName,
-                type: newRelationType,
-                maxDepth: ref.maxDepth
-            })
+            ref.type = newRelationType;
         }
     });
 
@@ -70,9 +63,18 @@ export default function initRefsMap(repositoriesMap: Map<string, any>) {
 }
 
 function checkReferenceEntity(ref: ReferenceEntity) {
-    if (!ref.refersToCollectionName || !ref.refersToKey) {
+    if (ref.refersToCollectionName && !ref.refersToKey) {
         throw new Error("Invalid Reference Entity - " + JSON.stringify(ref));
     }
+
+    if (ref._refererCollectionName && (!ref._refererKey || !ref.as)) {
+        throw new Error("Invalid Reference Entity - " + JSON.stringify(ref));
+    }
+
+    if (ref.refersToCollectionName && ref._refererCollectionName) {
+        throw new Error("Invalid Reference Entity - " + JSON.stringify(ref));
+    }
+
 }
 
 function extendReferenceEntities(repositoriesMap: any, parent: ReferenceEntity, depth, circulatDepth = 0, parents) {

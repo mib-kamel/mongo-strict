@@ -51,7 +51,6 @@ export interface RepositoryOptions {
     debug?: boolean;
     defaultSelectFields?: string[];
     cacheTimeout?: number;
-    reverseRefering?: boolean;
     isAutoCreateUniqueIndex?: boolean;
     entityClassValidatorOptions?: ValidatorOptions;
     lifecycle?: Lifecycle;
