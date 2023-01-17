@@ -1,0 +1,10 @@
+import { ReferenceEntity } from "../interfaces/orm.interfaces";
+export declare function checkReferenceEntities(collection: any, referenceEntities: any, updateData: any): Promise<boolean>;
+export declare function updateRefObjectIdsKeys(referenceEntities: any, refData: any): any;
+export declare function checkRequiredKeys(requiredKeys: any, insertData: any): void;
+export declare const validateData: (EntityDataValidator: any, insertData: any, repositoryOptions: any, isPartial?: boolean) => Promise<void>;
+export declare function fillDefaultValue(defaultValues: any, insertData: any): void;
+export declare function checkDuplicatedUniqueKeys(uniqueKeys: any, updateData: any): void;
+export declare function getCurrentReference(key: string, referenceEntities: ReferenceEntity[]): any;
+export declare function isRefersToId(referenceEntity: ReferenceEntity): boolean;
+export declare function isId(searchKey: any): boolean;
