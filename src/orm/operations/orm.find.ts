@@ -17,7 +17,7 @@ const PAGINATION_OPTIONS_DEFAULTS = {
     sort: undefined
 }
 
-const FIND_KEYS = ['where', 'select', 'skip', 'limit', 'selectFields', 'sort', 'cache', 'debug', 'populate']
+const FIND_KEYS = ['where', 'select', 'skip', 'limit', 'selectFields', 'sort', 'cache', 'debug', 'populate', 'collation']
 
 const checkAllFindOptionsKeysValid = (findOptions) => {
     const keys = Object.keys(findOptions);
@@ -64,7 +64,13 @@ export async function find(
         console.log(JSON.stringify(aggregateArray, null, 4));
     }
 
-    const res = await Repository.aggregate(aggregateArray).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
+    const aggregateOptions = {};
+
+    if (findOptions.collation) {
+        aggregateOptions['collation'] = findOptions.collation;
+    }
+
+    const res = await Repository.aggregate(aggregateArray, aggregateOptions).maxTimeMS(repositoryOptions.maxFindTimeMS).toArray();
 
     dataObjectIdToString(res, referenceEntities);
 

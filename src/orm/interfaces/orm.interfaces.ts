@@ -17,6 +17,7 @@ export interface FindOptions {
     cache?: CacheOptions | boolean;
     debug?: boolean;
     populate?: string | string[];
+    collation?: any;
 }
 
 export interface ReferenceEntity {
