@@ -85,7 +85,7 @@ function getEntityProperties(entity, repositoryOptions, EntityClass) {
 }
 exports.getEntityProperties = getEntityProperties;
 function isObjectID(id) {
-    if (!(id === null || id === void 0 ? void 0 : id.toString()) || typeof id !== 'object') {
+    if (!(id === null || id === void 0 ? void 0 : id.toString()) || typeof id !== 'object' || Array.isArray(id)) {
         return false;
     }
     try {
