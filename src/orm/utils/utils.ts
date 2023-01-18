@@ -96,7 +96,7 @@ export function getEntityProperties(entity: any, repositoryOptions: RepositoryOp
 }
 
 export function isObjectID(id) {
-    if (!id?.toString() || typeof id !== 'object') {
+    if (!id?.toString() || typeof id !== 'object' || Array.isArray(id)) {
         return false;
     }
 
