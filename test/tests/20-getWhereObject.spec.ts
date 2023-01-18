@@ -83,6 +83,32 @@ describe('AppController', () => {
             }
         });
 
+        it('Get where array of ids', async () => {
+            try {
+                const where = cvRepository._testOperations().getWhereObject(["62d6009711cb220017ca28f8", "62d6009711cb220017ca28f9", "62d6009711cb220017ca28f1"]);
+                expect(where).toBeDefined();
+                expect(where.$or).toBeDefined();
+                expect(where.$or.length).toEqual(3);
+                expect(where.$or[0]._id).toBeDefined();
+                expect(where.$or[1]._id).toBeDefined();
+                expect(where.$or[2]._id).toBeDefined();
+            } catch (e) {
+                expect(e).not.toBeDefined();
+            }
+        });
+
+        it('Get where array of ids of 1 items', async () => {
+            try {
+                const where = cvRepository._testOperations().getWhereObject(["62d6009711cb220017ca28f8"]);
+                expect(where).toBeDefined();
+                expect(where.$or).toBeDefined();
+                expect(where.$or.length).toEqual(1);
+                expect(where.$or[0]._id).toBeDefined();
+            } catch (e) {
+                expect(e).not.toBeDefined();
+            }
+        });
+
         it('Get error where object 5', async () => {
             try {
                 const where = cvRepository._testOperations().getWhereObject({ user: '2121122112' });

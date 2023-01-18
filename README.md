@@ -3,7 +3,7 @@
 ![Lines](https://img.shields.io/badge/lines-97.18%25-brightgreen.svg?style=flat)
 ![Statements](https://img.shields.io/badge/statements-97.07%25-brightgreen.svg?style=flat)
 ![Functions](https://img.shields.io/badge/functions-98.43%25-brightgreen.svg?style=flat)
-![Branches](https://img.shields.io/badge/branches-87.45%25-yellow.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-87.47%25-yellow.svg?style=flat)
 
 **mongo-strict is compatible with mongo >= 5**
 
@@ -449,7 +449,7 @@ But in case if we need to get the user CVs we will need to use the @Referes().
 
 In the User entity we have nothing indicates that this user has CV/s.
 
-Fortunutly mongo-strict supports this operation by using the @Referers decorator as the above example.
+Fortunutly mongo-strict supports this operation by using the @Referers decorator like the above example.
 
 Then we can do:
 
@@ -467,7 +467,7 @@ userRepository.find({select: ['cvs.cvName']})
 |    key    |       The key in the referer's collection which refers to the current key    |
 |    as    |       Select the referer as     |
 
-**The @Referers Decorator accepts an array of referers Object**
+**The @Referers Decorator accepts an array of referer Object**
 
 ## Initialize the DB Map
 
