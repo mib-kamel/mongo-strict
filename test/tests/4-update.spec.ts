@@ -34,7 +34,7 @@ describe('AppController', () => {
                     numberKey: i,
                     booleanKey: false,
                     jsonKey: { key: `value${i}` },
-                    userName: `MO (2)${i}`,
+                    userName: `MO (${i})`,
                     notRequiredUnique: `Not Required 2 but unique ${i}`
                 });
                 records.push(rec);
