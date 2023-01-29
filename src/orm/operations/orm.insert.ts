@@ -75,7 +75,7 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
     const findUniqueKeysWhere = [];
 
     uniqueKeys.forEach((uni: any) => {
-        const obj = {};
+        let obj = {};
         const { key, isIgnoreCase } = uni;
 
         if (insertData[key] === undefined) {
@@ -89,7 +89,14 @@ async function checkInsertUniqueKeys(collection, uniqueKeys, insertData, referen
         if (isIdKey) {
             obj[key] = new ObjectId(insertData[key]);
         } else if (isIgnoreCase && typeof insertData[key] === 'string') {
-            obj[key] = { $regex: new RegExp(`^${insertData[key]}$`), $options: 'i' };
+            obj = {
+                $expr: {
+                    $eq: [
+                        { $toLower: `$${key}` },
+                        { $toLower: insertData[key] }
+                    ]
+                }
+            }
         } else {
             obj[key] = insertData[key];
         }

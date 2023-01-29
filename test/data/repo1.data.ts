@@ -48,4 +48,22 @@ export const repo1Data = {
         newKey: 12,
         notRequiredUnique: 'I am Not Required but unique4'
     },
+    userNameWithSepecialChars: {
+        email: 'mib.kamel5@gmail.com',
+        phone: '010655565645',
+        numberKey: 45,
+        booleanKey: false,
+        jsonKey: { key: 'value' },
+        userName: 'Mo (5)',
+        notRequiredUnique: 'I am Not Required but unique5'
+    },
+    sameUserNameWithSepecialChars: {
+        email: 'mib.kamel6@gmail.com',
+        phone: '0106555656456',
+        numberKey: 46,
+        booleanKey: false,
+        jsonKey: { key: 'value' },
+        userName: 'Mo (5)',
+        notRequiredUnique: 'I am Not Required but unique6'
+    }
 }

@@ -32,7 +32,7 @@ class Test1Entity {
 
     @Allow()
     @IsString()
-    @IsRequired({ message: 'The Email Address is Required' })
+    @IsRequired({ message: 'The User Name is Required' })
     @IsUnique({ message: 'This USer Name is already registered' })
     @MaxLength(10)
     @MinLength(3)

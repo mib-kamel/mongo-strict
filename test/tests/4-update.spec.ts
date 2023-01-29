@@ -34,7 +34,7 @@ describe('AppController', () => {
                     numberKey: i,
                     booleanKey: false,
                     jsonKey: { key: `value${i}` },
-                    userName: `MO2${i}`,
+                    userName: `MO (2)${i}`,
                     notRequiredUnique: `Not Required 2 but unique ${i}`
                 });
                 records.push(rec);
@@ -98,6 +98,19 @@ describe('AppController', () => {
                 expect(res).toBeUndefined();
             } catch (e: any) {
                 expect(e.existingUniqueKeys).toContain("phone")
+            }
+        });
+
+        it('Should NOT update the second record because the user name with special characters is repeated', async () => {
+            const id = records[1].id;
+
+            try {
+                const res = await repo.update({ id }).setOne({
+                    userName: records[2].userName
+                });
+                expect(res).toBeUndefined();
+            } catch (e: any) {
+                expect(e.existingUniqueKeys).toContain("userName")
             }
         });
 
@@ -178,31 +191,6 @@ describe('AppController', () => {
                 expect(e).toBeDefined()
             }
         });
-
-        // it('Should NOT replace many by the same old value', async () => {
-        //     const record = records[7];
-        //     try {
-        //         const res = await repo.update(record.id).replaceMany({ ...record, numberKey: newNumberKey3 });
-        //         expect(res.existingUniqueKeys).toBeDefined();
-        //     } catch (e: any) {
-        //         expect(e.existingUniqueKeys).toBeDefined()
-        //     }
-        // });
-
-        // it('Should replace many ', async () => {
-        //     const duplicatedRecord = records2[0];
-        //     try {
-        //         const newKeyRecordsCountBefore = await repo2.count({ where: { numberKey: duplicatedRecord.numberKey } });
-        //         expect(newKeyRecordsCountBefore).toBe(1);
-
-        //         await repo2.update({numberKey: duplicatedRecord[0]}).replaceMany(duplicatedRecord);
-
-        //         const newKeyRecordsCount = await repo2.count({ where: { numberKey: duplicatedRecord.numberKey } });
-        //         expect(newKeyRecordsCount).toBe(NEW_RECORDS_COUNT2);
-        //     } catch (e: any) {
-        //         expect(e).toBeUndefined();
-        //     }
-        // });
     });
 
     afterAll(async () => {

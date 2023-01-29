@@ -44,7 +44,8 @@ describe('AppController', () => {
 
         it('should refuse invalid email', async () => {
             try {
-                await repo.insertOne(repo1Data.invalidEmail);
+                const inserted = await repo.insertOne(repo1Data.invalidEmail);
+                expect(inserted).toBeUndefined();
             } catch (e: any) {
                 expect(e.invalidKeys.length).toBe(1);
                 expect(e.invalidKeys).toContain("email");
@@ -53,7 +54,8 @@ describe('AppController', () => {
 
         it('should refuse repeated data with unique keys', async () => {
             try {
-                await repo.insertOne(repo1Data.validData1);
+                const inserted = await repo.insertOne(repo1Data.validData1);
+                expect(inserted).toBeUndefined();
             } catch (e: any) {
                 expect(e.existingUniqueKeys.length).toBe(3);
                 expect(e.existingUniqueKeys).toContain("email");
@@ -64,7 +66,8 @@ describe('AppController', () => {
 
         it('should refuse with required field not found', async () => {
             try {
-                await repo.insertOne(repo1Data.requiredFieldNotFound);
+                const inserted = await repo.insertOne(repo1Data.requiredFieldNotFound);
+                expect(inserted).toBeUndefined();
             } catch (e: any) {
                 expect(e.notFoundRequiredKeys.length).toBe(1);
                 expect(e.notFoundRequiredKeys).toContain("userName");
@@ -97,6 +100,28 @@ describe('AppController', () => {
             } catch (e: any) {
                 expect(e.invalidKeys.length).toBe(1);
                 expect(e.invalidKeys).toContain("newKey");
+            }
+        });
+
+        it('should insert user name with special chars', async () => {
+            try {
+                const inseretResponse = await repo.insertOne(repo1Data.userNameWithSepecialChars);
+                expect(inseretResponse.id).toBeDefined();
+                expect(inseretResponse.createdAt).toBeDefined();
+                expect(inseretResponse.updatedAt).toBeDefined();
+            } catch (e) {
+                expect(e).toBeUndefined();
+            }
+        });
+
+        it('should not insert user name with special chars again', async () => {
+            try {
+                const inserted = await repo.insertOne(repo1Data.sameUserNameWithSepecialChars);
+                expect(inserted).toBeUndefined();
+            } catch (e: any) {
+                expect(e.existingUniqueKeys).toBeDefined();
+                expect(e.existingUniqueKeys.length).toBe(1);
+                expect(e.existingUniqueKeys).toContain("userName");
             }
         });
     });
