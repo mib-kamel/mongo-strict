@@ -20,7 +20,9 @@
     "relations",
     "ORM",
     "decorators",
-    "typescript"
+    "typescript",
+    "backend",
+    "back-end"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && tsc --project tsconfig.prod.types.json && npm run make-badges",
