@@ -12,8 +12,8 @@ describe('AppController', () => {
     let repositoriesMap;
 
     beforeAll(async () => {
-        createConnection({
-            uri: `mongodb://localhost:27017/fancy-cvs`
+        await createConnection({
+            uri: `mongodb://127.0.0.1:27017/fancy-cvs`
         });
 
         userRepository = new UserRepository();

@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { createConnection, initDBMap } from '../src';
 import { RefCheckRepository } from './_database/Repositories/ref_check.repository';
 import { Test1Repository } from './_database/Repositories/test1.repository';
@@ -8,10 +7,10 @@ import { Test4Repository } from './_database/Repositories/test4.repository';
 import { Test5Repository } from './_database/Repositories/test5.repository';
 
 const databaseName = process.env.TEST_DATABASE_NAME || 'relation_ORM_test_DB';
-const mongoHostName = process.env.DATABASE_HOST_NAME || 'localhost';
+const mongoHostName = process.env.DATABASE_HOST_NAME || '127.0.0.1';
 
 export async function createTestingModule() {
-    createConnection({
+    await createConnection({
         uri: `mongodb://${mongoHostName}:27017/${databaseName}`
     }, { debug: false });
 

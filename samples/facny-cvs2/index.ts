@@ -4,8 +4,8 @@ import { CVRepository } from './cv.repository';
 import { UserRepository } from './user.repository';
 
 const start = async () => {
-    createConnection({
-        uri: `mongodb://localhost:27017/fancy-cvs`
+    await createConnection({
+        uri: `mongodb://127.0.0.1:27017/fancy-cvs`
     });
 
     const userRepository = new UserRepository();

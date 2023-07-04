@@ -12,8 +12,8 @@ describe('AppController', () => {
     const validObjectId = "5da8c5f02ca1a60e086ffc80";
 
     beforeAll(async () => {
-        createConnection({
-            uri: `mongodb://localhost:27017/fancy-cvs`
+        await createConnection({
+            uri: `mongodb://127.0.0.1:27017/fancy-cvs`
         });
 
         userRepository = new UserRepository();

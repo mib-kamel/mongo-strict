@@ -1,8 +1,8 @@
 # mongo-strict
 
 ![Lines](https://img.shields.io/badge/lines-97.02%25-brightgreen.svg?style=flat)
-![Statements](https://img.shields.io/badge/statements-96.93%25-brightgreen.svg?style=flat)
-![Functions](https://img.shields.io/badge/functions-98.48%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-96.94%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-98.49%25-brightgreen.svg?style=flat)
 ![Branches](https://img.shields.io/badge/branches-87.5%25-yellow.svg?style=flat)
 
 **mongo-strict is compatible with mongo >= 5**
@@ -87,8 +87,8 @@ Create your Database connection with the connection URL
 ```JavaScript
 import { createConnection } from 'mongo-strict';
 
-createConnection({
-    uri: `mongodb://localhost:27017/fancy-cvs`
+await createConnection({
+    uri: `mongodb://127.0.0.1:27017/fancy-cvs`
 });
 ```
 
@@ -193,8 +193,8 @@ import { CVRepository } from './cv.repository';
 import { UserRepository } from './user.repository';
 
 const start = async () => {
-    createConnection({
-        uri: `mongodb://localhost:27017/fancy-cvs`
+    await createConnection({
+        uri: `mongodb://127.0.0.1:27017/fancy-cvs`
     });
 
     const userRepository = new UserRepository();
@@ -261,8 +261,8 @@ You should pass the connection options which should contains the connection uri.
 You can pass the default repository Options which will be applied to the all repositories.
 
 ```JavaScript
-createConnection({
-    uri: `mongodb://localhost:27017/fancy-cvs`
+await createConnection({
+    uri: `mongodb://127.0.0.1:27017/fancy-cvs`
 }, repositoryOptions);
 ```
 
@@ -474,8 +474,8 @@ userRepository.find({select: ['cvs.cvName']})
 You should call initDBMap() function after initializing all the repositories to inialize your database reference Map, Example:
 
 ```Javascript
-    createConnection({
-        uri: `mongodb://localhost:27017/fancy-cvs`
+    await createConnection({
+        uri: `mongodb://127.0.0.1:27017/fancy-cvs`
     });
 
     const userRepository = new UserRepository();

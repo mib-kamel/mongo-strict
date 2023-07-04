@@ -8,8 +8,8 @@ describe('AppController', () => {
 
     beforeAll(async () => {
         try {
-            createConnection({
-                uri: `mongodb://localhost:27017/cr`
+            await createConnection({
+                uri: `mongodb://127.0.0.1:27017/cr`
             }, {
                 debug: false
             });

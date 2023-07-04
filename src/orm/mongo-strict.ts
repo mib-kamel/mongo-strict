@@ -7,7 +7,7 @@ import initRefsMap from "./utils/refsMap";
 import handleUniqueIndexes from "./utils/uniqueIndexes";
 import { getEntityProperties } from "./utils/utils";
 
-const { MongoClient } = require("mongodb");
+import { MongoClient } from 'mongodb';
 
 interface DBConnection {
     uri: string;
@@ -18,12 +18,16 @@ class MongoStrict {
     private repositoriesMap = new Map();
     private repositoriesOptions = {};
 
-    createConnection = (connection: DBConnection, repositoriesOptions: RepositoryOptions = {}) => {
+    createConnection = async (connection: DBConnection, repositoriesOptions: RepositoryOptions = {}) => {
         // if (typeof connection.uri !== 'string') {
         //     throw 'uri string is required to start a connection';
         // }
         this.repositoriesOptions = { ...REPOSITORIES_DEFAULT_OPTIONS, ...repositoriesOptions };
+
         this.connection = new MongoClient(connection.uri);
+
+        await this.connection.connect();
+
         return this.connection;
     }
 
